@@ -26,7 +26,7 @@ Recién arrancando. Lo voy haciendo por fases, despacio y con tests en cada paso
 3. [x] Los números (cálculos exactos)
 4. [x] XML de factura
 5. [x] Firma digital
-6. [ ] Enviar la factura al beta
+6. [x] Enviar la factura al beta
 7. [ ] Guardar y exponer por REST
 8. [ ] Reintentos
 9. [ ] Boletas y resumen diario
