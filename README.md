@@ -29,7 +29,7 @@ Recién arrancando. Lo voy haciendo por fases, despacio y con tests en cada paso
 6. [x] Enviar la factura al beta
 7. [x] Guardar y exponer por REST
 8. [x] Reintentos
-9. [ ] Boletas y resumen diario
+9. [x] Boletas y resumen diario
 10. [ ] Producción
 
 Los errores que me van saliendo y las limitaciones que dejo para después están en [`docs/ERRORES.md`](docs/ERRORES.md). Los detalles y decisiones que voy notando están en [`docs/OBSERVACIONES.md`](docs/OBSERVACIONES.md).

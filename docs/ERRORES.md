@@ -189,6 +189,20 @@ Reglas de este archivo:
 - **Qué pasó:** al agregar `idExterno` (obligatorio) a `FacturaRequest`, 9 tests de validación de `FacturaRequest` dejaron de pasar porque sus datos no lo tenían. Se vio al correr toda la suite y no solo los tests nuevos.
 - **Cómo quedó:** se actualizaron los datos de prueba y se agregaron tests de la validación del `idExterno`. Moraleja: correr siempre la suite completa antes de cerrar un paso.
 
+### E-024 La máquina de estados del resumen no permitía rechazarlo desde `GENERADO` ni `ERROR_TEMPORAL`
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 8
+- **Qué pasó:** al escribir el servicio del resumen apareció el caso de que la SUNAT conteste un error de datos (por ejemplo `0306`) justo al enviar, sin llegar a dar ticket. El resumen estaba en `GENERADO` o `ERROR_TEMPORAL` y la regla de estados no dejaba pasar a `RECHAZADO`.
+- **Cómo quedó:** `GENERADO` y `ERROR_TEMPORAL` también pueden ir a `RECHAZADO` (12 transiciones permitidas, con test). Un resumen rechazado se corrige y se reenvía con el mismo nombre.
+
+### E-025 La consulta de una factura mostraba también las boletas
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 8
+- **Qué pasó:** `GET /api/v1/facturas/{id}` y su `/xml` buscaban por el id sin mirar el tipo, así que con el id de una boleta devolvían la boleta (y el XML con nombre de factura `-01-`).
+- **Cómo quedó:** el servicio de facturas solo encuentra comprobantes que no sean boletas; las boletas tienen sus propios endpoints. Test con mutación (se quita el filtro y el test falla).
+
 ---
 
 ## Limitaciones que se dejan para después
@@ -203,8 +217,9 @@ Reglas de este archivo:
 - **Qué significa:** exonerado, inafecto, gratuito, descuento global, pago a crédito y dólares no se hacen al principio.
 
 ### L-003 Las boletas solo van por resumen diario
-- [ ] Estado: diferido (fase 8)
+- [x] Estado: resuelto (fase 8)
 - **Qué significa:** no se soporta el envío individual de boletas hasta confirmar en el beta qué responde la SUNAT.
+- **Cómo quedó:** las boletas nunca se mandan por `sendBill`: `POST /api/v1/boletas` solo las guarda y firma, y el resumen diario las informa.
 
 ### L-004 No hay notas de crédito, notas de débito ni comunicación de baja
 - [ ] Estado: diferido (opcional, después de la fase 9)
@@ -235,8 +250,9 @@ Reglas de este archivo:
 - **Qué significa:** faltan las páginas 35 a 54 (estructura del CDR y Anexo 2).
 
 ### L-011 El plazo de envío del resumen diario no está confirmado
-- [ ] Estado: pendiente (fase 8)
+- [x] Estado: resuelto (fase 8)
 - **Qué significa:** en lo leído no figura cuántos días hay para informar las boletas.
+- **Cómo quedó:** la guía del resumen de boletas dice que se envía "el día en que se emitieron las boletas o a más tardar hasta el sétimo día calendario contado desde el día siguiente". Es `sunat.resumen.plazo-dias=7`. Pasado ese plazo la SUNAT acepta con la observación `4443` (fuera de plazo), según las reglas de validación; eso no se comprobó en el beta.
 
 ### L-012 El certificado gratuito puede no corresponder a mi régimen
 - [ ] Estado: pendiente (se confirma antes de la fase 9)
@@ -327,3 +343,25 @@ Reglas de este archivo:
 - **Qué significa:** los códigos desconocidos, `1033` y las respuestas raras de la consulta de constancias dejan el comprobante en `REVISAR`. Nadie los avisa todavía: solo quedan en el log y en la base.
 - **Por qué se deja:** hay que saber primero cuáles aparecen de verdad. Se puede agregar un aviso (por ejemplo al agente) más adelante.
 
+### L-030 Un resumen rechazado se reenvía igual, no se puede corregir una boleta
+- [ ] Estado: diferido
+- **Qué significa:** si la SUNAT rechaza el resumen, `POST /api/v1/resumenes/{id}/reenviar` manda el mismo XML con el mismo nombre. Sirve cuando el rechazo fue por algo pasajero o de configuración, pero no hay forma de sacar una boleta con problemas del resumen o cambiarle datos: las boletas quedan `EN_RESUMEN` con la explicación anotada. El rechazo por boleta tampoco se modela (la SUNAT rechaza o acepta el resumen entero).
+- **Por qué se deja:** hasta ver rechazos reales no se sabe qué corrección hace falta. Las boletas se validan antes de guardarlas (documento, monto, RUC de la serie), así que el rechazo debería ser raro.
+
+### L-031 Las observaciones se asignan a la boleta por el texto
+- [ ] Estado: diferido
+- **Qué significa:** cuando la SUNAT acepta el resumen con observaciones, cada nota se asigna a la boleta cuyo número (por ejemplo `B001-12`) aparezca en el texto. Las notas que no nombran ninguna boleta se agregan a la descripción del resumen. Es lo mejor posible sin ver una constancia real con observaciones de un resumen.
+- **Por qué se deja:** no se pudo provocar una observación en el beta.
+
+### L-032 Un ticket sin respuesta se consulta para siempre
+- [ ] Estado: diferido
+- **Qué significa:** mientras la SUNAT conteste "en proceso" (`98`) o no responda, el resumen sigue `ENVIADO` y se vuelve a consultar con espera creciente (hasta 60 minutos). No hay un tope de intentos ni se sabe cuánto dura un ticket en la SUNAT.
+- **Por qué se deja:** el beta resolvió todos los tickets en segundos. Se ve con la SUNAT real (fase 9).
+
+### L-033 El resumen solo informa boletas nuevas
+- [ ] Estado: diferido (opcional, con las notas de crédito y la baja)
+- **Qué significa:** las líneas del resumen llevan siempre el estado `1` (adicionar). Modificar (`2`) o anular (`3`) una boleta ya informada necesita notas de crédito/débito o baja, que no están hechas.
+
+### L-034 Las boletas de después de la hora del resumen esperan al día siguiente
+- [ ] Estado: aceptado
+- **Qué significa:** el resumen se arma a la hora de `sunat.resumen.cron` (22:00 de Lima por defecto). Una boleta emitida después se informa en la siguiente corrida, con el nombre del día de su emisión (`RC-AAAAMMDD-N`), dentro del plazo de 7 días. `POST /api/v1/resumenes/generar` permite armar el resumen a mano cuando se quiera.

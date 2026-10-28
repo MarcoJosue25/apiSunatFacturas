@@ -345,3 +345,58 @@ El pom apaga el planificador en todos los tests (`sunat.reintentos.habilitado=fa
 
 ### O-109 Test de punta a punta de los reintentos con un servidor SOAP local (fase 7)
 `ReintentoPuntaAPuntaTest` usa el cliente HTTP real contra un servidor local que al principio no existe (conexión rechazada), lo enciende después y el planificador manda la factura una sola vez. Es la prueba de "apago la conexión, emito, la restauro y se envía sola".
+
+### O-110 El beta acepta una boleta por `sendBill` y no da `1079` (fase 8)
+Se probó en el beta con una boleta firmada: la acepta. Las reglas de validación dicen que debería dar `1079`. Por eso la API nunca manda boletas por `sendBill` y no se apoya en el beta para saberlo (L-021).
+
+### O-111 La boleta reutiliza el armado del XML de la factura (fase 8)
+`FacturaXmlBuilder` tiene `construir` (factura) y `construirBoleta`, que comparten el método privado `armar`. Diferencias: tipo de comprobante `03`, serie `B###`, el comprador puede ser anónimo (O-112) y la boleta no lleva forma de pago. El comprador del XML se arma con un registro interno (`Comprador`) que dice cómo se llama su nombre en cada tipo.
+
+### O-112 Cliente anónimo en la boleta (fase 8)
+Sin cliente, la boleta usa tipo de documento `0`, número `-` y nombre `CLIENTES VARIOS`. Solo se permite hasta S/ 700; por encima hay que dar documento. La API lo rechaza con 400 antes de reservar el número, para no gastar un correlativo.
+
+### O-113 Documentos del cliente de una boleta (fase 8)
+`ClienteBoletaRequest.tipoDocumento` acepta `0` (sin documento), `1` (DNI, 8 dígitos), `4` (carnet de extranjería), `6` (RUC con dígito verificador), `7` (pasaporte). El resumen acepta también `A`-`G` pero la API no los ofrece todavía.
+
+### O-114 El resumen diario es UBL 2.0, no 2.1 (fase 8)
+`SummaryDocuments` usa `UBLVersionID 2.0` y `CustomizationID 1.1`, con su propio esquema (`UBLPE-SummaryDocuments-1.0.xsd`) en `xsd/ubl-2.0`. `XsdValidator` tiene `validarFactura` (2.1) y `validarResumen` (2.0). El esquema 2.0 acepta un `ExtensionContent` vacío, por eso la validación del XML sin firmar también pasa (la firma se agrega igual).
+
+### O-115 Cómo se llama el resumen y el archivo (fase 8)
+Nombre `RC-AAAAMMDD-N` con la fecha de emisión de las boletas (no la de hoy) y N desde 1 cada día. El archivo es `{RUC}-RC-AAAAMMDD-N.zip` con `{RUC}-RC-AAAAMMDD-N.xml` adentro. El beta devolvió `0161` cuando los nombres del ZIP y del XML no coincidían.
+
+### O-116 Un resumen lleva como máximo 500 líneas (fase 8)
+Las boletas de un día se parten en bloques de 500, cada uno con su correlativo. Con 500 boletas hay 1 resumen y con 501 hay 2 (500 y 1); el bloque chico es el último. Tests con 1, 2, 499, 500, 501 y 1000 líneas en el armado del XML y con 500 y 501 boletas reales en el servicio.
+
+### O-117 Boletas de días distintos no se mezclan (fase 8)
+Se agrupan por fecha de emisión en hora de Lima. Una boleta del 28 y otra del 29 dan `RC-20261028-1` y `RC-20261029-1`.
+
+### O-118 El correlativo del resumen se reserva al crear, con reintento (fase 8)
+`maxCorrelativoDelDia + 1` dentro de la transacción que crea el resumen y marca las boletas. Si dos procesos piden el mismo número, el segundo choca con las unicidades (`uk_resumenes_nombre` y fecha+correlativo), se deshace sin dejar nada y vuelve a intentar (3 veces).
+
+### O-119 Estados de la boleta (fase 8)
+`PENDIENTE_DE_RESUMEN` (guardada) → `EN_RESUMEN` (el resumen ya se armó) → `ACEPTADO` o `ACEPTADO_CON_OBSERVACIONES`. Si el resumen es rechazado la boleta sigue en `EN_RESUMEN` con la explicación anotada si la SUNAT la nombró (L-030). El estado `RECHAZADO` de la boleta no se usa para boletas.
+
+### O-120 Cómo se lee el ticket (fase 8)
+`getStatus`: `98` sigue en proceso (se vuelve a consultar con espera 1, 1, 2, 5, 15, 30 y 60 minutos), `0` y `99` traen la constancia en base64. Con `0` la constancia puede ser de aceptación; con `99` es un rechazo con el código y el motivo. Cualquier otro código (por ejemplo `0127`, el ticket no existe) y una constancia ilegible dejan el resumen en `REVISAR` sin tocar las boletas.
+
+### O-121 Errores SOAP al enviar o consultar el resumen (fase 8)
+Se clasifican con el mismo `ClasificadorErrores` de las facturas: pasajeros → espera y reintenta (si es al enviar, `ERROR_TEMPORAL`; si es al consultar, sigue `ENVIADO`); de datos o rechazo → `RECHAZADO`; de configuración o desconocidos → `REVISAR`.
+
+### O-122 Dos planificadores para el resumen (fase 8)
+`ResumenDiarioScheduler` (cron en hora de Lima) arma y envía; `ConsultaTicketScheduler` (cada `intervalo-consulta-segundos`) envía los que no salieron y consulta los tickets que ya les toca. Ambos se apagan con `sunat.resumen.habilitado=false` (los tests lo hacen desde el pom). `SchedulingConfig` ya no depende de los reintentos: cada planificador tiene su propia condición.
+
+### O-123 Endpoints nuevos (fase 8)
+`POST /api/v1/boletas` (201 nueva, 200 repetida), `GET /api/v1/boletas/{id}` y `/xml` (`{RUC}-03-B001-N.xml`), `POST /api/v1/resumenes/generar`, `GET /api/v1/resumenes/{id}`, `POST /api/v1/resumenes/{id}/reenviar` (409 si el resumen no está rechazado). La boleta reutiliza `FacturaResponse`; el resumen tiene `ResumenResponse`. Dos excepciones nuevas: `ResumenNoEncontradoException` (404, "No existe el resumen N") y `OperacionNoPermitidaException` (409).
+
+### O-124 Un resumen rechazado se reenvía con el mismo nombre (fase 8)
+`prepararReenvio` lo vuelve a `GENERADO`, borra el ticket y lo envía otra vez. El nombre y el XML no cambian, como pide la SUNAT.
+
+### O-125 El beta aceptó el resumen diario real (fase 8)
+`SunatBetaResumenRealTest` (con `-Pbeta`): una boleta con DNI, resumen `RC-20261028-1`, ticket numérico, y el ticket terminó en segundos con código `0` ("El Resumen diario RC-20261028-1, ha sido aceptado"). Repetido el mismo día con el mismo nombre y número de boleta, el beta lo vuelve a aceptar (no recuerda corridas anteriores, igual que con las facturas).
+
+### O-126 Test de punta a punta de la boleta (fase 8)
+`BoletaResumenPuntaAPuntaTest`: POST real, MySQL, el cliente SOAP real contra un servidor local que contesta el ticket "en proceso" y luego "terminado", y la boleta que acaba `ACEPTADO`. Se revisa también el ZIP que llegó: nombre, firma válida y XML válido contra el esquema.
+
+### O-127 Las pruebas del resumen mueven el reloj (fase 8)
+Se reutiliza `RelojMutable`: la primera consulta del ticket queda a 1 minuto del envío, así que los tests avanzan el reloj en vez de esperar.
+

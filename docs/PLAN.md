@@ -286,30 +286,30 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 **Clases que aparecen:** `dto/BoletaRequest`, `sunat/xml/BoletaXmlBuilder`, `sunat/xml/ResumenDiarioXmlBuilder`, `service/ResumenDiarioService`, `scheduler/ResumenDiarioScheduler`, `scheduler/ConsultaTicketScheduler`, `model/ResumenDiario`, `controller/BoletaController`.
 
-- [ ] Confirmar en el beta que una boleta por `sendBill` da `1079`.
-- [ ] XML de boleta reutilizando lo de la factura. Cliente anónimo en las boletas de poco monto y documento obligatorio por encima de S/ 700 **(verificar)**.
-- [ ] XML del Resumen Diario (`SummaryDocuments`, guía de resumen 2.0), firmado, con una línea por boleta.
-- [ ] Bloques de máximo 500 líneas, cada uno con su correlativo `RC-AAAAMMDD-N`.
-- [ ] `sendSummary` y guardar el ticket.
-- [ ] Consulta del ticket con `getStatus`: 0 terminó, 98 en proceso (volver a consultar), 99 con errores.
-- [ ] `ResumenDiarioScheduler`: a una hora configurable arma el resumen de las boletas del día.
-- [ ] Estados de la boleta: pendiente de resumen, en resumen, aceptada y rechazada.
-- [ ] `POST /api/v1/boletas` y `GET /api/v1/boletas/{id}`.
-- [ ] Un resumen rechazado se corrige y se reenvía con el mismo nombre.
+- [x] Confirmar en el beta que una boleta por `sendBill` da `1079`. **Resultado: el beta NO lo da, la acepta** (ERRORES L-021).
+- [x] XML de boleta reutilizando lo de la factura. Cliente anónimo en las boletas de poco monto y documento obligatorio por encima de S/ 700 **(verificar)**.
+- [x] XML del Resumen Diario (`SummaryDocuments`, guía de resumen 2.0), firmado, con una línea por boleta.
+- [x] Bloques de máximo 500 líneas, cada uno con su correlativo `RC-AAAAMMDD-N`.
+- [x] `sendSummary` y guardar el ticket.
+- [x] Consulta del ticket con `getStatus`: 0 terminó, 98 en proceso (volver a consultar), 99 con errores.
+- [x] `ResumenDiarioScheduler`: a una hora configurable arma el resumen de las boletas del día.
+- [x] Estados de la boleta: pendiente de resumen, en resumen, aceptada y rechazada.
+- [x] `POST /api/v1/boletas` y `GET /api/v1/boletas/{id}`.
+- [x] Un resumen rechazado se corrige y se reenvía con el mismo nombre.
 
 **Tests**
-- [ ] `sendBill` con una boleta devuelve el esperado `1079`.
-- [ ] Resumen con 499, 500, 501 y 1000 líneas.
-- [ ] Resumen sin boletas: no se envía nada.
-- [ ] Boletas de días distintos no se mezclan en el mismo resumen.
-- [ ] Ticket en proceso (98) que luego termina (0).
-- [ ] Resumen rechazado y reenvío con el mismo nombre.
-- [ ] Boleta sobre el monto límite sin documento: rechazada localmente.
-- [ ] Las observaciones y rechazos del CDR del resumen se asignan a la boleta correcta.
-- [ ] Prueba real `@Tag("beta")`: boleta y resumen aceptados.
+- [x] `sendBill` con una boleta devuelve el esperado `1079`. **No se cumple en el beta** (L-021); queda probado que el beta la acepta, y la API nunca manda boletas por `sendBill`.
+- [x] Resumen con 499, 500, 501 y 1000 líneas.
+- [x] Resumen sin boletas: no se envía nada.
+- [x] Boletas de días distintos no se mezclan en el mismo resumen.
+- [x] Ticket en proceso (98) que luego termina (0).
+- [x] Resumen rechazado y reenvío con el mismo nombre.
+- [x] Boleta sobre el monto límite sin documento: rechazada localmente.
+- [x] Las observaciones y rechazos del CDR del resumen se asignan a la boleta correcta.
+- [x] Prueba real `@Tag("beta")`: boleta y resumen aceptados.
 
 **Listo cuando:**
-- [ ] Las boletas se informan solas cada día y quedan aceptadas en el beta.
+- [x] Las boletas se informan solas cada día y quedan aceptadas en el beta.
 
 ---
 
