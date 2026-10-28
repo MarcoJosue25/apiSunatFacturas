@@ -82,13 +82,13 @@ Reglas ante un rechazo, según el tipo de documento:
   Se corrige y se reenvía con **el mismo nombre de archivo**.
 - **Lotes**: cada documento se valida por separado.
 
-Los códigos y sus descripciones están en las "Reglas de validación" (xlsx, ver §10) y extraídos en `codigos_sunat.csv`.
+Los códigos y sus descripciones están en las "Reglas de validación" (xlsx, ver §10) y extraídos en `src/main/resources/sunat/codigos_sunat.csv`.
 Ahí también está el listado de "observaciones que migran a error": códigos que antes eran
 observación y ahora son error. La tabla de códigos del sistema debe cargarse desde ese xlsx y versionarse, no inventarse.
 
 ### Hallazgos del Excel de Reglas de validación (26/08/2026)
 
-Se extrajeron los códigos de todas las hojas a [`codigos_sunat.csv`](codigos_sunat.csv)
+Se extrajeron los códigos de todas las hojas a [`codigos_sunat.csv`](../../src/main/resources/sunat/codigos_sunat.csv)
 (869 códigos únicos). Por rango: 14 en 0xxx, 19 en 1xxx, 678 en 2xxx-3xxx y 158 en 4xxx+.
 
 **Los rangos del manual no sirven para decidir reintentos. Se clasifica código por código.**

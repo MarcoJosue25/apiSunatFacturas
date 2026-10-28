@@ -1,0 +1,5 @@
+codigo,tipo,hojas,descripcion
+
+0100,ERROR,General,"Con coma, y ""comillas"""
+
+0111,OBSERV,"Hoja1;Hoja2",Otra

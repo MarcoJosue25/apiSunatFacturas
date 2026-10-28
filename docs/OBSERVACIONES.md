@@ -23,7 +23,7 @@ El manual y las reglas permiten series numéricas (`[0-9]{1,4}-[0-9]{1,8}`) pero
 Además de `sendBill`, `sendSummary`, `sendPack` y `getStatus`, el beta publica `getStatusAR`. No la uso ni sé para qué sirve; queda anotada por si aparece en la documentación.
 
 ### O-005 La SUNAT cuenta con 869 códigos, la mayoría en 2000-3999 (fase 1)
-14 en 0xxx, 19 en 1xxx, 678 en 2xxx-3xxx y 158 en 4xxx+. Están en `docs/sunat/codigos_sunat.csv`.
+14 en 0xxx, 19 en 1xxx, 678 en 2xxx-3xxx y 158 en 4xxx+. Están en `src/main/resources/sunat/codigos_sunat.csv`.
 
 ### O-006 En el Excel de Reglas de validación, la primera hoja se llama "General " con un espacio al final (fase 1)
 Al leerlo con código hay que buscar la hoja por posición, no por nombre.
@@ -198,3 +198,30 @@ El ejemplo del manual trae `La Factura numero FA01-981, ha sido\n aceptada` (con
 
 ### O-060 Lombok `@Singular` adivina mal el singular de "observaciones" (fase 5)
 Generó `observacione(...)`, que no compiló en el uso. Se indica explícitamente `@Singular("observacion")`.
+
+### O-061 La clase se llama `ClaseResultado` y no `ClaseError` (fase 5)
+El enum incluye ACEPTADO y ACEPTADO_CON_OBSERVACIONES, que no son errores, así que `ClaseError` engañaba. Se cambió el nombre en el plan y en el código.
+
+### O-062 Dos clases más que las del plan: `YA_REGISTRADO` y `DESCONOCIDO` (fase 5)
+El plan listaba seis. `1033` (comprobante registrado antes con otros datos) no es un rechazo común: si una factura se envía dos veces porque el primer intento terminó en timeout, el segundo puede devolver `1033` y la factura **sí está registrada**. Merece su propia clase para que la fase 7 consulte la constancia en vez de darla por perdida. `DESCONOCIDO` hace explícita la regla "lo que no está en la tabla nunca se reintenta".
+
+### O-063 Los códigos de ejemplo del manual (2047, 4001, 4031) ya no existen en las reglas de 2026 (fase 5)
+Los ejemplos de constancia del manual usan `2047`, `4001` y `4031`, pero la tabla extraída de las Reglas de validación del 26/08/2026 no los tiene. Por eso el clasificador los trata como desconocidos. Un test lo deja escrito. Lo que importa de verdad se confirma con constancias reales del beta.
+
+### O-064 `1080` se clasificó como configuración (fase 5)
+"Debe enviar su comprobante por el SEE-Empresas supervisadas" no estaba en la lista de las notas, pero es del mismo tipo que `1078` y `1086`: depende de cómo está inscrito el emisor, no del documento. Es una decisión mía; si en la práctica resultara ser otra cosa, se mueve a datos.
+
+### O-065 Una constancia con código de observación como respuesta se deja como desconocida (fase 5)
+Las observaciones llegan como notas de una constancia aceptada (código `0`). Si un código de observación (por ejemplo `4287`) apareciera como `ResponseCode`, no sería una aceptación; se deja `DESCONOCIDO` para que alguien lo revise, en vez de inventar una regla.
+
+### O-066 Una respuesta SOAP ilegible no se clasifica como transitoria (fase 5)
+`SunatNoDisponibleException` (sin conexión, timeout, HTTP sin detalle) sí es transitoria, pero `SunatRespuestaInvalidaException` (una página HTML con HTTP 200, un XML cortado) no tiene clasificación todavía: no se sabe si la SUNAT llegó a procesar el comprobante. La decisión de qué hacer con ella queda para la fase 7.
+
+### O-067 La tabla de códigos se movió a `src/main/resources/sunat/` (fase 5)
+Ahora hay una sola copia (la que carga la aplicación) y los enlaces de `NOTAS.md` y de las observaciones apuntan ahí. Si la aplicación la encuentra mal formada (encabezado, columnas, código repetido, tipo desconocido, comillas sin cerrar) no arranca.
+
+### O-068 Dos fallos reales del catálogo que encontraron los tests (fase 5)
+`Map.copyOf(...).get(null)` lanza `NullPointerException`, y un tipo desconocido en la tabla lanzaba `IllegalArgumentException` en vez del error de arranque con el número de línea. Ambos arreglados.
+
+### O-069 El manual escribe el ZIP en mayúsculas (`.ZIP`) y nosotros en minúsculas (fase 5)
+Los ejemplos del manual (`20100066603-01-F001-1.ZIP` y `.XML`) están en mayúsculas. Se usa minúscula, que es lo que usan las librerías conocidas; si el beta rechazara el nombre por eso (códigos `0151` o `0159`), se cambia. Queda como punto a confirmar en la prueba real.

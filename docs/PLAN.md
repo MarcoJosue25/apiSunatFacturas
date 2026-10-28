@@ -184,16 +184,16 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 **Objetivo:** primera factura aceptada por el beta de la SUNAT.
 
-**Clases que aparecen:** `util/ZipUtil`, `sunat/cdr/CdrParser`, `sunat/cdr/CdrResultado`, `sunat/errores/CatalogoCodigos`, `sunat/errores/ClasificadorErrores`, `model/enums/ClaseError`, y un servicio que arma el recorrido completo.
+**Clases que aparecen:** `util/ZipUtil`, `sunat/cdr/CdrParser`, `sunat/cdr/CdrResultado`, `sunat/errores/CatalogoCodigos`, `sunat/errores/ClasificadorErrores`, `model/enums/ClaseResultado`, y un servicio que arma el recorrido completo.
 
 - [x] Nombre del archivo `RUC-01-SERIE-NUMERO` (`NumeracionUtil.nombreArchivoFactura`) y ZIP con el XML adentro (`ZipUtil`).
 - [ ] Probar en el beta si pide la carpeta `dummy` **(verificar)**.
 - [x] `sendBill` en el cliente SOAP, con el ZIP en base64 (`SoapEnvelopeBuilder`, `SoapResponseParser`, `BillServiceClient`).
 - [ ] Probar en el beta si hace falta MTOM **(verificar)**.
 - [x] `CdrParser`: descomprime la respuesta y lee el `ApplicationResponse` (código, descripción y observaciones).
-- [ ] Mover `codigos_sunat.csv` a `src/main/resources` y cargarlo al arrancar.
-- [ ] `ClasificadorErrores` con las clases: aceptado, aceptado con observaciones, rechazo, error de datos, error de configuración y transitorio. Las reglas salen de `docs/sunat/NOTAS.md`.
-- [ ] Un código desconocido nunca se reintenta.
+- [x] Mover `codigos_sunat.csv` a `src/main/resources` y cargarlo al arrancar.
+- [x] `ClasificadorErrores` con las clases (`ClaseResultado`): aceptado, aceptado con observaciones, rechazo, error de datos, error de configuración, transitorio, ya registrado y desconocido. Las reglas salen de `docs/sunat/NOTAS.md`.
+- [x] Un código desconocido nunca se reintenta.
 - [ ] Servicio que arma el recorrido: calcular, XML, XSD, firmar, ZIP, enviar, leer el CDR, clasificar. Todavía sin base de datos.
 
 **Tests**
@@ -201,10 +201,10 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] El nombre del archivo (`RUC-01-F001-1`) coincide con el RUC, la serie y el número que lleva el XML (se movió de la fase 3 porque el nombre se arma con el ZIP).
 - [x] CDR de ejemplo: aceptado, rechazado y con observaciones.
 - [ ] SOAP Fault con `0111`, `0151` y `0306`.
-- [ ] Cada regla de clasificación de las notas (por ejemplo `0100` y `0109` transitorios, `0306` no).
-- [ ] Los 869 códigos del CSV reciben una clase sin fallar.
-- [ ] Código desconocido: no se reintenta.
-- [ ] Timeout o 500: transitorio.
+- [x] Cada regla de clasificación de las notas (por ejemplo `0100` y `0109` transitorios, `0306` no).
+- [x] Los 869 códigos del CSV reciben una clase sin fallar.
+- [x] Código desconocido: no se reintenta.
+- [x] Timeout o 500: transitorio.
 - [x] CDR corrupto o ZIP de respuesta vacío.
 - [ ] Prueba real `@Tag("beta")`: factura válida aceptada.
 - [ ] Prueba real: total mal calculado, para ver que lo que atrapa nuestro validador local es lo mismo que rechaza la SUNAT.

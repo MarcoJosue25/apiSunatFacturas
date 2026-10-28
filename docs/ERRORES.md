@@ -40,7 +40,7 @@ Reglas de este archivo:
 - **Fecha:** 2026-10-28
 - **Fase:** 5
 - **Qué pasó:** el manual dice que 0100-0999 son excepciones de la SUNAT, pero el Excel de Reglas de validación muestra que varios son errores del emisor (por ejemplo `0151` a `0161` y `0306`). Y 24 códigos entre 2000 y 3999 son observaciones, no rechazos.
-- **Cómo se soluciona:** clasificar código por código con la tabla `codigos_sunat.csv`. Solo `0100` y `0109` son transitorios. Un código desconocido nunca se reintenta.
+- **Cómo se soluciona:** clasificar código por código con la tabla `src/main/resources/sunat/codigos_sunat.csv`. Solo `0100` y `0109` son transitorios. Un código desconocido nunca se reintenta.
 
 ### E-003 Los cálculos mal redondeados ahora rechazan la factura
 - [ ] Estado: pendiente (se resuelve en las fases 2 y 3)
