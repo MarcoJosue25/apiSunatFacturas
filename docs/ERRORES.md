@@ -133,6 +133,13 @@ Reglas de este archivo:
 - **Qué pasó:** en las Reglas de validación, el código `2108` ("Presentación fuera de fecha") es un error: la diferencia entre la fecha de recepción del XML y la fecha de emisión supera el plazo máximo vigente. O sea, la propia SUNAT hace cumplir el plazo (ver E-004), y un reintento que llegue tarde no se acepta aunque el XML sea correcto.
 - **Cómo se soluciona:** el reintento termina en `VENCIDO` al cumplirse el plazo y no reenvía. Si igual llega un `2108`, se clasifica como rechazo y no se reintenta. Ojo también con `1033` ("registrado previamente con otros datos"): si hay que reenviar, el XML debe ser exactamente el mismo.
 
+### E-016 Los valores por defecto de Lombok no funcionan al leer un JSON
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 3
+- **Qué pasó:** `ItemRequest` tenía `@Builder.Default private String unidadMedida = "NIU"`. Al leer un JSON sin ese campo, Jackson 3 construye el objeto con el constructor de todos los argumentos y deja `null`, así que la validación fallaba con "la unidad de medida no puede estar vacía" aunque el campo se omitió a propósito. Lo atrapó el test del JSON de una factura completa.
+- **Cómo quedó:** el valor por defecto va en el getter (`getUnidadMedida()` devuelve `NIU` si es nulo) y el campo solo valida el patrón cuando viene. Regla para los demás DTO: un valor por defecto se pone en el getter, no en el campo.
+
 ---
 
 ## Limitaciones que se dejan para después

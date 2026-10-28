@@ -126,7 +126,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] Extraer los XSD 2.1 (`docs/sunat/Archivos XSD (1).zip`) a `src/main/resources/xsd/`, con una nota de qué versión son.
 - [x] `XsdValidator`: valida un XML contra los XSD y devuelve los errores legibles. Valida el documento **ya firmado**, porque el esquema no admite un `ExtensionContent` vacío (se descubrió al armar el XML de referencia). Mientras no haya firma (fase 4), los tests usan una firma de relleno.
 - [ ] Datos del emisor en `sunat.emisor.*` (razón social, nombre comercial, ubigeo y dirección).
-- [ ] DTO de entrada de la factura (se reutiliza en la fase 6 para el endpoint).
+- [x] DTO de entrada de la factura (se reutiliza en la fase 6 para el endpoint).
 - [ ] `FacturaXmlBuilder` con el DOM del JDK: versión UBL, tipo de documento 01, moneda PEN, leyenda 1000, emisor, cliente con RUC, forma de pago contado, ítems, impuestos, totales, `cac:Signature` y un `ext:UBLExtension` vacío para la firma.
 - [ ] Codificación ISO-8859-1 declarada y real.
 - [ ] Validación de coherencia antes de generar: los totales cuadran con las líneas.
@@ -140,8 +140,8 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [ ] Caracteres especiales: ñ, tildes, `&`, `<`, comillas.
 - [ ] Caracteres que no existen en ISO-8859-1 (emoji, guion largo): se define qué se hace y se prueba.
 - [ ] 1, 100 y 1000 líneas.
-- [ ] Cliente sin RUC en una factura: rechazado antes de llegar a la SUNAT.
-- [ ] RUC del cliente con longitud o dígito verificador inválido.
+- [x] Cliente sin RUC en una factura: rechazado antes de llegar a la SUNAT.
+- [x] RUC del cliente con longitud o dígito verificador inválido.
 - [ ] Totales que no cuadran: rechazados localmente.
 - [ ] El nombre del archivo (`RUC-01-F001-1`) coincide con el contenido del XML.
 
