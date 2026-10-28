@@ -27,21 +27,34 @@ import java.util.List;
 @Component
 public class XsdValidator {
 
-    private static final String BASE_LOGICA = "https://esquemas.locales/ubl-2.1/";
-    private static final String RAIZ_CLASSPATH = "/xsd/ubl-2.1/";
+    private static final String BASE_LOGICA = "https://esquemas.locales/";
+    private static final String RAIZ_CLASSPATH = "/xsd/";
+    // Cada documento usa su versión de UBL: la factura y la boleta la 2.1, el resumen diario la 2.0
+    private static final String CARPETA_FACTURA = "ubl-2.1";
+    private static final String CARPETA_RESUMEN = "ubl-2.0";
     private static final int MAX_ERRORES = 50;
 
     // Cargar los esquemas tarda un par de segundos (son 2.7 MB), así que se hace la primera vez que se necesitan
     private volatile Schema esquemaFactura;
+    private volatile Schema esquemaResumen;
 
     // Devuelve los errores encontrados, cada uno con su línea y columna. Lista vacía = el XML es válido.
     public List<String> validarFactura(byte[] xml) {
+        return validar(xml, this::esquemaFactura);
+    }
+
+    // Lo mismo para el resumen diario de boletas (SummaryDocuments, UBL 2.0)
+    public List<String> validarResumen(byte[] xml) {
+        return validar(xml, this::esquemaResumen);
+    }
+
+    private List<String> validar(byte[] xml, java.util.function.Supplier<Schema> esquema) {
         if (xml == null || xml.length == 0) {
             return List.of("El XML está vacío");
         }
         List<String> errores = new ArrayList<>();
         try {
-            Validator validador = esquemaFactura().newValidator();
+            Validator validador = esquema.get().newValidator();
             validador.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
             validador.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
             validador.setErrorHandler(new Recolector(errores));
@@ -61,7 +74,7 @@ public class XsdValidator {
             synchronized (this) {
                 actual = esquemaFactura;
                 if (actual == null) {
-                    actual = cargarEsquema("maindoc/UBL-Invoice-2.1.xsd");
+                    actual = cargarEsquema(CARPETA_FACTURA, "maindoc/UBL-Invoice-2.1.xsd");
                     esquemaFactura = actual;
                 }
             }
@@ -69,7 +82,23 @@ public class XsdValidator {
         return actual;
     }
 
-    private Schema cargarEsquema(String archivo) {
+    private Schema esquemaResumen() {
+        Schema actual = esquemaResumen;
+        if (actual == null) {
+            synchronized (this) {
+                actual = esquemaResumen;
+                if (actual == null) {
+                    actual = cargarEsquema(CARPETA_RESUMEN, "maindoc/UBLPE-SummaryDocuments-1.0.xsd");
+                    esquemaResumen = actual;
+                }
+            }
+        }
+        return actual;
+    }
+
+    private Schema cargarEsquema(String carpeta, String archivo) {
+        String baseLogica = BASE_LOGICA + carpeta + "/";
+        String raizClasspath = RAIZ_CLASSPATH + carpeta + "/";
         try {
             SchemaFactory fabrica = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             fabrica.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -78,11 +107,11 @@ public class XsdValidator {
             DOMImplementationLS ls = implementacionLs();
             // Los esquemas se piden por una dirección lógica y se entregan desde el classpath: nada sale a internet
             fabrica.setResourceResolver((tipo, namespace, publicId, systemId, baseUri) -> {
-                String absoluta = URI.create(baseUri == null ? BASE_LOGICA : baseUri).resolve(systemId).toString();
-                if (!absoluta.startsWith(BASE_LOGICA)) {
+                String absoluta = URI.create(baseUri == null ? baseLogica : baseUri).resolve(systemId).toString();
+                if (!absoluta.startsWith(baseLogica)) {
                     return null;
                 }
-                InputStream in = XsdValidator.class.getResourceAsStream(RAIZ_CLASSPATH + absoluta.substring(BASE_LOGICA.length()));
+                InputStream in = XsdValidator.class.getResourceAsStream(raizClasspath + absoluta.substring(baseLogica.length()));
                 if (in == null) {
                     return null;
                 }
@@ -92,11 +121,11 @@ public class XsdValidator {
                 entrada.setPublicId(publicId);
                 return entrada;
             });
-            InputStream raiz = XsdValidator.class.getResourceAsStream(RAIZ_CLASSPATH + archivo);
+            InputStream raiz = XsdValidator.class.getResourceAsStream(raizClasspath + archivo);
             if (raiz == null) {
                 throw new IllegalStateException("No se encuentra el esquema " + archivo);
             }
-            return fabrica.newSchema(new StreamSource(raiz, BASE_LOGICA + archivo));
+            return fabrica.newSchema(new StreamSource(raiz, baseLogica + archivo));
         } catch (SAXException e) {
             throw new IllegalStateException("No se pudo cargar el esquema " + archivo, e);
         }
