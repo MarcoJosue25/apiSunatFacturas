@@ -119,6 +119,13 @@ Reglas de este archivo:
 - **Qué pasó:** al mandar un sobre sin la cabecera de seguridad, el beta respondió HTTP **200** con un `Fault` dentro del cuerpo (`faultcode soap-env:Client.0200`). El mensaje además es engañoso: dice "El servidor remoto no se encuentra activo (codigo: 0200)" aunque el problema era la cabecera. Ejemplo guardado en `src/test/resources/sunat/beta/fault-sin-seguridad.xml`.
 - **Cómo se soluciona:** el cliente nunca decide por el código HTTP: siempre pasa el cuerpo al `SoapResponseParser`, que lanza `SunatFaultException` si hay un Fault. El código de 4 dígitos se saca del `faultcode` o del texto "(codigo: NNNN)".
 
+### E-014 Un test con timeout muy corto fallaba en la primera llamada
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 1
+- **Qué pasó:** en la prueba de punta a punta el timeout de lectura era de 400 ms. La primera consulta, con la aplicación recién arrancada (clases sin cargar, cliente HTTP sin calentar), tardó más que eso y la API respondió 504 aunque el código estaba bien.
+- **Cómo quedó:** timeout de 1500 ms y un servidor lento de 3000 ms. Se corrió la suite tres veces seguidas sin fallos. Regla para el resto del proyecto: los tests con tiempo usan márgenes holgados, porque el CI puede ser más lento que mi entorno.
+
 ---
 
 ## Limitaciones que se dejan para después
