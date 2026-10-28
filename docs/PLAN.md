@@ -40,16 +40,16 @@ Lo hacemos despacio y por fases. Cada fase termina en algo que funciona y se pue
 
 **Objetivo:** un proyecto vacío pero sano, con el CI verde.
 
-- [ ] Revisar el esqueleto de la rama `claude/sharp-goodall-tx30hd`: qué se aprovecha y qué no. Traer lo bueno a esta rama.
-- [ ] `pom.xml`: parent Spring Boot 4.1.x, Java 21, solo `webmvc`, `validation`, `lombok` y los starters de test. Sin JPA ni Flyway todavía.
-- [ ] Clase principal `ApiSunatApplication` y `application.yml` mínimo (nombre y puerto).
-- [ ] Maven wrapper (`mvnw`) en el repo.
-- [ ] `.gitignore`: `target`, `.env`, IDE y certificados reales (`*.p12`), con excepción de los de prueba.
-- [ ] CI de GitHub Actions (basado en el del agente): `./mvnw -B clean test`, en cada push a cualquier rama y en pull requests.
+- [x] Revisar el esqueleto de la rama `claude/sharp-goodall-tx30hd`: qué se aprovecha y qué no. Traer lo bueno a esta rama.
+- [x] `pom.xml`: parent Spring Boot 4.1.x, Java 21, solo `webmvc`, `validation`, `lombok` y los starters de test. Sin JPA ni Flyway todavía.
+- [x] Clase principal `ApiSunatApplication` y `application.yml` mínimo (nombre y puerto).
+- [x] Maven wrapper (`mvnw`) en el repo.
+- [x] `.gitignore`: `target`, `.env`, IDE y certificados reales (`*.p12`), con excepción de los de prueba.
+- [x] CI de GitHub Actions (basado en el del agente): `./mvnw -B clean test`, en cada push a cualquier rama y en pull requests.
 - [ ] README: el estado apunta a este plan.
 
 **Tests**
-- [ ] El contexto de Spring arranca (`contextLoads`).
+- [x] El contexto de Spring arranca (`contextLoads`).
 - [ ] El CI corre en verde sobre el proyecto vacío.
 
 **Listo cuando:**

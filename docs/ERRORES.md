@@ -71,11 +71,11 @@ Reglas de este archivo:
 - **Cómo se soluciona:** probar en el beta si acepta SHA-256. Si exige SHA-1, se evalúa cómo habilitarlo de forma limitada.
 
 ### E-007 Hay dos ramas con esqueletos del proyecto
-- [ ] Estado: pendiente (se resuelve en la fase 0)
+- [x] Estado: resuelto (la rama vieja sigue en GitHub; la puede borrar el dueño del repo)
 - **Fecha:** 2026-10-28
 - **Fase:** 0
-- **Qué pasó:** otra sesión creó la rama `claude/sharp-goodall-tx30hd` con un esqueleto de Spring Boot, y esta rama tiene las notas y el plan.
-- **Cómo se soluciona:** revisar el esqueleto, traer lo que sirva a esta rama y borrar la otra.
+- **Qué pasó:** otra sesión creó la rama `claude/sharp-goodall-tx30hd` con un esqueleto de Spring Boot. Usaba otro groupId y paquete (`com.apisunatfacturas`), `spring-boot-starter-web`, Actuator y no tenía Lombok.
+- **Cómo quedó:** se revisó y no se reutilizó. Se rehízo el esqueleto en esta rama con lo acordado (`apisunat.api_sunat`, `spring-boot-starter-webmvc`, Lombok, sin Actuator porque nada lo usa todavía).
 
 ### E-008 Archivos repetidos en `docs/sunat/`
 - [ ] Estado: pendiente (limpieza menor)
@@ -97,6 +97,13 @@ Reglas de este archivo:
 - **Fase:** ninguna
 - **Qué pasó:** los pasos para copiar los documentos estaban escritos para PowerShell, pero se corrieron en Git Bash, y no se copió nada.
 - **Cómo quedó:** se repitieron con `mkdir` y `cp`, y los archivos subieron bien.
+
+### E-011 El Maven wrapper no puede bajar Maven dentro del entorno de Claude
+- [ ] Estado: diferido (afecta solo al entorno de Claude)
+- **Fecha:** 2026-10-28
+- **Fase:** 0
+- **Qué pasó:** `./mvnw` usa `wget` para bajar la distribución de Maven, y `wget` falla en el entorno de Claude por el proxy. Con `curl` la misma URL funciona.
+- **Cómo se soluciona:** en el entorno de Claude se usa el `mvn` instalado (`mvn clean test`). El wrapper queda en el repo para tu máquina y para el CI. Se confirma en el primer CI que `./mvnw` funciona allí.
 
 ---
 

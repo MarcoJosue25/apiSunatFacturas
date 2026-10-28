@@ -1,0 +1,22 @@
+name: CI
+
+# Corre en cada push a cualquier rama y en los pull requests
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Compilar y correr los tests
+        run: ./mvnw -B clean test
