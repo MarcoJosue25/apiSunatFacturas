@@ -160,23 +160,23 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] `Clock` inyectable con la zona de Lima (`config/ClockConfig`), con su test. Se movió desde la fase 5 porque `CertificadoLoader` lo necesita para saber si el certificado está vigente.
 - [x] Propiedades `sunat.certificado.ruta` y `sunat.certificado.clave`.
 - [x] `CertificadoLoader`: lee el `.p12`, valida la vigencia, que la clave sea RSA de 1024 bits o más y que el RUC del certificado sea el del emisor; devuelve la clave privada y el certificado (sin la cadena: no se usa).
-- [ ] `XmlSigner`: XMLDSig dentro de `ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent`, sobre todo el documento.
-- [ ] Algoritmo de firma: el JDK 21 desactiva SHA-1 por defecto, así que se prueba en el beta si acepta SHA-256 **(verificar)**.
-- [ ] El verificador de firmas vive solo en los tests, porque en producción no se usa.
+- [x] `XmlSigner`: XMLDSig dentro de `ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent`, sobre todo el documento.
+- [ ] Algoritmo de firma: se firma con RSA-SHA256 (el JDK 21 desactiva SHA-1 por defecto y el XML de ejemplo ya usa SHA-256). Queda sin marcar hasta que el beta acepte una factura firmada así, en la fase 5 **(verificar)**.
+- [x] El verificador de firmas vive solo en los tests, porque en producción no se usa.
 
 **Tests**
-- [ ] La firma verifica correctamente.
-- [ ] Cambiar un solo carácter después de firmar rompe la verificación.
-- [ ] La firma queda en la posición correcta y hay un único `UBLExtension` con firma.
-- [ ] Con ñ y tildes la firma verifica y respeta ISO-8859-1.
-- [ ] El XML firmado sigue pasando el XSD.
-- [ ] La firma no altera el contenido del documento.
+- [x] La firma verifica correctamente.
+- [x] Cambiar un solo carácter después de firmar rompe la verificación.
+- [x] La firma queda en la posición correcta y hay un único `UBLExtension` con firma.
+- [x] Con ñ y tildes la firma verifica y respeta ISO-8859-1.
+- [x] El XML firmado sigue pasando el XSD.
+- [x] La firma no altera el contenido del documento.
 - [x] Clave incorrecta, certificado vencido, `.p12` corrupto y archivo inexistente fallan con mensajes claros.
-- [ ] Un XML sin el espacio para la firma da un error claro.
+- [x] Un XML sin el espacio para la firma da un error claro.
 - [x] El certificado con otro RUC se detecta.
 
 **Listo cuando:**
-- [ ] La factura sale firmada, verificable y válida contra el XSD.
+- [x] La factura sale firmada, verificable y válida contra el XSD.
 
 ---
 

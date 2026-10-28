@@ -138,3 +138,21 @@ Al romper a propósito la validación de vigencia, el código ni compiló (el `c
 
 ### O-040 La excepción del certificado todavía no tiene respuesta HTTP (fase 4)
 `CertificadoInvalidoException` se lanza al firmar, que recién ocurre dentro del recorrido de la fase 5. Su mapeo en `ManejadorExcepciones` (una respuesta 500 con el mensaje, porque es un problema de configuración y no del cliente) se agrega cuando haya un endpoint que la pueda provocar.
+
+### O-041 Firmar vuelve a escribir el XML y cambia el orden de los `xmlns` de la raíz (fase 4)
+El XML se lee a un DOM, se le agrega la firma y se escribe de nuevo, y en esa segunda escritura el JDK pone los `xmlns` de la raíz en otro orden (`xmlns` por defecto primero). Fuera de la firma no cambia nada más. No importa para la SUNAT ni para la firma (la canonicalización normaliza el orden), y un test lo fija comparando sin los `xmlns`.
+
+### O-042 La firma con RSA es siempre igual para el mismo XML (fase 4)
+RSA PKCS#1 v1.5 no usa números al azar: firmar dos veces el mismo XML con el mismo certificado da exactamente los mismos bytes. Sirve para los reintentos: reenviar una factura firmada de nuevo es reenviar el mismo archivo. Un test lo comprueba.
+
+### O-043 `XmlSigner` es genérico, no solo para facturas (fase 4)
+Firma cualquier XML UBL con un único `ext:ExtensionContent` vacío, así que el resumen diario y las comunicaciones de baja (fase 8) lo reutilizan sin cambios. Por eso no se llama `FacturaSigner`.
+
+### O-044 Un XML con un `DOCTYPE` se rechaza al firmar (fase 4)
+Al leer el XML para firmarlo no se aceptan declaraciones `DOCTYPE`, así que no se puede usar una entidad externa para leer archivos del servidor (XXE). El XML que llega al firmador lo arma la propia aplicación, pero se protege igual porque es barato.
+
+### O-045 Los tests de 999 ítems iguales volvieron a chocar con L-015 (fase 4)
+Al probar la firma con 999 líneas del mismo precio, el armador rechazó la factura por el redondeo acumulado. Es la limitación ya anotada (L-015); el test usa precios distintos.
+
+### O-046 Los mensajes de error de assertj pueden ser enormes (fase 4)
+Un `isEqualTo` entre dos XML largos imprime ambos completos. Para comparar XML conviene un helper que dé una diferencia corta, o recortar la salida al leer los resultados.

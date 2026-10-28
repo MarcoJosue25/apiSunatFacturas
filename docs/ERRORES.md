@@ -147,6 +147,13 @@ Reglas de este archivo:
 - **Qué pasó:** el total de la línea se redondea a centavos y al dividirlo entre una cantidad muy chica ese redondeo se amplifica: con 0.001 unidades, medio centavo son 5 soles por unidad. En una factura aleatoria, 250099.00 × 0.001 daba un total de 250.10, y `(valor de venta + IGV) / cantidad` era 250100.00: una diferencia de 1.00, justo el límite que tolera la SUNAT (regla 3270). Lo atrapó el verificador independiente `ReglasSunatXml` con 300 facturas aleatorias.
 - **Cómo quedó:** `CalculadoraIgv.calcularLinea` informa el precio que llegó, salvo que se aleje más de 0.50 del que de verdad se cobró (total / cantidad), y en ese caso informa el cobrado. Si ese precio cobrado pasa de 12 enteros, se rechaza antes de enviar. Está explicado en `docs/sunat/CALCULOS.md`.
 
+### E-018 El JDK escribía el base64 de la firma partido en líneas con `&#13;`
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 4
+- **Qué pasó:** al mirar el XML firmado, el `SignatureValue` y el `X509Certificate` salían en varias líneas de 76 caracteres con `&#13;` (retorno de carro) al final de cada una. La firma verificaba igual, pero no es la forma habitual y no se sabe si el servicio de la SUNAT lo toleraría igual de bien.
+- **Cómo quedó:** `XmlSigner` quita los espacios de esos dos textos después de firmar, para que queden en una sola línea. No afecta la firma porque `Reference URI=""` excluye a la propia firma y el base64 se lee sin espacios. El `DigestValue` no se toca porque sí está dentro de lo firmado. Un test comprueba que no haya `&#13;` ni saltos de línea y que la firma siga verificando.
+
 ---
 
 ## Limitaciones que se dejan para después
