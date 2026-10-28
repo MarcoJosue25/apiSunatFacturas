@@ -123,9 +123,8 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 **Clases que aparecen:** `dto/FacturaRequest` (+ `ItemRequest`, `ClienteRequest`), `sunat/xml/FacturaXmlBuilder`, `sunat/xml/XsdValidator`, y los enums de catálogo que se usen.
 
-- [ ] Extraer los XSD 2.1 (`docs/sunat/Archivos XSD (1).zip`) a `src/main/resources/xsd/`, con una nota de qué versión son.
-- [ ] `XsdValidator`: valida un XML contra los XSD y devuelve los errores legibles.
-- [ ] `Clock` inyectable con la zona de Lima (fecha y hora de emisión), con su test.
+- [x] Extraer los XSD 2.1 (`docs/sunat/Archivos XSD (1).zip`) a `src/main/resources/xsd/`, con una nota de qué versión son.
+- [x] `XsdValidator`: valida un XML contra los XSD y devuelve los errores legibles. Valida el documento **ya firmado**, porque el esquema no admite un `ExtensionContent` vacío (se descubrió al armar el XML de referencia). Mientras no haya firma (fase 4), los tests usan una firma de relleno.
 - [ ] Datos del emisor en `sunat.emisor.*` (razón social, nombre comercial, ubigeo y dirección).
 - [ ] DTO de entrada de la factura (se reutiliza en la fase 6 para el endpoint).
 - [ ] `FacturaXmlBuilder` con el DOM del JDK: versión UBL, tipo de documento 01, moneda PEN, leyenda 1000, emisor, cliente con RUC, forma de pago contado, ítems, impuestos, totales, `cac:Signature` y un `ext:UBLExtension` vacío para la firma.
@@ -192,6 +191,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [ ] Mover `codigos_sunat.csv` a `src/main/resources` y cargarlo al arrancar.
 - [ ] `ClasificadorErrores` con las clases: aceptado, aceptado con observaciones, rechazo, error de datos, error de configuración y transitorio. Las reglas salen de `docs/sunat/NOTAS.md`.
 - [ ] Un código desconocido nunca se reintenta.
+- [ ] `Clock` inyectable con la zona de Lima (fecha y hora de emisión), con su test. Se hace aquí porque lo usa el servicio de abajo, y no el armador del XML, que recibe la fecha como parámetro.
 - [ ] Servicio que arma el recorrido: calcular, XML, XSD, firmar, ZIP, enviar, leer el CDR, clasificar. Todavía sin base de datos.
 
 **Tests**
