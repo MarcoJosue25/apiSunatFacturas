@@ -248,12 +248,15 @@ class ComprobanteServiceImplTest {
         Comprobante primero = comprobantes.findById(r.getId()).orElseThrow();
         assertThat(primero.getIntentosFallidos()).isEqualTo(1);
         // espera de 1 minuto después del primer fallo
-        assertThat(java.time.Duration.between(primero.getActualizadoEn(), primero.getProximoIntento())).isEqualTo(java.time.Duration.ofMinutes(1));
+        // (la columna guarda segundos enteros, por eso se admite una diferencia menor que un segundo)
+        assertThat(java.time.Duration.between(primero.getActualizadoEn(), primero.getProximoIntento()))
+                .isBetween(java.time.Duration.ofSeconds(59), java.time.Duration.ofSeconds(61));
 
         servicio.enviar(r.getId());
         Comprobante segundo = comprobantes.findById(r.getId()).orElseThrow();
         assertThat(segundo.getIntentosFallidos()).isEqualTo(2);
-        assertThat(java.time.Duration.between(segundo.getActualizadoEn(), segundo.getProximoIntento())).isEqualTo(java.time.Duration.ofMinutes(2));
+        assertThat(java.time.Duration.between(segundo.getActualizadoEn(), segundo.getProximoIntento()))
+                .isBetween(java.time.Duration.ofSeconds(119), java.time.Duration.ofSeconds(121));
     }
 
     @Test

@@ -300,3 +300,15 @@ Al intentar espiar `SerieService` (que tiene `Propagation.MANDATORY`), la propia
 
 ### O-094 La respuesta no lleva el XML ni la constancia (fase 6)
 `FacturaResponse` no tiene campos para eso; el XML se descarga aparte en `GET /api/v1/facturas/{id}/xml` (ISO-8859-1, como adjunto). La constancia de la SUNAT (ZIP) se guarda en la base y por ahora no se expone; se agregará un endpoint si el cliente la necesita.
+
+### O-095 Las fechas `DATETIME` de la base guardan segundos enteros (fase 7)
+`fecha_emision` y `proximo_intento` son `DATETIME` sin fracción (MySQL redondea al segundo), mientras `creado_en`, `actualizado_en` y la fecha de cada intento llevan milisegundos. Un test de espera de 1 minuto vio 59.889 s por esto. Para un plazo medido en minutos y días no importa.
+
+### O-096 La política de espera es fija: 1, 2, 5, 15, 30 y 60 minutos (fase 7)
+Sin aleatoriedad ("jitter") ni configuración: con un solo emisor y pocos comprobantes no hay una estampida que repartir. `PoliticaBackoff` es un componente aparte para poder cambiarla sin tocar el resto.
+
+### O-097 Un comprobante nuevo ya sale con su primer intento programado a 1 minuto (fase 7)
+Si la petición `POST` se cae justo después de guardar y antes de enviar, el comprobante queda `PENDIENTE` y el planificador lo recoge pasado ese minuto, sin competir con la petición que lo está enviando.
+
+### O-098 Un error de Git: se comiteó un paso con un test fallando (fase 7)
+Encadené `mvn test ...; git commit` sin condicionar el commit al resultado y subió con un test en rojo (era un test mal escrito, no el código). Se corrigió en el commit siguiente; desde ahora se comitea solo si los tests pasan.
