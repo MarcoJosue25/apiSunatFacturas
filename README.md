@@ -23,7 +23,7 @@ Recién arrancando. Lo voy haciendo por fases, despacio y con tests en cada paso
 
 1. [x] Cimientos
 2. [x] Conexión con el beta de la SUNAT
-3. [ ] Los números (cálculos exactos)
+3. [x] Los números (cálculos exactos)
 4. [ ] XML de factura
 5. [ ] Firma digital
 6. [ ] Enviar la factura al beta

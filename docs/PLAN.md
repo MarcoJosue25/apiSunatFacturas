@@ -102,7 +102,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] Totales del documento: suma de valores de venta, IGV total e importe total.
 - [x] Redondeo a 2 decimales y precisión del valor unitario, según lo anotado.
 - [x] Monto en letras para la leyenda 1000, con el formato de la guía: `MIL OCHOCIENTOS CINCUENTA Y OCHO CON 59/100 SOLES` (mayúsculas y sin tildes).
-- [ ] Serie y correlativo: formato `F001-00000001` y validación del formato.
+- [x] Serie y correlativo: formato `F001-4355` (sin ceros a la izquierda, como la guía) y validación con la regla oficial 1001.
 
 **Tests**
 - [x] Redondeo: 0.005, 0.015, 0.004999, 0.01, montos grandes y los límites.
@@ -110,10 +110,10 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] Coherencia: el total siempre es la suma de las líneas y el IGV de la línea cuadra con su base. Con muchos casos generados con semilla fija.
 - [x] Ida y vuelta: del precio con IGV al valor unitario y de regreso no pierde centavos.
 - [x] Monto en letras: 0, 1, 15, 21, 100 ("CIEN"), 101, 1000, 1001, 21000, 1000000 ("UN MILLÓN"), centavos, y negativos rechazados.
-- [ ] Serie y correlativo: `F001`, `F999`, `B001`, serie inválida, correlativo 0 o de más de 8 dígitos.
+- [x] Serie y correlativo: `F001`, `F999`, `FA01`, serie inválida (`B001` se agrega con las boletas, en la fase 8), correlativo 0 o de más de 8 dígitos.
 
 **Listo cuando:**
-- [ ] Los cálculos son puros, no dependen de nada externo y tienen sus casos límite cubiertos.
+- [x] Los cálculos son puros, no dependen de nada externo y tienen sus casos límite cubiertos.
 
 ---
 

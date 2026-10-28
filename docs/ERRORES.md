@@ -126,6 +126,13 @@ Reglas de este archivo:
 - **Qué pasó:** en la prueba de punta a punta el timeout de lectura era de 400 ms. La primera consulta, con la aplicación recién arrancada (clases sin cargar, cliente HTTP sin calentar), tardó más que eso y la API respondió 504 aunque el código estaba bien.
 - **Cómo quedó:** timeout de 1500 ms y un servidor lento de 3000 ms. Se corrió la suite tres veces seguidas sin fallos. Regla para el resto del proyecto: los tests con tiempo usan márgenes holgados, porque el CI puede ser más lento que mi entorno.
 
+### E-015 La SUNAT rechaza con 2108 las facturas enviadas fuera de plazo
+- [ ] Estado: pendiente (se usa en la fase 7)
+- **Fecha:** 2026-10-28
+- **Fase:** 7
+- **Qué pasó:** en las Reglas de validación, el código `2108` ("Presentación fuera de fecha") es un error: la diferencia entre la fecha de recepción del XML y la fecha de emisión supera el plazo máximo vigente. O sea, la propia SUNAT hace cumplir el plazo (ver E-004), y un reintento que llegue tarde no se acepta aunque el XML sea correcto.
+- **Cómo se soluciona:** el reintento termina en `VENCIDO` al cumplirse el plazo y no reenvía. Si igual llega un `2108`, se clasifica como rechazo y no se reintenta. Ojo también con `1033` ("registrado previamente con otros datos"): si hay que reenviar, el XML debe ser exactamente el mismo.
+
 ---
 
 ## Limitaciones que se dejan para después
