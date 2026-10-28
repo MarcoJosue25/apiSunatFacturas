@@ -208,3 +208,13 @@ Reglas de este archivo:
 - **Qué significa:** el redondeo de cada línea se acumula. Con 35.00 repetido, cada línea se desvía 0.0012 del 18%, así que unas 417 líneas iguales superan el margen de 0.50 que me puse (la SUNAT tolera 1). Con el peor precio (0.23) bastan unas 86. `CalculadoraIgv.calcularTotales` lanza un error antes de que el documento llegue a la SUNAT.
 - **Por qué se deja:** una venta por WhatsApp no tiene cientos de líneas, y juntar los productos iguales en una sola línea con su cantidad es exacto. Si algún día hace falta, se puede repartir el redondeo entre las líneas (difusión del error) para que el total siempre cuadre.
 
+### L-016 El emisor no envía ubigeo, departamento, provincia ni distrito
+- [ ] Estado: diferido (se agrega si hace falta)
+- **Qué significa:** en el XML, el domicilio fiscal del emisor lleva solo la dirección y el código de establecimiento. El ubigeo, departamento, provincia y distrito son opcionales para la SUNAT y no se envían todavía.
+- **Por qué se deja:** la SUNAT valida el ubigeo contra su lista, y no tenemos esa lista. Si una factura lo necesita, se agrega con una validación del código.
+
+### L-017 Los caracteres que no existen en ISO-8859-1 se reemplazan por "?"
+- [ ] Estado: diferido (comportamiento decidido)
+- **Qué significa:** el XML va en ISO-8859-1. Un emoji o una letra de otro alfabeto en el nombre de un producto o un cliente se escribe como `?` (uno por carácter). Las comillas y guiones elegantes, los puntos suspensivos y el euro se cambian por su parecido en ASCII (`TextoSunat`).
+- **Por qué se deja:** es lo más seguro para que la SUNAT no rechace el XML. Quien necesite el texto exacto lo tiene en la base de datos, no en el XML.
+
