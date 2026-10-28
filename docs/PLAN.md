@@ -156,9 +156,9 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 **Clases que aparecen:** `sunat/firma/CertificadoLoader`, `sunat/firma/XmlSigner`, y las propiedades del certificado.
 
-- [ ] Certificados de prueba generados con `keytool` y guardados en `src/test/resources`: uno válido, uno vencido y uno con otro RUC. Documentar el comando.
+- [x] Certificados de prueba generados con `keytool` y guardados en `src/test/resources`: uno válido, uno vencido, uno aún no vigente, uno con otro RUC y uno sin RUC. Comando documentado en `src/test/resources/certificados/LEEME.md`.
 - [x] `Clock` inyectable con la zona de Lima (`config/ClockConfig`), con su test. Se movió desde la fase 5 porque `CertificadoLoader` lo necesita para saber si el certificado está vigente.
-- [ ] Propiedades `sunat.certificado.ruta` y `sunat.certificado.clave`.
+- [x] Propiedades `sunat.certificado.ruta` y `sunat.certificado.clave`.
 - [ ] `CertificadoLoader`: lee el `.p12`, valida la vigencia y obtiene la clave privada y la cadena.
 - [ ] `XmlSigner`: XMLDSig dentro de `ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent`, sobre todo el documento.
 - [ ] Algoritmo de firma: el JDK 21 desactiva SHA-1 por defecto, así que se prueba en el beta si acepta SHA-256 **(verificar)**.

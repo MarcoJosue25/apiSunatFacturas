@@ -1,6 +1,7 @@
 package apisunat.api_sunat.config;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -42,6 +43,10 @@ public class SunatProperties {
     @NotNull(message = "Faltan los datos del emisor")
     private Emisor emisor = new Emisor();
 
+    @Valid
+    @NotNull(message = "Faltan los datos del certificado")
+    private Certificado certificado = new Certificado();
+
     // Los datos de quien emite la factura (el negocio). Lo opcional puede venir vacío.
     @Getter
     @Setter
@@ -69,6 +74,33 @@ public class SunatProperties {
 
         public String getDireccion() {
             return direccion == null || direccion.isBlank() ? null : direccion;
+        }
+    }
+
+    // El certificado digital con el que se firman las facturas (un .p12 o .pfx). La aplicación arranca sin él,
+    // pero no puede firmar: el error aparece recién al intentar cargarlo.
+    @Getter
+    @Setter
+    public static class Certificado {
+
+        private String ruta;
+
+        private String clave;
+
+        // Igual que los datos opcionales del emisor: en el archivo de configuración un valor vacío llega como texto vacío
+        public String getRuta() {
+            return ruta == null || ruta.isBlank() ? null : ruta;
+        }
+
+        // La clave no se recorta ni se normaliza más que el vacío: un espacio puede ser parte de la clave
+        public String getClave() {
+            return clave == null || clave.isEmpty() ? null : clave;
+        }
+
+        // Una ruta sin clave (o al revés) es una configuración a medias: se avisa al arrancar y no al firmar
+        @AssertTrue(message = "El certificado necesita la ruta y la clave juntas, o ninguna de las dos")
+        public boolean isRutaYClaveCompletas() {
+            return (getRuta() == null) == (getClave() == null);
         }
     }
 }

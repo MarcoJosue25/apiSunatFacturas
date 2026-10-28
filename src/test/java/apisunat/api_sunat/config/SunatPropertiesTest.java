@@ -172,6 +172,55 @@ class SunatPropertiesTest {
         assertThat(camposInvalidos(p)).as(String.valueOf(codigo)).containsExactly("emisor.codigoEstablecimiento");
     }
 
+    // --- Certificado digital ---
+
+    @Test
+    void sinCertificadoConfiguradoLaValidacionPasaYLosDatosSonNulos() {
+        SunatProperties p = valida();
+        assertThat(validator.validate(p)).isEmpty();
+        assertThat(p.getCertificado().getRuta()).isNull();
+        assertThat(p.getCertificado().getClave()).isNull();
+    }
+
+    @Test
+    void conRutaYClaveElCertificadoEsValido() {
+        SunatProperties p = valida();
+        p.getCertificado().setRuta("/ruta/certificado.p12");
+        p.getCertificado().setClave("secreta");
+        assertThat(validator.validate(p)).isEmpty();
+    }
+
+    @Test
+    void laRutaSinClaveOLaClaveSinRutaFallan() {
+        SunatProperties soloRuta = valida();
+        soloRuta.getCertificado().setRuta("/ruta/certificado.p12");
+        assertThat(camposInvalidos(soloRuta)).containsExactly("certificado.rutaYClaveCompletas");
+
+        SunatProperties soloClave = valida();
+        soloClave.getCertificado().setClave("secreta");
+        assertThat(camposInvalidos(soloClave)).containsExactly("certificado.rutaYClaveCompletas");
+    }
+
+    @Test
+    void laRutaVaciaOConSoloEspaciosCuentaComoSinRuta() {
+        SunatProperties p = valida();
+        p.getCertificado().setRuta("   ");
+        assertThat(p.getCertificado().getRuta()).isNull();
+        p.getCertificado().setClave("secreta");
+        assertThat(camposInvalidos(p)).containsExactly("certificado.rutaYClaveCompletas");
+    }
+
+    @Test
+    void laClaveVaciaCuentaComoSinClavePeroUnEspacioEsUnaClaveReal() {
+        SunatProperties p = valida();
+        p.getCertificado().setClave("");
+        assertThat(p.getCertificado().getClave()).isNull();
+        p.getCertificado().setClave(" ");
+        assertThat(p.getCertificado().getClave()).isEqualTo(" ");
+        p.getCertificado().setRuta("/ruta/certificado.p12");
+        assertThat(validator.validate(p)).isEmpty();
+    }
+
     // --- Con el arranque de Spring de verdad: una configuración mala impide que la aplicación arranque ---
 
     @Configuration
@@ -235,5 +284,31 @@ class SunatPropertiesTest {
     @Test
     void sinNingunaPropiedadLaAplicacionNoArranca() {
         runner.run(ctx -> assertThat(ctx).hasFailed());
+    }
+
+    @Test
+    void sinCertificadoLaAplicacionArrancaConLosDatosNulos() {
+        runner.withPropertyValues(BUENAS).withPropertyValues("sunat.certificado.ruta=", "sunat.certificado.clave=").run(ctx -> {
+            assertThat(ctx).hasNotFailed();
+            assertThat(ctx.getBean(SunatProperties.class).getCertificado().getRuta()).isNull();
+            assertThat(ctx.getBean(SunatProperties.class).getCertificado().getClave()).isNull();
+        });
+    }
+
+    @Test
+    void conRutaYClaveDelCertificadoLaAplicacionLosLee() {
+        runner.withPropertyValues(BUENAS).withPropertyValues("sunat.certificado.ruta=/ruta/certificado.p12", "sunat.certificado.clave=secreta").run(ctx -> {
+            assertThat(ctx).hasNotFailed();
+            assertThat(ctx.getBean(SunatProperties.class).getCertificado().getRuta()).isEqualTo("/ruta/certificado.p12");
+            assertThat(ctx.getBean(SunatProperties.class).getCertificado().getClave()).isEqualTo("secreta");
+        });
+    }
+
+    @Test
+    void conUnaRutaSinClaveLaAplicacionNoArranca() {
+        runner.withPropertyValues(BUENAS).withPropertyValues("sunat.certificado.ruta=/ruta/certificado.p12").run(ctx -> {
+            assertThat(ctx).hasFailed();
+            assertThat(ctx.getStartupFailure()).hasStackTraceContaining("la ruta y la clave juntas");
+        });
     }
 }

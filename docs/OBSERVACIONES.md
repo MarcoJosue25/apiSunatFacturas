@@ -108,3 +108,15 @@ El `Clock` con la zona de Lima se iba a crear en la fase 5, pero la validación 
 
 ### O-030 Lima no tiene horario de verano (fase 4)
 `America/Lima` es siempre UTC-5. Aun así se usa la zona con nombre y no un desplazamiento fijo, para que el código diga claramente que son fechas de Perú. Un test comprueba los 12 meses.
+
+### O-031 El certificado es opcional al arrancar, pero ruta y clave van juntas (fase 4)
+La aplicación arranca sin certificado (para poder consultar tickets, que no firman). Si se pone la ruta sin la clave, o la clave sin la ruta, no arranca: es una configuración a medias y conviene enterarse al arrancar y no al firmar la primera factura. El error de "no hay certificado" al firmar lo da el `CertificadoLoader` (paso siguiente).
+
+### O-032 La clave del certificado no se recorta (fase 4)
+La ruta vacía o con solo espacios cuenta como "sin ruta", pero de la clave solo se trata como ausente la cadena vacía: un espacio podría ser parte de una clave real. Un test lo fija.
+
+### O-033 Los certificados de prueba no deben vencer a mitad del proyecto (fase 4)
+`valido.p12` vence en 2035, pero aun así los tests de vigencia usan un reloj fijo y no la fecha real. Así no se rompen solos con el paso del tiempo (como pasa con los tests que dependen de `now()`).
+
+### O-034 `keytool -startdate` permite crear certificados vencidos y futuros (fase 4)
+No hace falta esperar ni manipular el reloj del sistema para tener un certificado vencido: `-startdate "2020/01/01 00:00:00" -validity 30` lo genera ya vencido.

@@ -21,3 +21,7 @@ sunat:
     nombre-comercial: ${SUNAT_EMISOR_NOMBRE_COMERCIAL:}
     direccion: ${SUNAT_EMISOR_DIRECCION:}
     codigo-establecimiento: ${SUNAT_EMISOR_ESTABLECIMIENTO:0000}
+  # El certificado digital (.p12) para firmar. Sin él la aplicación arranca, pero no puede firmar facturas.
+  certificado:
+    ruta: ${SUNAT_CERTIFICADO_RUTA:}
+    clave: ${SUNAT_CERTIFICADO_CLAVE:}
