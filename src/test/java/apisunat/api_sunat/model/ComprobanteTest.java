@@ -20,7 +20,7 @@ class ComprobanteTest {
     private static final LocalDateTime T2 = T0.plusSeconds(9);
 
     private static Comprobante nuevo() {
-        return Comprobante.nuevo("pedido-77", "F001", 4355, T0, "20123456786", "CLIENTE SAC", new BigDecimal("70.00"), new byte[]{1, 2, 3}, T0, T0.plusMinutes(1));
+        return Comprobante.nuevo("pedido-77", "F001", 4355, T0, "20123456786", "CLIENTE SAC", BigDecimal.ONE, BigDecimal.ONE, new BigDecimal("70.00"), new byte[]{1, 2, 3}, T0, T0.plusMinutes(1));
     }
 
     private static ResultadoEmision resultado(ClaseResultado clase, String codigo, String descripcion, List<CdrResultado.Observacion> obs, byte[] cdr) {
@@ -45,7 +45,7 @@ class ComprobanteTest {
 
     @Test
     void elNumeroNoLlevaCerosALaIzquierda() {
-        Comprobante c = Comprobante.nuevo("a", "F001", 1, T0, "20123456786", "X", BigDecimal.TEN, new byte[]{1}, T0, T0.plusMinutes(1));
+        Comprobante c = Comprobante.nuevo("a", "F001", 1, T0, "20123456786", "X", BigDecimal.ONE, BigDecimal.ONE, BigDecimal.TEN, new byte[]{1}, T0, T0.plusMinutes(1));
         assertThat(c.numero()).isEqualTo("F001-1");
     }
 
@@ -256,5 +256,110 @@ class ComprobanteTest {
         Comprobante c = nuevo();
         c.marcarEnviando(T1);
         assertThatThrownBy(() -> c.marcarVencido(T2)).isInstanceOf(IllegalStateException.class);
+    }
+
+    // --- Boletas ---
+
+    private static Comprobante boleta() {
+        return Comprobante.nuevaBoleta("boleta-1", "B001", 12, T0, "1", "46237547", "Luana Pazos", new BigDecimal("59.32"),
+                new BigDecimal("10.68"), new BigDecimal("70.00"), new byte[]{1, 2}, T0);
+    }
+
+    @Test
+    void unaBoletaNuevaEsperaSuResumenYNoTieneProximoIntento() {
+        Comprobante b = boleta();
+
+        assertThat(b.esBoleta()).isTrue();
+        assertThat(b.getTipoDocumento()).isEqualTo("03");
+        assertThat(b.getEstado()).isEqualTo(EstadoComprobante.PENDIENTE_DE_RESUMEN);
+        assertThat(b.getProximoIntento()).isNull();
+        assertThat(b.getResumenId()).isNull();
+        assertThat(b.numero()).isEqualTo("B001-12");
+        assertThat(b.getTipoDocumentoCliente()).isEqualTo("1");
+        assertThat(b.getDocumentoCliente()).isEqualTo("46237547");
+        assertThat(b.getTotalGravado()).isEqualByComparingTo("59.32");
+        assertThat(b.getTotalIgv()).isEqualByComparingTo("10.68");
+    }
+
+    @Test
+    void unaFacturaNoEsBoletaYGuardaSusTotales() {
+        Comprobante f = nuevo();
+        assertThat(f.esBoleta()).isFalse();
+        assertThat(f.getTipoDocumentoCliente()).isEqualTo("6");
+        assertThat(f.getTotalGravado()).isEqualByComparingTo("1");
+    }
+
+    @Test
+    void laBoletaEntraAUnResumenYQuedaEnResumen() {
+        Comprobante b = boleta();
+        b.incluirEnResumen(77L, T1);
+
+        assertThat(b.getEstado()).isEqualTo(EstadoComprobante.EN_RESUMEN);
+        assertThat(b.getResumenId()).isEqualTo(77L);
+        assertThat(b.getActualizadoEn()).isEqualTo(T1);
+    }
+
+    @Test
+    void unaFacturaNoPuedeIrEnUnResumen() {
+        assertThatThrownBy(() -> nuevo().incluirEnResumen(1L, T1)).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Solo las boletas van en un resumen diario");
+    }
+
+    @Test
+    void unaBoletaNoSePuedeEnviarSolaComoUnaFactura() {
+        assertThatThrownBy(() -> boleta().marcarEnviando(T1)).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Un comprobante PENDIENTE_DE_RESUMEN no puede pasar a ENVIANDO");
+    }
+
+    @Test
+    void siElResumenSeAceptaLaBoletaQuedaAceptada() {
+        Comprobante b = boleta();
+        b.incluirEnResumen(77L, T1);
+        b.aceptarPorResumen("0", "El Resumen RC-20261028-1 ha sido aceptado", null, T2);
+
+        assertThat(b.getEstado()).isEqualTo(EstadoComprobante.ACEPTADO);
+        assertThat(b.getCodigoSunat()).isEqualTo("0");
+        assertThat(b.getObservaciones()).isNull();
+    }
+
+    @Test
+    void siHayObservacionesParaEstaBoletaQuedaAceptadaConObservaciones() {
+        Comprobante b = boleta();
+        b.incluirEnResumen(77L, T1);
+        b.aceptarPorResumen("0", "aceptado", "4443 - Informada fuera del plazo B001-12", T2);
+
+        assertThat(b.getEstado()).isEqualTo(EstadoComprobante.ACEPTADO_CON_OBSERVACIONES);
+        assertThat(b.getObservaciones()).isEqualTo("4443 - Informada fuera del plazo B001-12");
+    }
+
+    @Test
+    void unaBoletaQueNoEstaEnUnResumenNoSePuedeAceptarPorResumen() {
+        assertThatThrownBy(() -> boleta().aceptarPorResumen("0", "x", null, T1)).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void siElResumenSeRechazaSeAnotaQueDijoLaSunatSinCambiarElEstado() {
+        Comprobante b = boleta();
+        b.incluirEnResumen(77L, T1);
+        b.anotarRespuestaDelResumen("2987", "El comprobante ya fue informado B001-12", T2);
+
+        assertThat(b.getEstado()).isEqualTo(EstadoComprobante.EN_RESUMEN);
+        assertThat(b.getCodigoSunat()).isEqualTo("2987");
+        assertThat(b.getDescripcionSunat()).isEqualTo("El comprobante ya fue informado B001-12");
+        assertThat(b.getActualizadoEn()).isEqualTo(T2);
+    }
+
+    @Test
+    void soloUnaBoletaEnUnResumenAdmiteAnotarLaRespuestaDelResumen() {
+        assertThatThrownBy(() -> boleta().anotarRespuestaDelResumen("2987", "x", T1)).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void unaBoletaYaAceptadaNoSePuedeMeterEnOtroResumen() {
+        Comprobante b = boleta();
+        b.incluirEnResumen(77L, T1);
+        b.aceptarPorResumen("0", "ok", null, T2);
+        assertThatThrownBy(() -> b.incluirEnResumen(78L, T2)).isInstanceOf(IllegalStateException.class);
+        assertThat(b.getResumenId()).isEqualTo(77L);
     }
 }

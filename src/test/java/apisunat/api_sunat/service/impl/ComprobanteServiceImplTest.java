@@ -146,7 +146,7 @@ class ComprobanteServiceImplTest {
         assertThat(guardado.getXmlFirmado()).isNotEmpty();
         assertThat(verifica(guardado.getXmlFirmado())).isTrue();
         assertThat(guardado.getCdrZip()).isNotEmpty();
-        assertThat(guardado.getRucCliente()).isEqualTo("20123456786");
+        assertThat(guardado.getDocumentoCliente()).isEqualTo("20123456786");
         assertThat(intentos.findByComprobanteIdOrderByIdAsc(r.getId())).singleElement()
                 .satisfies(i -> {
                     assertThat(i.getResultado()).isEqualTo("ACEPTADO");

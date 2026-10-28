@@ -22,4 +22,11 @@ public interface ComprobanteRepository extends JpaRepository<Comprobante, Long> 
     // Los que llevan demasiado tiempo "enviándose": la aplicación se cayó a mitad del envío
     @Query("select c.id from Comprobante c where c.estado = apisunat.api_sunat.model.enums.EstadoComprobante.ENVIANDO and c.actualizadoEn < :limite order by c.id")
     List<Long> idsEnviandoDesde(@Param("limite") LocalDateTime limite);
+
+    // Las boletas que todavía no están en ningún resumen, de la más antigua a la más nueva
+    @Query("select c.id from Comprobante c where c.estado = apisunat.api_sunat.model.enums.EstadoComprobante.PENDIENTE_DE_RESUMEN "
+            + "order by c.fechaEmision, c.correlativo")
+    List<Long> idsBoletasPendientesDeResumen();
+
+    List<Comprobante> findByResumenIdOrderByCorrelativo(Long resumenId);
 }

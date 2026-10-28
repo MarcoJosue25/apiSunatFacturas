@@ -31,14 +31,26 @@ public enum EstadoComprobante {
     REVISAR,
 
     // Pasó el plazo de envío sin que la SUNAT lo recibiera: ya no se puede enviar (la SUNAT lo rechazaría por fuera de plazo)
-    VENCIDO;
+    VENCIDO,
+
+    // Solo boletas: está emitida y guardada, y espera a que el resumen diario la informe a la SUNAT
+    PENDIENTE_DE_RESUMEN,
+
+    // Solo boletas: ya está en un resumen diario y se espera la respuesta de la SUNAT al resumen
+    EN_RESUMEN;
 
     private static final Set<EstadoComprobante> DESDE_ENVIANDO = EnumSet.of(
             ACEPTADO, ACEPTADO_CON_OBSERVACIONES, RECHAZADO, ERROR_DE_DATOS, ERROR_DE_CONFIGURACION, ERROR_TEMPORAL, REVISAR);
 
+    // Una boleta cuyo resumen terminó queda aceptada (con o sin observaciones). Si el resumen se rechaza, la boleta sigue en el resumen
+    // hasta que este se corrija y se reenvíe; también puede volver a esperar un resumen nuevo.
+    private static final Set<EstadoComprobante> DESDE_EN_RESUMEN = EnumSet.of(ACEPTADO, ACEPTADO_CON_OBSERVACIONES, RECHAZADO);
+
     public boolean puedePasarA(EstadoComprobante destino) {
         return switch (this) {
             case PENDIENTE, ERROR_TEMPORAL -> destino == ENVIANDO || destino == VENCIDO;
+            case PENDIENTE_DE_RESUMEN -> destino == EN_RESUMEN;
+            case EN_RESUMEN -> DESDE_EN_RESUMEN.contains(destino);
             case ENVIANDO -> DESDE_ENVIANDO.contains(destino);
             default -> false;
         };

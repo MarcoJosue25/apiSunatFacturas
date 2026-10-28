@@ -41,7 +41,7 @@ class ComprobanteRepositoryTest {
     }
 
     private static Comprobante nuevo(String idExterno, long correlativo, byte[] xml) {
-        return Comprobante.nuevo(idExterno, "F001", correlativo, T0, "20123456786", "CLIENTE SAC ñandú áéíóú", new BigDecimal("70.00"), xml, T0, T0.plusMinutes(1));
+        return Comprobante.nuevo(idExterno, "F001", correlativo, T0, "20123456786", "CLIENTE SAC ñandú áéíóú", new BigDecimal("59.32"), new BigDecimal("10.68"), new BigDecimal("70.00"), xml, T0, T0.plusMinutes(1));
     }
 
     @Test
@@ -55,7 +55,7 @@ class ComprobanteRepositoryTest {
         assertThat(leido.getSerie()).isEqualTo("F001");
         assertThat(leido.getCorrelativo()).isEqualTo(1);
         assertThat(leido.getFechaEmision()).isEqualTo(T0);
-        assertThat(leido.getRucCliente()).isEqualTo("20123456786");
+        assertThat(leido.getDocumentoCliente()).isEqualTo("20123456786");
         assertThat(leido.getRazonSocialCliente()).isEqualTo("CLIENTE SAC ñandú áéíóú");
         assertThat(leido.getImporteTotal()).isEqualByComparingTo("70.00");
         assertThat(leido.getEstado()).isEqualTo(EstadoComprobante.PENDIENTE);
@@ -124,7 +124,7 @@ class ComprobanteRepositoryTest {
     @Test
     void elMismoCorrelativoEnOtraSerieSiSePuede() {
         comprobantes.saveAndFlush(nuevo("a", 7, new byte[]{1}));
-        Comprobante otraSerie = Comprobante.nuevo("b", "F002", 7, T0, "20123456786", "X", BigDecimal.TEN, new byte[]{1}, T0, T0.plusMinutes(1));
+        Comprobante otraSerie = Comprobante.nuevo("b", "F002", 7, T0, "20123456786", "X", BigDecimal.ONE, BigDecimal.ONE, BigDecimal.TEN, new byte[]{1}, T0, T0.plusMinutes(1));
 
         assertThat(comprobantes.saveAndFlush(otraSerie).getId()).isNotNull();
     }

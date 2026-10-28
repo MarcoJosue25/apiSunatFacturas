@@ -22,7 +22,9 @@ class EstadoComprobanteTest {
             "PENDIENTE>ENVIANDO", "PENDIENTE>VENCIDO",
             "ERROR_TEMPORAL>ENVIANDO", "ERROR_TEMPORAL>VENCIDO",
             "ENVIANDO>ACEPTADO", "ENVIANDO>ACEPTADO_CON_OBSERVACIONES", "ENVIANDO>RECHAZADO", "ENVIANDO>ERROR_DE_DATOS",
-            "ENVIANDO>ERROR_DE_CONFIGURACION", "ENVIANDO>ERROR_TEMPORAL", "ENVIANDO>REVISAR");
+            "ENVIANDO>ERROR_DE_CONFIGURACION", "ENVIANDO>ERROR_TEMPORAL", "ENVIANDO>REVISAR",
+            "PENDIENTE_DE_RESUMEN>EN_RESUMEN",
+            "EN_RESUMEN>ACEPTADO", "EN_RESUMEN>ACEPTADO_CON_OBSERVACIONES", "EN_RESUMEN>RECHAZADO");
 
     static Stream<Arguments> todasLasCombinaciones() {
         Stream.Builder<Arguments> b = Stream.builder();
@@ -41,9 +43,9 @@ class EstadoComprobanteTest {
     }
 
     @Test
-    void hayDiezEstadosYOnceTransicionesPermitidas() {
-        assertThat(values()).hasSize(10);
-        assertThat(PERMITIDAS).hasSize(11);
+    void hayDoceEstadosYQuinceTransicionesPermitidas() {
+        assertThat(values()).hasSize(12);
+        assertThat(PERMITIDAS).hasSize(15);
     }
 
     @ParameterizedTest

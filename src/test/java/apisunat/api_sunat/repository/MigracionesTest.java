@@ -54,9 +54,9 @@ class MigracionesTest {
         var resultado = flyway().migrate();
 
         assertThat(resultado.success).isTrue();
-        assertThat(resultado.migrationsExecuted).isEqualTo(2);
+        assertThat(resultado.migrationsExecuted).isEqualTo(3);
         assertThat(consultar("SELECT table_name FROM information_schema.tables WHERE table_schema = '" + ESQUEMA + "' ORDER BY 1"))
-                .contains("series", "comprobantes", "envio_intentos", "flyway_schema_history");
+                .contains("series", "comprobantes", "envio_intentos", "resumenes_diarios", "flyway_schema_history");
     }
 
     @Test
@@ -72,7 +72,8 @@ class MigracionesTest {
         flyway().migrate();
         assertThat(consultar("SELECT index_name FROM information_schema.statistics WHERE table_schema = '" + ESQUEMA
                 + "' AND non_unique = 0 AND index_name <> 'PRIMARY' GROUP BY index_name ORDER BY 1"))
-                .containsExactlyInAnyOrder("uk_series_tipo_serie", "uk_comprobantes_id_externo", "uk_comprobantes_numero");
+                .containsExactlyInAnyOrder("uk_series_tipo_serie", "uk_comprobantes_id_externo", "uk_comprobantes_numero", "uk_resumenes_nombre",
+                        "uk_resumenes_fecha_correlativo");
     }
 
     @Test
@@ -88,7 +89,7 @@ class MigracionesTest {
     void losIntentosDependenDeUnComprobanteQueExiste() throws SQLException {
         flyway().migrate();
         assertThat(consultar("SELECT constraint_name FROM information_schema.table_constraints WHERE table_schema = '" + ESQUEMA
-                + "' AND constraint_type = 'FOREIGN KEY'")).containsExactly("fk_envio_intentos_comprobante");
+                + "' AND constraint_type = 'FOREIGN KEY'")).containsExactlyInAnyOrder("fk_envio_intentos_comprobante", "fk_comprobantes_resumen");
     }
 
     @Test
@@ -130,5 +131,38 @@ class MigracionesTest {
 
         assertThat(consultar("SELECT CONCAT(intentos_fallidos, '/', IFNULL(proximo_intento, 'null')) FROM comprobantes WHERE id_externo = 'viejo'"))
                 .containsExactly("0/null");
+    }
+
+    @Test
+    void laMigracionDeBoletasConservaElRucDeLasFacturasQueYaExistianComoDocumentoDelCliente() throws SQLException {
+        Flyway hastaV2 = Flyway.configure()
+                .dataSource(ConexionTest.urlDeEsquema(ESQUEMA), ConexionTest.usuario(), ConexionTest.clave())
+                .locations("classpath:db/migration").target("2").load();
+        try (Connection c = ConexionTest.conectarSinEsquema(); Statement s = c.createStatement()) {
+            s.execute("CREATE DATABASE " + ESQUEMA + " CHARACTER SET utf8mb4");
+        }
+        hastaV2.migrate();
+        try (Connection c = java.sql.DriverManager.getConnection(ConexionTest.urlDeEsquema(ESQUEMA), ConexionTest.usuario(), ConexionTest.clave());
+             Statement s = c.createStatement()) {
+            s.execute("INSERT INTO comprobantes (id_externo, tipo_documento, serie, correlativo, fecha_emision, ruc_cliente, razon_social_cliente,"
+                    + " importe_total, estado, creado_en, actualizado_en) VALUES ('viejo', '01', 'F001', 1, NOW(), '20123456786', 'X', 10.00,"
+                    + " 'ACEPTADO', NOW(3), NOW(3))");
+        }
+
+        Flyway.configure().dataSource(ConexionTest.urlDeEsquema(ESQUEMA), ConexionTest.usuario(), ConexionTest.clave())
+                .locations("classpath:db/migration").load().migrate();
+
+        assertThat(consultar("SELECT CONCAT(documento_cliente, '/', tipo_documento_cliente, '/', total_gravado, '/', IFNULL(resumen_id, 'null')) "
+                + "FROM comprobantes WHERE id_externo = 'viejo'")).containsExactly("20123456786/6/0.00/null");
+    }
+
+    @Test
+    void laTablaDeResumenesTieneSusColumnasYGuardaXmlYConstanciaGrandes() throws SQLException {
+        flyway().migrate();
+        assertThat(consultar("SELECT column_name FROM information_schema.columns WHERE table_schema = '" + ESQUEMA
+                + "' AND table_name = 'resumenes_diarios' AND column_name IN ('ticket', 'nombre', 'fecha_referencia', 'proximo_intento') ORDER BY 1"))
+                .containsExactly("fecha_referencia", "nombre", "proximo_intento", "ticket");
+        assertThat(consultar("SELECT data_type FROM information_schema.columns WHERE table_schema = '" + ESQUEMA
+                + "' AND table_name = 'resumenes_diarios' AND column_name IN ('xml_firmado', 'cdr_zip')")).containsExactly("longblob", "longblob");
     }
 }

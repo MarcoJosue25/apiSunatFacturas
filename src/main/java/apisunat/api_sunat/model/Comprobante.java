@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 public class Comprobante {
 
     public static final String TIPO_FACTURA = "01";
+    public static final String TIPO_BOLETA = "03";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,14 +57,29 @@ public class Comprobante {
     @Column(name = "fecha_emision", nullable = false, updatable = false)
     private LocalDateTime fechaEmision;
 
-    @Column(name = "ruc_cliente", nullable = false, length = 11, updatable = false)
-    private String rucCliente;
+    // El RUC de una factura; en una boleta, el documento del cliente ("-" si es anónimo)
+    @Column(name = "documento_cliente", nullable = false, length = 20, updatable = false)
+    private String documentoCliente;
+
+    // Catálogo 06 de la SUNAT: 6 RUC, 1 DNI, 4 carné, 7 pasaporte, 0 sin documento
+    @Column(name = "tipo_documento_cliente", nullable = false, length = 1, updatable = false)
+    private String tipoDocumentoCliente;
 
     @Column(name = "razon_social_cliente", nullable = false, length = 1500, updatable = false)
     private String razonSocialCliente;
 
     @Column(name = "importe_total", nullable = false, precision = 14, scale = 2, updatable = false)
     private BigDecimal importeTotal;
+
+    @Column(name = "total_gravado", nullable = false, precision = 14, scale = 2, updatable = false)
+    private BigDecimal totalGravado;
+
+    @Column(name = "total_igv", nullable = false, precision = 14, scale = 2, updatable = false)
+    private BigDecimal totalIgv;
+
+    // Solo boletas: el resumen diario que la informó
+    @Column(name = "resumen_id")
+    private Long resumenId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
@@ -104,15 +120,57 @@ public class Comprobante {
     @Column(name = "actualizado_en", nullable = false)
     private LocalDateTime actualizadoEn;
 
-    // Un comprobante nuevo: ya tiene su número y su XML firmado, y espera ser enviado
+    // Una factura nueva: ya tiene su número y su XML firmado, y espera ser enviada
     public static Comprobante nuevo(String idExterno, String serie, long correlativo, LocalDateTime fechaEmision, String rucCliente,
-                                    String razonSocialCliente, BigDecimal importeTotal, byte[] xmlFirmado, LocalDateTime ahora,
-                                    LocalDateTime primerIntento) {
+                                    String razonSocialCliente, BigDecimal totalGravado, BigDecimal totalIgv, BigDecimal importeTotal,
+                                    byte[] xmlFirmado, LocalDateTime ahora, LocalDateTime primerIntento) {
         return Comprobante.builder()
                 .idExterno(idExterno).tipoDocumento(TIPO_FACTURA).serie(serie).correlativo(correlativo)
-                .fechaEmision(fechaEmision).rucCliente(rucCliente).razonSocialCliente(razonSocialCliente)
-                .importeTotal(importeTotal).xmlFirmado(xmlFirmado).estado(EstadoComprobante.PENDIENTE)
-                .proximoIntento(primerIntento).creadoEn(ahora).actualizadoEn(ahora).build();
+                .fechaEmision(fechaEmision).documentoCliente(rucCliente).tipoDocumentoCliente("6").razonSocialCliente(razonSocialCliente)
+                .totalGravado(totalGravado).totalIgv(totalIgv).importeTotal(importeTotal).xmlFirmado(xmlFirmado)
+                .estado(EstadoComprobante.PENDIENTE).proximoIntento(primerIntento).creadoEn(ahora).actualizadoEn(ahora).build();
+    }
+
+    // Una boleta nueva: ya tiene su número y su XML firmado, y espera a que el resumen diario la informe
+    public static Comprobante nuevaBoleta(String idExterno, String serie, long correlativo, LocalDateTime fechaEmision, String tipoDocumentoCliente,
+                                          String documentoCliente, String nombreCliente, BigDecimal totalGravado, BigDecimal totalIgv,
+                                          BigDecimal importeTotal, byte[] xmlFirmado, LocalDateTime ahora) {
+        return Comprobante.builder()
+                .idExterno(idExterno).tipoDocumento(TIPO_BOLETA).serie(serie).correlativo(correlativo)
+                .fechaEmision(fechaEmision).documentoCliente(documentoCliente).tipoDocumentoCliente(tipoDocumentoCliente)
+                .razonSocialCliente(nombreCliente).totalGravado(totalGravado).totalIgv(totalIgv).importeTotal(importeTotal)
+                .xmlFirmado(xmlFirmado).estado(EstadoComprobante.PENDIENTE_DE_RESUMEN).creadoEn(ahora).actualizadoEn(ahora).build();
+    }
+
+    public boolean esBoleta() {
+        return TIPO_BOLETA.equals(tipoDocumento);
+    }
+
+    // La boleta entra a un resumen diario
+    public void incluirEnResumen(Long resumenId, LocalDateTime ahora) {
+        if (!esBoleta()) {
+            throw new IllegalStateException("Solo las boletas van en un resumen diario");
+        }
+        cambiarA(EstadoComprobante.EN_RESUMEN, ahora);
+        this.resumenId = resumenId;
+    }
+
+    // La SUNAT aceptó el resumen: la boleta queda aceptada, con las observaciones que le correspondan
+    public void aceptarPorResumen(String codigo, String descripcion, String observaciones, LocalDateTime ahora) {
+        cambiarA(observaciones == null ? EstadoComprobante.ACEPTADO : EstadoComprobante.ACEPTADO_CON_OBSERVACIONES, ahora);
+        this.codigoSunat = codigo;
+        this.descripcionSunat = descripcion;
+        this.observaciones = observaciones;
+    }
+
+    // La SUNAT rechazó el resumen y nombró a esta boleta: se anota qué dijo, pero la boleta sigue en el resumen hasta que se corrija y reenvíe
+    public void anotarRespuestaDelResumen(String codigo, String descripcion, LocalDateTime ahora) {
+        if (estado != EstadoComprobante.EN_RESUMEN) {
+            throw new IllegalStateException("Un comprobante " + estado + " no está en un resumen");
+        }
+        this.codigoSunat = codigo;
+        this.descripcionSunat = descripcion;
+        this.actualizadoEn = ahora;
     }
 
     // Serie y número tal como van en el XML, por ejemplo F001-4355
