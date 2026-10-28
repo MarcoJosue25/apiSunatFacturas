@@ -44,12 +44,16 @@ public class FacturaServiceImpl implements FacturaService {
 
     @Override
     public ResultadoEmision emitir(FacturaRequest request, String serie, long correlativo) {
-        // Todo lo que puede fallar por nuestra culpa se hace antes de hablar con la SUNAT
-        String nombre = NumeracionUtil.nombreArchivoFactura(propiedades.getRuc(), serie, correlativo);
-        String numero = NumeracionUtil.numeroFactura(serie, correlativo);
         // Siempre hora de Lima, aunque el reloj de la aplicación estuviera en otra zona
         LocalDateTime emision = LocalDateTime.now(clock.withZone(ClockConfig.ZONA_LIMA));
+        byte[] firmado = prepararXml(request, serie, correlativo, emision);
+        return enviar(serie, correlativo, firmado);
+    }
 
+    @Override
+    public byte[] prepararXml(FacturaRequest request, String serie, long correlativo, LocalDateTime emision) {
+        // Todo lo que puede fallar por nuestra culpa se hace antes de hablar con la SUNAT
+        String nombre = NumeracionUtil.nombreArchivoFactura(propiedades.getRuc(), serie, correlativo);
         byte[] xml = xmlBuilder.construir(request, serie, correlativo, emision);
         CertificadoFirma certificado = certificadoLoader.cargar();
         byte[] firmado = firmante.firmar(xml, certificado);
@@ -58,7 +62,14 @@ public class FacturaServiceImpl implements FacturaService {
             // El XML lo armamos nosotros: si no cumple el esquema es un error del programa, no del cliente
             throw new IllegalStateException("El XML armado para " + nombre + " no cumple el esquema de la SUNAT: " + errores);
         }
-        byte[] zip = ZipUtil.comprimir(nombre + ".xml", firmado);
+        return firmado;
+    }
+
+    @Override
+    public ResultadoEmision enviar(String serie, long correlativo, byte[] xmlFirmado) {
+        String nombre = NumeracionUtil.nombreArchivoFactura(propiedades.getRuc(), serie, correlativo);
+        String numero = NumeracionUtil.numeroFactura(serie, correlativo);
+        byte[] zip = ZipUtil.comprimir(nombre + ".xml", xmlFirmado);
 
         log.info("Enviando {} a la SUNAT", nombre);
         byte[] constancia;
@@ -69,7 +80,7 @@ public class FacturaServiceImpl implements FacturaService {
             log.warn("La SUNAT respondió con error {} para {}: {}", fault.getCodigo(), nombre, clase);
             return ResultadoEmision.builder()
                     .nombreArchivo(nombre).clase(clase).codigo(fault.getCodigo()).descripcion(fault.getFaultString())
-                    .observaciones(List.of()).xmlFirmado(firmado).build();
+                    .observaciones(List.of()).xmlFirmado(xmlFirmado).build();
         }
 
         CdrResultado cdr = cdrParser.leer(constancia);
@@ -81,6 +92,6 @@ public class FacturaServiceImpl implements FacturaService {
         log.info("La SUNAT respondió para {}: {} (código {})", nombre, clase, cdr.getCodigo());
         return ResultadoEmision.builder()
                 .nombreArchivo(nombre).clase(clase).codigo(cdr.getCodigo()).descripcion(cdr.getDescripcion())
-                .observaciones(cdr.getObservaciones()).xmlFirmado(firmado).cdrZip(constancia).build();
+                .observaciones(cdr.getObservaciones()).xmlFirmado(xmlFirmado).cdrZip(constancia).build();
     }
 }
