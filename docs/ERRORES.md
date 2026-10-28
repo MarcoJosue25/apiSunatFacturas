@@ -7,6 +7,12 @@ Cómo se lee:
 - **Fase** es la fase del [plan](PLAN.md) donde se resuelve o donde se decide.
 - Cuando algo se resuelve, no se borra: se marca y se anota cómo quedó.
 
+Reglas de este archivo:
+- Los errores y las limitaciones se anotan **en el momento en que aparecen**, no al final de la fase.
+- Aunque se arreglen, **se quedan guardados**. Solo se marcan como resueltos y se anota cómo quedaron.
+- Si este archivo se vuelve muy grande, se crea otro con la misma estructura (`ERRORES-2.md`, `ERRORES-3.md`...) y se enlaza desde aquí.
+- Cada fase de [`PLAN.md`](PLAN.md) cierra revisando que lo que salió esté anotado.
+
 ## Plantilla
 
 ```

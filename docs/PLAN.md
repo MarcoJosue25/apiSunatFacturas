@@ -12,7 +12,9 @@ Lo hacemos despacio y por fases. Cada fase termina en algo que funciona y se pue
 
 - Los commits son cortos y en lenguaje normal ("agrego el cliente de getStatus", "valido el XML contra el XSD").
 - Un paso, sus tests, un commit.
-- Todo error que aparezca y toda limitación que dejemos para después se anota en [`docs/ERRORES.md`](ERRORES.md), con cómo se soluciona o por qué se deja.
+- Todo error que aparezca y toda limitación que dejemos para después se anota en [`docs/ERRORES.md`](ERRORES.md) **en el momento en que sale**, con cómo se soluciona o por qué se deja. Aunque se arregle, queda guardado ahí. Si el archivo crece mucho se crea otro con la misma estructura.
+- Los commits se hacen de rato en rato, uno por paso terminado (con sus tests en verde).
+- Se avanza un paso a la vez: implementar, probar, anotar y recién entonces seguir.
 - Las pruebas contra el beta de la SUNAT llevan `@Tag("beta")` y no corren en `./mvnw test` normal, para que el CI no dependa de internet. Se corren a propósito.
 - Los servidores simulados se hacen sin librerías extra (`MockRestServiceServer` de Spring y, para timeouts, un servidor chico del JDK). WireMock solo si algún día hace falta.
 - Todo lo marcado **(verificar)** es algo que supongo pero todavía no está confirmado en la documentación o en el beta.
