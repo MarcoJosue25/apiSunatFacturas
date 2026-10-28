@@ -222,21 +222,21 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 **Clases que aparecen:** `model/Comprobante`, `model/Serie`, `model/EnvioIntento`, `model/enums/EstadoComprobante`, repositorios, `service/SerieService`, `service/ComprobanteService` (+ `impl`), `controller/FacturaController`, DTOs de respuesta.
 
-- [ ] MySQL 8.4 y Flyway: dependencias, `docker-compose.yml` y servicio de MySQL en el CI (como el agente).
-- [ ] Migración V1: `series`, `comprobantes` y `envio_intentos`. Se guarda el XML firmado y el CDR; los ítems viven dentro del XML.
-- [ ] Entidades con el estilo del agente, `@Version` y cambios de estado dentro de la propia entidad: pendiente, enviando, aceptado, aceptado con observaciones, rechazado, error de datos, error de configuración, error temporal y vencido.
-- [ ] Repositorios.
-- [ ] `SerieService`: siguiente correlativo atómico, sin saltos ni repetidos.
+- [x] MySQL 8.4 y Flyway: dependencias, `docker-compose.yml` y servicio de MySQL en el CI (como el agente).
+- [x] Migración V1: `series`, `comprobantes` y `envio_intentos`. Se guarda el XML firmado y el CDR; los ítems viven dentro del XML.
+- [x] Entidades con el estilo del agente, `@Version` y cambios de estado dentro de la propia entidad: (`VENCIDO` se agrega en la fase 7, que es la que lo usa; se agregó `REVISAR` para respuestas desconocidas o `YA_REGISTRADO`). pendiente, enviando, aceptado, aceptado con observaciones, rechazado, error de datos, error de configuración, error temporal y vencido.
+- [x] Repositorios.
+- [x] `SerieService`: siguiente correlativo atómico, sin saltos ni repetidos. (`asegurar` antes de la transacción y `siguiente` dentro de ella).
 - [ ] Recorrido: reservar el número, guardar pendiente, generar y firmar, guardar el XML, enviar, guardar el resultado. Un rechazo consume el número. Un error temporal deja el comprobante pendiente para la fase 7.
 - [ ] `POST /api/v1/facturas` con el DTO validado y `GET /api/v1/facturas/{id}` con el estado.
 - [ ] Un `idExterno` único del agente para que si reintenta una petición no se duplique la factura.
 - [ ] `GET /api/v1/facturas/{id}/xml`, porque el cliente debe poder descargar su comprobante **(decidir)**.
 
 **Tests**
-- [ ] Las migraciones aplican sobre un MySQL limpio.
-- [ ] Correlativo con 50 hilos a la vez: sin saltos ni repetidos.
+- [x] Las migraciones aplican sobre un MySQL limpio.
+- [x] Correlativo con 50 hilos a la vez: sin saltos ni repetidos.
 - [ ] Un rechazo consume el número.
-- [ ] Transiciones de estado permitidas y prohibidas, en una prueba parametrizada.
+- [x] Transiciones de estado permitidas y prohibidas, en una prueba parametrizada.
 - [ ] Validación del POST: campos faltantes, RUC mal, monto 0 e ítems vacíos.
 - [ ] Idempotencia: el mismo `idExterno` dos veces, y también a la vez, da una sola factura.
 - [ ] GET de un id inexistente da 404.

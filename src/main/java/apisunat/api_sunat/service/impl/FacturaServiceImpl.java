@@ -81,6 +81,6 @@ public class FacturaServiceImpl implements FacturaService {
         log.info("La SUNAT respondió para {}: {} (código {})", nombre, clase, cdr.getCodigo());
         return ResultadoEmision.builder()
                 .nombreArchivo(nombre).clase(clase).codigo(cdr.getCodigo()).descripcion(cdr.getDescripcion())
-                .observaciones(cdr.getObservaciones()).xmlFirmado(firmado).build();
+                .observaciones(cdr.getObservaciones()).xmlFirmado(firmado).cdrZip(constancia).build();
     }
 }

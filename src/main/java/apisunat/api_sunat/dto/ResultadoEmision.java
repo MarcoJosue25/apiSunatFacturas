@@ -27,4 +27,7 @@ public class ResultadoEmision {
 
     // El XML tal como se envió (firmado), para guardarlo
     byte[] xmlFirmado;
+
+    // El ZIP de la constancia de la SUNAT, para guardarlo (null si la SUNAT contestó con un error SOAP, que no trae constancia)
+    byte[] cdrZip;
 }

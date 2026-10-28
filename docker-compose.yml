@@ -1,0 +1,23 @@
+# MySQL para desarrollar en local: docker compose up -d
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: api-sunat-mysql
+    environment:
+      MYSQL_DATABASE: apisunat
+      MYSQL_USER: apisunat
+      MYSQL_PASSWORD: apisunat
+      MYSQL_ROOT_PASSWORD: root
+      TZ: America/Lima
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-datos:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql-datos:

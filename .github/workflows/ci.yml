@@ -9,6 +9,26 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    # La misma base que usa la aplicación (MySQL 8.4)
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: apisunat
+          MYSQL_USER: apisunat
+          MYSQL_PASSWORD: apisunat
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -proot"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+
+    env:
+      DB_URL: jdbc:mysql://localhost:3306/apisunat
+      DB_USUARIO: root
+      DB_CLAVE: root
+
     steps:
       - uses: actions/checkout@v4
 

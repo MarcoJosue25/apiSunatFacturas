@@ -255,3 +255,24 @@ Es solo la codificación de la salida del terminal del entorno; los textos en me
 
 ### O-079 Cada prueba real usa un correlativo nuevo (fase 5)
 Los números salen de la hora actual más un contador, para no repetir un número ya usado en corridas anteriores del beta.
+
+### O-080 Las pruebas ahora necesitan MySQL (fase 6)
+Todos los tests que levantan Spring (`@SpringBootTest`) corren las migraciones de Flyway y la validación de Hibernate contra una base MySQL real. En el CI hay un servicio `mysql:8.4`; en local se usa `docker compose up -d` (puerto 3306) o cualquier MySQL con las variables `DB_URL`, `DB_USUARIO` y `DB_CLAVE`. En este entorno no hay Docker, así que probé con un MySQL 8.0 instalado con apt en el puerto 3307 (difiere del 8.4 del CI solo en versión menor; no se usó nada propio de 8.4).
+
+### O-081 Las pruebas del CI usan el usuario `root` de MySQL (fase 6)
+Porque `MigracionesTest` crea y borra un esquema aparte y necesita el privilegio `CREATE DATABASE`. En producción la aplicación usa un usuario normal (`apisunat`) que solo necesita las tablas de su base.
+
+### O-082 Hibernate solo valida el esquema, no lo crea (fase 6)
+`ddl-auto: validate`. Si una entidad y la migración no coinciden, la aplicación no arranca. Funcionó a la primera con `@JdbcTypeCode(SqlTypes.LONGVARBINARY)` para los campos `byte[]` que son `LONGBLOB`.
+
+### O-083 `INSERT IGNORE` fuera de la transacción principal (fase 6)
+Ver E-020 y E-021: la serie se crea con `asegurar` antes de abrir la transacción del comprobante; `siguiente` solo bloquea la fila con `SELECT ... FOR UPDATE` y, si la transacción se deshace, el número no se pierde (no hay huecos). `Propagation.MANDATORY` impide pedir un número sin transacción.
+
+### O-084 Los campos del comprobante que no cambian son `updatable = false` (fase 6)
+Número, fecha, cliente, importe y XML firmado no se modifican nunca después de guardarlos; un test comprueba que el XML se conserva. Lo que cambia (estado, código y descripción de la SUNAT, observaciones, constancia) sí se actualiza.
+
+### O-085 `VENCIDO` y su transición se agregan en la fase 7 (fase 6)
+El plan listaba `VENCIDO` entre los estados de la fase 6, pero nada lo usa hasta que exista el plazo de envío. Se agrega con su transición y sus tests en la fase 7, como pide la regla de no implementar lo que todavía no se usa.
+
+### O-086 Un comprobante puede quedar `ENVIANDO` si la aplicación se cae a mitad del envío (fase 6)
+`PENDIENTE` y `ERROR_TEMPORAL` se pueden reenviar, pero `ENVIANDO` no tiene salida salvo un resultado. La fase 7 debe tratar un `ENVIANDO` viejo como incierto (consultar la constancia antes de reenviar).

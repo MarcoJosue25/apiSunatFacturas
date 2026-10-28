@@ -161,6 +161,20 @@ Reglas de este archivo:
 - **Qué pasó:** para leer la constancia (`applicationResponse`) usé `Base64.getMimeDecoder()`, porque la SUNAT puede partir el base64 en líneas. Ese decodificador ignora en silencio los caracteres que no son base64: el texto `@@@@` se decodificaba como una constancia vacía y `esto no es base64!!` como bytes a medias, en vez de fallar. Lo descubrió el test de "constancia que no es base64".
 - **Cómo quedó:** `SoapResponseParser.leerSendBill` quita los espacios y saltos de línea y decodifica con `Base64.getDecoder()` (estricto). Un texto que no es base64 lanza `SunatRespuestaInvalidaException`. Los tests cubren tanto el base64 partido en líneas (válido) como la basura (inválida).
 
+### E-020 Interbloqueo (deadlock) al pedir el correlativo con `INSERT IGNORE` y `SELECT ... FOR UPDATE`
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 6
+- **Qué pasó:** la primera versión de `SerieService.siguiente` hacía `INSERT IGNORE` de la fila de la serie y luego `SELECT ... FOR UPDATE` en la misma transacción. Con 50 hilos a la vez, MySQL abortó transacciones con "Deadlock found when trying to get lock": cada `INSERT IGNORE` de una fila que ya existe deja un bloqueo compartido sobre ella, y después todos piden el exclusivo y se esperan entre sí. Lo encontró el test de 50 hilos con transacciones que fallan.
+- **Cómo quedó:** la creación de la serie sale de esa transacción (`SerieService.asegurar`, que se llama antes), y `siguiente` solo hace el `SELECT ... FOR UPDATE`. El test de 50 hilos se repitió 4 veces seguidas sin fallar.
+
+### E-021 Una transacción anidada para crear la serie agotaba las conexiones
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 6
+- **Qué pasó:** el primer arreglo de E-020 creaba la serie en una transacción nueva (`REQUIRES_NEW`) dentro de la del comprobante. Cada hilo necesitaba una segunda conexión mientras guardaba la primera; con 50 hilos y un pool de 10, todos esperaban conexión y ninguno la liberaba ("Connection is not available, request timed out").
+- **Cómo quedó:** se descartó esa idea. `asegurar` se llama antes de abrir la transacción principal, así que nunca hace falta una segunda conexión mientras se tiene la primera.
+
 ---
 
 ## Limitaciones que se dejan para después
