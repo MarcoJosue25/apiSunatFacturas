@@ -137,7 +137,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [ ] El XML generado pasa el XSD.
 - [ ] Comparación contra el ejemplo de la guía de la SUNAT.
 - [ ] Cada campo obligatorio ausente falla con un mensaje claro.
-- [x] Caracteres especiales: ñ, tildes, `&`, `<`, comillas.
+- [ ] Caracteres especiales en el XML: ñ, tildes, `&`, `<`, comillas.
 - [x] Caracteres que no existen en ISO-8859-1 (emoji, guion largo): se define qué se hace y se prueba.
 - [ ] 1, 100 y 1000 líneas.
 - [x] Cliente sin RUC en una factura: rechazado antes de llegar a la SUNAT.
