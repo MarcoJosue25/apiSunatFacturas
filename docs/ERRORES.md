@@ -99,11 +99,11 @@ Reglas de este archivo:
 - **Cómo quedó:** se repitieron con `mkdir` y `cp`, y los archivos subieron bien.
 
 ### E-011 El Maven wrapper no puede bajar Maven dentro del entorno de Claude
-- [ ] Estado: diferido (afecta solo al entorno de Claude)
+- [x] Estado: resuelto en el CI (afecta solo al entorno de Claude, donde se usa `mvn`)
 - **Fecha:** 2026-10-28
 - **Fase:** 0
 - **Qué pasó:** `./mvnw` usa `wget` para bajar la distribución de Maven, y `wget` falla en el entorno de Claude por el proxy. Con `curl` la misma URL funciona.
-- **Cómo se soluciona:** en el entorno de Claude se usa el `mvn` instalado (`mvn clean test`). El wrapper queda en el repo para tu máquina y para el CI. Se confirma en el primer CI que `./mvnw` funciona allí.
+- **Cómo se soluciona:** en el entorno de Claude se usa el `mvn` instalado (`mvn clean test`). El wrapper queda en el repo para tu máquina y para el CI. Confirmado: en GitHub Actions `./mvnw -B clean test` corre en verde (corridas 1 y 2).
 
 ### E-012 Un RUC nulo pasaba la validación de las propiedades
 - [x] Estado: resuelto

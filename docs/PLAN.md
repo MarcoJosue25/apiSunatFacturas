@@ -46,14 +46,14 @@ Lo hacemos despacio y por fases. Cada fase termina en algo que funciona y se pue
 - [x] Maven wrapper (`mvnw`) en el repo.
 - [x] `.gitignore`: `target`, `.env`, IDE y certificados reales (`*.p12`), con excepción de los de prueba.
 - [x] CI de GitHub Actions (basado en el del agente): `./mvnw -B clean test`, en cada push a cualquier rama y en pull requests.
-- [ ] README: el estado apunta a este plan.
+- [x] README: el estado apunta a este plan.
 
 **Tests**
 - [x] El contexto de Spring arranca (`contextLoads`).
-- [ ] El CI corre en verde sobre el proyecto vacío.
+- [x] El CI corre en verde sobre el proyecto vacío.
 
 **Listo cuando:**
-- [ ] `./mvnw clean test` pasa en local y en el CI.
+- [x] `./mvnw clean test` pasa en local y en el CI.
 
 ---
 

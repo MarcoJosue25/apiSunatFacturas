@@ -21,7 +21,7 @@ Es un servicio independiente: mi agente no sabe nada de XML ni de firmas, solo l
 
 Recién arrancando. Lo voy haciendo por fases, despacio y con tests en cada paso. El plan completo, con los pasos y su check, está en [`docs/PLAN.md`](docs/PLAN.md).
 
-1. [ ] Cimientos
+1. [x] Cimientos
 2. [ ] Conexión con el beta de la SUNAT
 3. [ ] Los números (cálculos exactos)
 4. [ ] XML de factura
