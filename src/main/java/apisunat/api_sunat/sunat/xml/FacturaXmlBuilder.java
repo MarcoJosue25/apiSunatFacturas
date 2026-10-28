@@ -1,6 +1,8 @@
 package apisunat.api_sunat.sunat.xml;
 
 import apisunat.api_sunat.config.SunatProperties;
+import apisunat.api_sunat.dto.BoletaRequest;
+import apisunat.api_sunat.dto.ClienteBoletaRequest;
 import apisunat.api_sunat.dto.ClienteRequest;
 import apisunat.api_sunat.dto.FacturaRequest;
 import apisunat.api_sunat.dto.ItemRequest;
@@ -44,6 +46,8 @@ public class FacturaXmlBuilder {
 
     private static final String MONEDA = "PEN";
     private static final String TIPO_FACTURA = "01";
+    private static final String TIPO_BOLETA = "03";
+    private static final String NOMBRE_ANONIMO = "CLIENTES VARIOS";
     private static final String TIPO_OPERACION_VENTA_INTERNA = "0101";
     private static final String ID_FIRMA = "IDSignSP";
     private static final String URI_FIRMA = "#SignatureSP";
@@ -56,6 +60,10 @@ public class FacturaXmlBuilder {
 
     private final SunatProperties propiedades;
 
+    // Quien compra, tal como va en el XML: tipo de documento del catálogo 06, número y nombre
+    private record Comprador(String tipoDocumento, String numeroDocumento, String nombre, String direccion, String etiquetaNombre) {
+    }
+
     public byte[] construir(FacturaRequest request, String serie, long correlativo, LocalDateTime emision) {
         if (request == null || request.getCliente() == null || request.getItems() == null || request.getItems().isEmpty()) {
             throw new IllegalArgumentException("La factura necesita un cliente y al menos un ítem");
@@ -64,11 +72,39 @@ public class FacturaXmlBuilder {
             throw new IllegalArgumentException("La fecha de emisión es obligatoria");
         }
         String numero = NumeracionUtil.numeroFactura(serie, correlativo);
+        ClienteRequest cliente = request.getCliente();
+        Comprador comprador = new Comprador("6", cliente.getRuc(), cliente.getRazonSocial(), cliente.getDireccion(), "La razón social del cliente");
+        return armar(TIPO_FACTURA, numero, comprador, request.getItems(), emision, true);
+    }
 
+    // Una boleta lleva lo mismo que una factura, con tipo 03, serie B y sin forma de pago. Sin cliente (o sin documento) el comprador
+    // es anónimo: tipo 0 y guión, que la SUNAT solo permite hasta S/ 700 (esa regla la comprueba quien llama, que sabe el total).
+    public byte[] construirBoleta(BoletaRequest request, String serie, long correlativo, LocalDateTime emision) {
+        if (request == null || request.getItems() == null || request.getItems().isEmpty()) {
+            throw new IllegalArgumentException("La boleta necesita al menos un ítem");
+        }
+        if (emision == null) {
+            throw new IllegalArgumentException("La fecha de emisión es obligatoria");
+        }
+        String numero = NumeracionUtil.numeroBoleta(serie, correlativo);
+        ClienteBoletaRequest cliente = request.getCliente();
+        Comprador comprador;
+        if (cliente == null || cliente.esAnonimo()) {
+            String nombre = cliente != null && cliente.getNombre() != null && !cliente.getNombre().isBlank() ? cliente.getNombre() : NOMBRE_ANONIMO;
+            comprador = new Comprador("0", "-", nombre, null, "El nombre del cliente");
+        } else {
+            String nombre = cliente.getNombre() != null && !cliente.getNombre().isBlank() ? cliente.getNombre() : NOMBRE_ANONIMO;
+            comprador = new Comprador(cliente.getTipoDocumento(), cliente.getNumeroDocumento(), nombre, null, "El nombre del cliente");
+        }
+        return armar(TIPO_BOLETA, numero, comprador, request.getItems(), emision, false);
+    }
+
+    private byte[] armar(String tipoDocumento, String numero, Comprador comprador, List<ItemRequest> items, LocalDateTime emision,
+                         boolean conFormaPago) {
         // Primero los números, para que cualquier problema salga antes de armar nada
         List<LineaCalculada> lineas = new ArrayList<>();
-        for (int i = 0; i < request.getItems().size(); i++) {
-            ItemRequest item = request.getItems().get(i);
+        for (int i = 0; i < items.size(); i++) {
+            ItemRequest item = items.get(i);
             try {
                 lineas.add(CalculadoraIgv.calcularLinea(item.getPrecioUnitario(), item.getCantidad()));
             } catch (IllegalArgumentException e) {
@@ -93,7 +129,7 @@ public class FacturaXmlBuilder {
         texto(doc, invoice, "cbc:IssueDate", emision.format(FECHA));
         texto(doc, invoice, "cbc:IssueTime", emision.format(HORA));
 
-        Element tipo = texto(doc, invoice, "cbc:InvoiceTypeCode", TIPO_FACTURA);
+        Element tipo = texto(doc, invoice, "cbc:InvoiceTypeCode", tipoDocumento);
         tipo.setAttribute("listAgencyName", "PE:SUNAT");
         tipo.setAttribute("listID", TIPO_OPERACION_VENTA_INTERNA);
         tipo.setAttribute("listName", "Tipo de Documento");
@@ -108,11 +144,13 @@ public class FacturaXmlBuilder {
         String razonEmisor = limpiar("La razón social del emisor", propiedades.getEmisor().getRazonSocial(), MAX_NOMBRE);
         agregarFirma(doc, invoice, razonEmisor);
         agregarEmisor(doc, invoice, razonEmisor);
-        agregarCliente(doc, invoice, request.getCliente());
+        agregarComprador(doc, invoice, comprador);
 
-        Element pago = hijo(doc, invoice, NS_CAC, "cac:PaymentTerms");
-        texto(doc, pago, "cbc:ID", "FormaPago");
-        texto(doc, pago, "cbc:PaymentMeansID", "Contado");
+        if (conFormaPago) {
+            Element pago = hijo(doc, invoice, NS_CAC, "cac:PaymentTerms");
+            texto(doc, pago, "cbc:ID", "FormaPago");
+            texto(doc, pago, "cbc:PaymentMeansID", "Contado");
+        }
 
         agregarImpuestoDelDocumento(doc, invoice, totales);
 
@@ -122,7 +160,7 @@ public class FacturaXmlBuilder {
         monto(doc, monetario, "cbc:PayableAmount", totales.getImporteTotal());
 
         for (int i = 0; i < lineas.size(); i++) {
-            agregarLinea(doc, invoice, i + 1, request.getItems().get(i), lineas.get(i));
+            agregarLinea(doc, invoice, i + 1, items.get(i), lineas.get(i));
         }
         return serializar(doc);
     }
@@ -155,15 +193,15 @@ public class FacturaXmlBuilder {
         }
     }
 
-    private void agregarCliente(Document doc, Element invoice, ClienteRequest cliente) {
+    private void agregarComprador(Document doc, Element invoice, Comprador comprador) {
         Element parte = hijo(doc, hijo(doc, invoice, NS_CAC, "cac:AccountingCustomerParty"), NS_CAC, "cac:Party");
-        Element id = texto(doc, hijo(doc, parte, NS_CAC, "cac:PartyIdentification"), "cbc:ID", cliente.getRuc());
-        id.setAttribute("schemeID", "6");
+        Element id = texto(doc, hijo(doc, parte, NS_CAC, "cac:PartyIdentification"), "cbc:ID", comprador.numeroDocumento());
+        id.setAttribute("schemeID", comprador.tipoDocumento());
         Element legal = hijo(doc, parte, NS_CAC, "cac:PartyLegalEntity");
-        texto(doc, legal, "cbc:RegistrationName", limpiar("La razón social del cliente", cliente.getRazonSocial(), MAX_NOMBRE));
-        if (cliente.getDireccion() != null) {
+        texto(doc, legal, "cbc:RegistrationName", limpiar(comprador.etiquetaNombre(), comprador.nombre(), MAX_NOMBRE));
+        if (comprador.direccion() != null) {
             Element domicilio = hijo(doc, legal, NS_CAC, "cac:RegistrationAddress");
-            texto(doc, hijo(doc, domicilio, NS_CAC, "cac:AddressLine"), "cbc:Line", limpiar("La dirección del cliente", cliente.getDireccion(), MAX_DIRECCION));
+            texto(doc, hijo(doc, domicilio, NS_CAC, "cac:AddressLine"), "cbc:Line", limpiar("La dirección del cliente", comprador.direccion(), MAX_DIRECCION));
         }
     }
 

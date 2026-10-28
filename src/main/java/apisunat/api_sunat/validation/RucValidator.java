@@ -15,7 +15,7 @@ public class RucValidator implements ConstraintValidator<Ruc, String> {
         return ruc == null || esValido(ruc);
     }
 
-    static boolean esValido(String ruc) {
+    public static boolean esValido(String ruc) {
         if (ruc.length() != 11 || !PREFIJOS.contains(ruc.substring(0, 2))) {
             return false;
         }

@@ -97,4 +97,46 @@ class NumeracionUtilTest {
         assertThatThrownBy(() -> NumeracionUtil.nombreArchivoFactura("20100066603", "F001", 0)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> NumeracionUtil.nombreArchivoFactura("20100066603", "F001", 100_000_000L)).isInstanceOf(IllegalArgumentException.class);
     }
+
+    // --- Boletas ---
+
+    @ParameterizedTest
+    @ValueSource(strings = {"B001", "B002", "BA01", "BZZZ", "B0A9", "B999", "B000"})
+    void lasSeriesQueEmpiezanConBYTienenCuatroCaracteresSonDeBoleta(String serie) {
+        assertThat(NumeracionUtil.esSerieDeBoleta(serie)).isTrue();
+        assertThat(NumeracionUtil.esSerieDeFactura(serie)).isFalse();
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"F001", "b001", "B00", "B0011", " B001", "B001\n", "B-01", "BÑ01", "0001", "E001", "T001"})
+    void lasDemasSeriesNoSonDeBoleta(String serie) {
+        assertThat(NumeracionUtil.esSerieDeBoleta(serie)).isFalse();
+    }
+
+    @Test
+    void unaSerieDeBoletaNoEsDeFactura() {
+        assertThat(NumeracionUtil.esSerieDeFactura("B001")).isFalse();
+        assertThatThrownBy(() -> NumeracionUtil.numeroFactura("B001", 1)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> NumeracionUtil.numeroBoleta("F001", 1)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"B001,1,B001-1", "B001,4355,B001-4355", "BA01,99999999,BA01-99999999"})
+    void elNumeroDeUnaBoletaNoLlevaCeros(String serie, long correlativo, String esperado) {
+        assertThat(NumeracionUtil.numeroBoleta(serie, correlativo)).isEqualTo(esperado);
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {0, -1, 100_000_000L})
+    void elCorrelativoDeUnaBoletaDebeEstarEntre1Y99999999(long correlativo) {
+        assertThatThrownBy(() -> NumeracionUtil.numeroBoleta("B001", correlativo)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void elNombreDelArchivoDeUnaBoletaLlevaElTipo03() {
+        assertThat(NumeracionUtil.nombreArchivoBoleta("20100066603", "B001", 12)).isEqualTo("20100066603-03-B001-12");
+        assertThatThrownBy(() -> NumeracionUtil.nombreArchivoBoleta("123", "B001", 12)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> NumeracionUtil.nombreArchivoBoleta("20100066603", "F001", 12)).isInstanceOf(IllegalArgumentException.class);
+    }
 }
