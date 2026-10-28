@@ -19,18 +19,22 @@ Es un servicio independiente: mi agente no sabe nada de XML ni de firmas, solo l
 
 ## Estado
 
-Recién arrancando. El plan, por etapas:
+Recién arrancando. Lo voy haciendo por fases, despacio y con tests en cada paso. El plan completo, con los pasos y su check, está en [`docs/PLAN.md`](docs/PLAN.md).
 
-1. [ ] Consulta de prueba contra el servicio beta de la SUNAT
-2. [ ] Boleta de punta a punta (XML, firma, resumen diario y CDR)
-3. [ ] Factura
-4. [ ] Guardar XML y CDR de cada comprobante
-5. [ ] Reintentos cuando la SUNAT falla
-6. [ ] Paso a producción con certificado propio
+1. [ ] Cimientos
+2. [ ] Conexión con el beta de la SUNAT
+3. [ ] Los números (cálculos exactos)
+4. [ ] XML de factura
+5. [ ] Firma digital
+6. [ ] Enviar la factura al beta
+7. [ ] Guardar y exponer por REST
+8. [ ] Reintentos
+9. [ ] Boletas y resumen diario
+10. [ ] Producción
 
 ## Stack
 
-Java 21, Spring Boot y Maven.
+Java 21, Spring Boot y Maven. MySQL con Flyway más adelante, igual que en mi agente.
 
 ## Documentación
 
