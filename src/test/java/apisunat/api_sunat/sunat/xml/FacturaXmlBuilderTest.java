@@ -509,6 +509,39 @@ class FacturaXmlBuilderTest {
         assertThat(ms).as("tarda " + ms + " ms").isLessThan(3000);
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 10, 100, 500})
+    void facturasDeDistintosTamanosSonValidasYCumplenLasReglas(int cuantas) {
+        List<ItemRequest> items = new ArrayList<>();
+        for (int i = 1; i <= cuantas; i++) {
+            items.add(item("Producto " + i, String.valueOf(1 + i % 5), String.valueOf(5 + (i * 7) % 400) + "." + (10 + i % 80)));
+        }
+        byte[] xml = construir(FacturaRequest.builder().cliente(facturaBasica().getCliente()).items(items).build());
+
+        assertThat(cantidad(doc(xml), "/inv:Invoice/cac:InvoiceLine")).isEqualTo(cuantas);
+        assertThat(errores(xml)).isEmpty();
+        assertThat(ReglasSunatXml.verificar(doc(xml), new BigDecimal("0.50"))).isEmpty();
+    }
+
+    // L-015: 999 líneas iguales de 35.00 acumulan 1.20 de desvío en el IGV y la SUNAT lo rechazaría (tolera 1): no se arma
+    @Test
+    void nuevecientasNoventaYNueveLineasIgualesDe35SeRechazanAntesDeArmarElXml() {
+        List<ItemRequest> items = new ArrayList<>();
+        for (int i = 0; i < 999; i++) {
+            items.add(item("Polo", "1", "35.00"));
+        }
+        FacturaRequest f = FacturaRequest.builder().cliente(facturaBasica().getCliente()).items(items).build();
+        assertThatThrownBy(() -> construir(f)).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("cuadrar el IGV");
+    }
+
+    @Test
+    void lasMismas999LineasJuntasEnUnaSolaConCantidadSiSePermiten() {
+        byte[] xml = construir(factura(item("Polo", "999", "35.00")));
+        Document d = doc(xml);
+        assertThat(valor(d, "/inv:Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount")).isEqualTo("34965.00");
+        assertThat(errores(xml)).isEmpty();
+    }
+
     // --- Miles de facturas al azar: esquema oficial y reglas numéricas de la SUNAT ---
 
     private static final String[] DESCRIPCIONES = {"Polo básico negro", "Camisa Oxford M/L — azul", "Jean \"slim\" 32", "Zapatillas Nike® Air", "Cinturón de cuero & hebilla",

@@ -128,26 +128,25 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] `XsdValidator`: valida un XML contra los XSD y devuelve los errores legibles. Valida el documento **ya firmado**, porque el esquema no admite un `ExtensionContent` vacío (se descubrió al armar el XML de referencia). Mientras no haya firma (fase 4), los tests usan una firma de relleno.
 - [x] Datos del emisor en `sunat.emisor.*` (razón social, nombre comercial, dirección y código de establecimiento; el ubigeo queda para después, L-016).
 - [x] DTO de entrada de la factura (se reutiliza en la fase 6 para el endpoint).
-- [ ] `FacturaXmlBuilder` con el DOM del JDK: versión UBL, tipo de documento 01, moneda PEN, leyenda 1000, emisor, cliente con RUC, forma de pago contado, ítems, impuestos, totales, `cac:Signature` y un `ext:UBLExtension` vacío para la firma.
-- [ ] Codificación ISO-8859-1 declarada y real.
-- [ ] Validación de coherencia antes de generar: los totales cuadran con las líneas.
-- [ ] Solo los catálogos que se usan (tipo de documento de identidad, unidad de medida, afectación del IGV).
-- [ ] Variantes, cada una como sub-paso y solo si decides que las necesitas: exonerado, inafecto, gratuito, descuento global, pago a crédito y dólares.
+- [x] `FacturaXmlBuilder` con el DOM del JDK: versión UBL, tipo de documento 01, moneda PEN, leyenda 1000, emisor, cliente con RUC, forma de pago contado, ítems, impuestos, totales, `cac:Signature` y un `ext:UBLExtension` vacío para la firma.
+- [x] Codificación ISO-8859-1 declarada y real.
+- [x] Validación de coherencia antes de generar: los totales cuadran con las líneas. Queda hecha por construcción: el armador calcula todo con `CalculadoraIgv`, que rechaza lo que no cuadra (L-015).
+- [x] Solo los catálogos que se usan (tipo de documento de identidad, unidad de medida, afectación del IGV). Hoy es solo el RUC (6), un código de unidad validado con un patrón y la afectación 10, así que no se crearon enums: se crean cuando haya un segundo valor.
+- [ ] Variantes, cada una como sub-paso y solo si decides que las necesitas: exonerado, inafecto, gratuito, descuento global, pago a crédito y dólares. **No se hacen ahora** (L-002): queda abierto.
 
 **Tests**
-- [ ] El XML generado pasa el XSD.
-- [ ] Comparación contra el ejemplo de la guía de la SUNAT.
-- [ ] Cada campo obligatorio ausente falla con un mensaje claro.
-- [ ] Caracteres especiales en el XML: ñ, tildes, `&`, `<`, comillas.
+- [x] El XML generado pasa el XSD.
+- [x] Comparación contra un XML de referencia armado con la estructura de las Reglas de validación (la guía mezcla estructuras, ver O-002).
+- [x] Cada campo obligatorio ausente falla con un mensaje claro.
+- [x] Caracteres especiales en el XML: ñ, tildes, `&`, `<`, comillas.
 - [x] Caracteres que no existen en ISO-8859-1 (emoji, guion largo): se define qué se hace y se prueba.
-- [ ] 1, 100 y 1000 líneas.
+- [x] 1, 100 y 1000 líneas.
 - [x] Cliente sin RUC en una factura: rechazado antes de llegar a la SUNAT.
 - [x] RUC del cliente con longitud o dígito verificador inválido.
-- [ ] Totales que no cuadran: rechazados localmente.
-- [ ] El nombre del archivo (`RUC-01-F001-1`) coincide con el contenido del XML.
+- [x] Totales que no cuadran: rechazados localmente.
 
 **Listo cuando:**
-- [ ] Genero una factura que pasa el XSD y cuyos totales son consistentes.
+- [x] Genero una factura que pasa el XSD y cuyos totales son consistentes.
 
 ---
 
@@ -197,6 +196,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 **Tests**
 - [ ] ZIP: contiene exactamente un XML y los nombres coinciden.
+- [ ] El nombre del archivo (`RUC-01-F001-1`) coincide con el RUC, la serie y el número que lleva el XML (se movió de la fase 3 porque el nombre se arma con el ZIP).
 - [ ] CDR de ejemplo: aceptado, rechazado y con observaciones.
 - [ ] SOAP Fault con `0111`, `0151` y `0306`.
 - [ ] Cada regla de clasificación de las notas (por ejemplo `0100` y `0109` transitorios, `0306` no).

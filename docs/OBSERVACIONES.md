@@ -92,3 +92,13 @@ Los valores esperados de los cálculos, los RUC y los números en letras salen d
 
 ### O-025 El primer test lento de un arranque no es un error del código (fase 1)
 Con la aplicación recién arrancada, la primera consulta tarda más (ver E-014). Los tests con tiempo usan márgenes amplios.
+
+### O-026 El orden de los `xmlns` de la raíz lo decide el JDK (fase 3)
+Al escribir el XML, el JDK pone `xmlns:cac`, `xmlns:cbc`, `xmlns:ds`, `xmlns:ext` y al final el `xmlns` por defecto. El orden no importa para la SUNAT ni para la firma (la canonicalización lo normaliza). Los tests solo comprueban que cada espacio de nombres se declare una vez.
+
+### O-027 Un catálogo con un solo valor no se vuelve enum todavía (fase 3)
+El tipo de documento de identidad es siempre `6` (RUC), la afectación del IGV es siempre `10` y la unidad de medida se valida con un patrón. Los enums se crean cuando haya un segundo valor que los justifique (por ejemplo, DNI en las boletas, en la fase 8).
+
+### O-028 El detalle de la guía se contrasta con las Reglas, no con la guía (fase 3)
+Para saber qué elementos son obligatorios sirve más la lista de errores de las Reglas de validación (`No existe el Tag UBL...`) que la guía, porque es lo que la SUNAT realmente exige. Ejemplos que solo se ven ahí: la forma de pago (`FormaPago`, error `3244`) y el atributo `listID` del tipo de operación (error `3205`).
+
