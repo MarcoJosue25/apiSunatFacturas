@@ -319,21 +319,21 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 **Clases que aparecen:** un filtro de autenticación por llave de API, la configuración de perfiles, y un `Dockerfile`.
 
-- [ ] Perfiles `beta` y `prod`. En `prod` las URLs de producción son obligatorias, y no arranca si apunta al beta o si usa un certificado de prueba.
-- [ ] Autenticación de la API con una llave en una cabecera, comparada en tiempo constante. Sin llave, 401.
-- [ ] Secretos solo por variables de entorno, sin que aparezcan en logs ni en las respuestas de error.
-- [ ] Certificado real: pedir el Certificado Digital Tributario gratuito y registrarlo en SOL. Pasos manuales documentados en `docs/`.
-- [ ] Usuario secundario de SOL para el envío. Pasos documentados.
-- [ ] `Dockerfile` liviano (multi-stage con JRE) y `docker-compose` con MySQL.
-- [ ] Logs útiles (idExterno, id del comprobante y código de la SUNAT) sin datos sensibles.
-- [ ] Primera emisión real de prueba, controlada: monto bajo y un cliente propio.
-- [ ] Respaldo de los XML y CDR, porque hay que conservarlos.
+- [x] Perfiles `beta` y `prod` (sin perfil = beta; `prod` lo valida `ValidadorProduccion`, antes de conectar a la base). En `prod` las URLs de producción son obligatorias, y no arranca si apunta al beta o si usa un certificado de prueba.
+- [x] Autenticación de la API con una llave en una cabecera, comparada en tiempo constante. Sin llave, 401.
+- [x] Secretos solo por variables de entorno, sin que aparezcan en logs ni en las respuestas de error.
+- [ ] Certificado real: pedir el Certificado Digital Tributario gratuito y registrarlo en SOL. **Lo hace una persona**; pasos en `docs/PRODUCCION.md` (sección 1).
+- [ ] Usuario secundario de SOL para el envío. **Lo hace una persona**; pasos en `docs/PRODUCCION.md` (sección 2).
+- [x] `Dockerfile` liviano (multi-stage con JRE) y `docker-compose` con MySQL.
+- [x] Logs útiles (idExterno, id del comprobante y código de la SUNAT) sin datos sensibles.
+- [ ] Primera emisión real de prueba, controlada: monto bajo y un cliente propio. **Pendiente de una persona**; guion en `docs/PRODUCCION.md` (sección 5).
+- [x] Respaldo de los XML y CDR, porque hay que conservarlos (`scripts/respaldo.sh` probado con una restauración real; programarlo en cron queda manual).
 
 **Tests**
-- [ ] Sin llave y con llave incorrecta: 401. Con llave correcta: 200.
-- [ ] El perfil `prod` no arranca con configuración del beta o con un certificado de prueba.
-- [ ] Los secretos no aparecen en logs ni en los errores.
-- [ ] La imagen de Docker arranca (prueba de humo manual).
+- [x] Sin llave y con llave incorrecta: 401. Con llave correcta: 200.
+- [x] El perfil `prod` no arranca con configuración del beta o con un certificado de prueba.
+- [x] Los secretos no aparecen en logs ni en los errores.
+- [x] La imagen de Docker arranca (prueba de humo manual): corrida aquí con el .jar armado fuera de la imagen (el sandbox no llega a Maven Central desde dentro de un contenedor); el paso de compilar de la imagen lo comprueba el CI.
 
 **Listo cuando:**
 - [ ] Una factura real, controlada, queda aceptada por la SUNAT.
@@ -355,5 +355,5 @@ Se necesitan si algún día hay que corregir o anular un comprobante. No se cons
 - [x] Qué responde la SUNAT al reenviar un comprobante ya aceptado (fase 5).: en el beta, la misma constancia.
 - [ ] Plazo de envío de facturas: 1 día o 3 días (fase 7).
 - [x] Si `getStatusCdr` existe en el beta (fase 7).: no existe en el beta.
-- [ ] Plazo de envío del resumen diario de boletas (fase 8).
+- [x] Plazo de envío del resumen diario de boletas (fase 8).: hasta el sétimo día calendario desde el día siguiente (7 días).
 - [ ] Si el beta acepta mi RUC 10 y mi régimen permite el certificado gratuito (fase 9).

@@ -400,3 +400,33 @@ Se clasifican con el mismo `ClasificadorErrores` de las facturas: pasajeros → 
 ### O-127 Las pruebas del resumen mueven el reloj (fase 8)
 Se reutiliza `RelojMutable`: la primera consulta del ticket queda a 1 minuto del envío, así que los tests avanzan el reloj en vez de esperar.
 
+### O-128 La llave de la API: cabecera `X-API-Key`, comparada por huella (fase 9)
+`ApiKeyFilter` compara el SHA-256 de la llave recibida con el de la esperada usando `MessageDigest.isEqual`, así el tiempo no depende de cuántos caracteres coinciden ni del largo de la llave. Sin cabecera también hace la comparación (con texto vacío). Responde 401 con `{"mensaje": ...}` y `WWW-Authenticate: ApiKey`, sin repetir la llave. Protege solo `/api/*` y se pide antes de leer el cuerpo (un JSON roto sin llave da 401, no 400). El tiempo constante no se puede probar con un test de forma fiable; lo que se prueba es el comportamiento y que no hay `equals` de texto.
+
+### O-129 Sin llave configurada la API no pide nada, y avisa (fase 9)
+`sunat.api-key` vacía deja pasar todo y escribe un WARN al arrancar: es para desarrollo y los tests. Con el perfil `prod` no arranca sin llave de 32 caracteres o más. La llave solo puede llevar ASCII visible: las cabeceras HTTP se leen como ISO-8859-1 y una llave con `ñ` o emojis no coincidiría nunca (hay un test que lo muestra).
+
+### O-130 Qué revisa el perfil `prod` (fase 9)
+URL de producción (`https://e-factura.sunat.gob.pe/...`, también la de la consulta de constancias si está activa), RUC distinto de `20100066603`, usuario/clave distintos de `MODDATOS`, razón social distinta de la de pruebas, certificado cargable (vigente, RSA, RUC en el `OU` igual al del emisor) y **no autofirmado** (emisor distinto del titular), y llave de la API. Dice todos los problemas juntos y nunca el valor de un secreto. Un certificado de prueba hecho por una "autoridad" falsa pasaría la revisión: nadie puede saber desde aquí si la entidad es de confianza.
+
+### O-131 El perfil `beta` es no poner perfil (fase 9)
+El plan decía "perfiles beta y prod". Se resolvió con que sin perfil la aplicación usa el beta y solo `prod` agrega reglas; un perfil `beta` vacío no hacía nada.
+
+### O-132 Un certificado de prueba emitido por otra "autoridad" (fase 9)
+`emitido-por-ca.p12` (RUC 20512345678) lo firma una CA de prueba creada con `keytool -gencert`, para probar que `prod` acepta uno no autofirmado. Los comandos están en `src/test/resources/certificados/LEEME.md`.
+
+### O-133 El test de secretos mira el log a nivel DEBUG y TRACE (fase 9)
+`SecretosNoSeFiltranTest` sube el log a DEBUG (`apisunat` a TRACE), hace emisiones con la SUNAT fallando de tres maneras y una llave incorrecta, y comprueba que ni la clave SOL, ni la clave del certificado, ni la llave de la API (ni la que se prueba y falla) aparecen en un solo mensaje de log, en ninguna excepción ni en ninguna respuesta. También que el log trae lo útil: operación, estado HTTP, `idExterno` y nombre del archivo. En un test Spring Boot reconfigura Logback al arrancar, por eso el appender se agrega con el contexto ya levantado (o, en `PerfilProduccionArranqueTest`, con un listener de `ApplicationPreparedEvent`).
+
+### O-134 El texto que devuelve la SUNAT sí se muestra tal cual (fase 9)
+Las descripciones de la SUNAT (por ejemplo `descripcionSunat`) se guardan y se devuelven como llegan. Si algún día la SUNAT repitiera en un error la clave que se le mandó, saldría en esa respuesta. Hasta ahora ninguna respuesta lo hizo (el beta no valida la clave, y producción no se ha probado).
+
+### O-135 Docker: imagen en dos pasos, usuario sin privilegios (fase 9)
+`eclipse-temurin:21-jdk-alpine` compila; `21-jre-alpine` corre, con un usuario `apisunat` (no root), `SPRING_PROFILES_ACTIVE=prod` por defecto y zona horaria de Lima. En `docker-compose.yml` el servicio `api-sunat` está en el perfil `app`, así `docker compose up -d` sigue levantando solo MySQL para desarrollar. Prueba de humo hecha aquí: sin configuración se niega a arrancar (y no toca la base), con configuración completa responde 401 sin llave y 404 con llave, el proceso corre como `apisunat` y los logs no traen secretos. Dentro de este sandbox la compilación **dentro** de la imagen no se pudo probar (los contenedores pasan por un proxy con certificado propio y Maven no confía en él): se armó el .jar fuera y solo la segunda etapa en un `docker build`. El CI arma la imagen completa en un job aparte.
+
+### O-136 El respaldo se prueba restaurándolo (fase 9)
+`RespaldoScriptTest` emite una boleta, corre `scripts/respaldo.sh`, restaura el archivo en una base nueva y compara el XML firmado byte por byte. La clave de la base va por `MYSQL_PWD` y no por la línea de comandos. Se salta si no hay `mysqldump` y `mysql` instalados.
+
+### O-137 Un archivo de basura (`REVISAR`) en la raíz (fase 9)
+Quedó en el repositorio, desde una mutación de pruebas, un archivo llamado `REVISAR` con el texto `M3 TRANSITORIO-`. Se borró.
+

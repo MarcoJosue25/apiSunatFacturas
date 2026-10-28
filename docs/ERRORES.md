@@ -203,6 +203,27 @@ Reglas de este archivo:
 - **Qué pasó:** `GET /api/v1/facturas/{id}` y su `/xml` buscaban por el id sin mirar el tipo, así que con el id de una boleta devolvían la boleta (y el XML con nombre de factura `-01-`).
 - **Cómo quedó:** el servicio de facturas solo encuentra comprobantes que no sean boletas; las boletas tienen sus propios endpoints. Test con mutación (se quita el filtro y el test falla).
 
+### E-026 Con el log de Spring en DEBUG la clave SOL salía en el log
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 9
+- **Qué pasó:** el test de secretos (`SecretosNoSeFiltranTest`, que mira todo el log a nivel DEBUG/TRACE) encontró que el cliente HTTP de Spring escribe el cuerpo completo de cada petición (`Writing [<soapenv:Envelope ...`) cuando su log está en DEBUG. El sobre SOAP lleva la clave SOL en el `UsernameToken`. A nivel INFO (el normal) no salía.
+- **Cómo quedó:** el cuerpo se manda como bytes (`byte[]`) y no como texto, así que Spring escribe `[B@...` y no el contenido. El test pasó de rojo a verde con ese cambio y vuelve a ponerse rojo si se deshace.
+
+### E-027 Con el perfil prod, Flyway migraba la base antes de negarse a arrancar
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 9
+- **Qué pasó:** en la prueba de humo con Docker, la aplicación con la configuración del beta y el perfil `prod` se negó a arrancar, pero antes ya había creado las tablas (Flyway corre al crear la conexión y el validador era un bean más).
+- **Cómo quedó:** `ArranqueProduccionConfig` hace que la base de datos dependa del validador, así que la configuración se revisa primero. Test: no aparece ningún mensaje de Hikari ni de Flyway cuando la configuración no sirve (rojo sin el cambio). En el contenedor real se comprobó que la base queda sin tablas.
+
+### E-028 Otro interbloqueo, ahora al crear la serie por primera vez
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 9
+- **Qué pasó:** corriendo toda la suite (2129 tests) falló una vez `facturasDistintasALaVezRecibenNumerosDistintosYSeguidos` con "Deadlock found" en el `INSERT IGNORE` de `asegurar`. Es el caso que E-022 no cubría: 50 hilos creando a la vez una serie que todavía no existe (la lectura previa da "no existe" en todos y todos hacen el `INSERT IGNORE`). El reintento por interbloqueo solo protegía la reserva del número, no la creación de la serie.
+- **Cómo quedó:** `asegurar` también se repite hasta 3 veces ante un interbloqueo (en facturas y en boletas); al repetir, la serie ya existe. Test con un interbloqueo simulado (rojo sin el reintento).
+
 ---
 
 ## Limitaciones que se dejan para después
@@ -365,3 +386,21 @@ Reglas de este archivo:
 ### L-034 Las boletas de después de la hora del resumen esperan al día siguiente
 - [ ] Estado: aceptado
 - **Qué significa:** el resumen se arma a la hora de `sunat.resumen.cron` (22:00 de Lima por defecto). Una boleta emitida después se informa en la siguiente corrida, con el nombre del día de su emisión (`RC-AAAAMMDD-N`), dentro del plazo de 7 días. `POST /api/v1/resumenes/generar` permite armar el resumen a mano cuando se quiera.
+
+### L-035 Hay una sola llave de API, sin usuarios ni permisos
+- [ ] Estado: aceptado
+- **Qué significa:** quien tiene la llave puede emitir, consultar y reenviar todo. No hay llaves distintas por agente, ni vencimiento, ni límite de peticiones, ni registro de quién emitió qué (solo el `idExterno` que manda quien llama).
+- **Por qué se deja:** hay un solo cliente (el agente). Rotar la llave = cambiar `SUNAT_API_KEY` y reiniciar.
+
+### L-036 La API habla HTTP plano
+- [ ] Estado: aceptado
+- **Qué significa:** la aplicación no trae HTTPS. La llave de la API y los datos de los clientes viajan sin cifrar si se expone el puerto 8081 directamente.
+- **Por qué se deja:** se pone detrás de un proxy con HTTPS (`docs/PRODUCCION.md`, sección 4) o solo en red local.
+
+### L-037 El respaldo es manual o por cron, y no incluye el certificado
+- [ ] Estado: diferido
+- **Qué significa:** `scripts/respaldo.sh` respalda la base (XML y constancias). Programarlo, guardarlo fuera del servidor y respaldar el `.p12` y el `.env` (que no están en la base) lo hace quien administre el servidor.
+
+### L-038 La imagen de Docker no tiene healthcheck
+- [ ] Estado: diferido
+- **Qué significa:** no hay un endpoint de salud (no se usa Actuator) y `docker compose` no sabe si la API responde; solo si el proceso vive (`restart: unless-stopped`).

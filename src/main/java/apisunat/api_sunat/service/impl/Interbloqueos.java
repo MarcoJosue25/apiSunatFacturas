@@ -15,6 +15,13 @@ final class Interbloqueos {
     private Interbloqueos() {
     }
 
+    static void conReintento(Runnable accion) {
+        conReintento(() -> {
+            accion.run();
+            return null;
+        });
+    }
+
     static <T> T conReintento(Supplier<T> accion) {
         for (int intento = 1; ; intento++) {
             try {

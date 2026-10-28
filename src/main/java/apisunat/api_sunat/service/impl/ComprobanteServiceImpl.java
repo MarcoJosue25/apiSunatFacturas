@@ -59,7 +59,8 @@ public class ComprobanteServiceImpl implements ComprobanteService {
         }
 
         String serie = propiedades.getSerieFactura();
-        serieService.asegurar(Comprobante.TIPO_FACTURA, serie);
+        // Varios hilos creando la misma serie por primera vez también pueden chocar en MySQL; al repetir, la serie ya existe
+        Interbloqueos.conReintento(() -> serieService.asegurar(Comprobante.TIPO_FACTURA, serie));
         // A segundos enteros: es lo que lleva el XML (IssueTime) y lo que guarda la base, así la respuesta coincide con lo guardado
         LocalDateTime emision = ahora().truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
 

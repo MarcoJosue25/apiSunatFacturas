@@ -80,6 +80,9 @@ class ComprobanteServiceImplTest {
     @MockitoSpyBean
     private FacturaService facturaService;
 
+    @MockitoSpyBean
+    private apisunat.api_sunat.service.SerieService serieService;
+
     private String rutaCertificado;
     private String claveCertificado;
 
@@ -330,6 +333,19 @@ class ComprobanteServiceImplTest {
         assertThat(r.getEstado()).isEqualTo(EstadoComprobante.ACEPTADO);
         assertThat(comprobantes.count()).isEqualTo(1);
         verify(facturaService, times(2)).prepararXml(any(), anyString(), anyLong(), any());
+    }
+
+    @Test
+    void siLaCreacionDeLaSerieChocaPorInterbloqueoSeVuelveAIntentar() {
+        sunatAcepta();
+        doThrow(new org.springframework.dao.CannotAcquireLockException("Deadlock found when trying to get lock"))
+                .doCallRealMethod().when(serieService).asegurar(anyString(), anyString());
+
+        FacturaResponse r = servicio.emitir(factura("pedido-1")).factura();
+
+        assertThat(r.getNumero()).isEqualTo("F001-1");
+        verify(serieService, times(2)).asegurar("01", "F001");
+        org.mockito.Mockito.reset(serieService);
     }
 
     @Test
