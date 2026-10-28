@@ -62,7 +62,7 @@ o hay fuentes que se contradicen. No darlo por cierto hasta probarlo en el beta.
 
 | Código | Tipo | Qué significa | Qué hacer |
 |---|---|---|---|
-| 0100 a 0999 | Excepción de SUNAT | Falla del servicio; el documento no se procesó | Reintentable con límite, salvo códigos de autenticación o permisos (ver abajo) |
+| 0100 a 0999 | Excepción (el documento no se procesó) | Mezcla fallas de SUNAT y errores de configuración o del archivo | Solo 0100 y 0109 son transitorios; el resto no se reintenta (ver abajo) |
 | 1000 a 1999 | Excepción de formato o estructura | Falla del emisor; el documento se considera **no informado** | Corregir el XML y reenviar. No es reintento automático |
 | 2000 a 3999 | Rechazo | CDR con estado **rechazado**; no tiene validez | Ver reglas por tipo de documento |
 | 4000 en adelante | Observación | CDR **aceptado** con advertencias; válido | Registrar las observaciones y no reenviar |
@@ -82,10 +82,40 @@ Reglas ante un rechazo, según el tipo de documento:
   Se corrige y se reenvía con **el mismo nombre de archivo**.
 - **Lotes**: cada documento se valida por separado.
 
-Los códigos y sus descripciones están en las "Reglas de validación" (xlsx, ver §9).
+Los códigos y sus descripciones están en las "Reglas de validación" (xlsx, ver §10) y extraídos en `codigos_sunat.csv`.
 Ahí también está el listado de "observaciones que migran a error": códigos que antes eran
-observación y ahora son error. La tabla de códigos del sistema debe cargarse desde ese xlsx y versionarse,
-no inventarse. **[VERIFICAR]** qué códigos 0100-0999 son de credenciales o permisos, que no sirven para reintentar.
+observación y ahora son error. La tabla de códigos del sistema debe cargarse desde ese xlsx y versionarse, no inventarse.
+
+### Hallazgos del Excel de Reglas de validación (26/08/2026)
+
+Se extrajeron los códigos de todas las hojas a [`codigos_sunat.csv`](codigos_sunat.csv)
+(869 códigos únicos). Por rango: 14 en 0xxx, 19 en 1xxx, 678 en 2xxx-3xxx y 158 en 4xxx+.
+
+**Los rangos del manual no sirven para decidir reintentos. Se clasifica código por código.**
+
+- **Transitorios de SUNAT (reintentar):** `0100` (servicio de recepción no responde, "intente nuevamente")
+  y `0109` (servicio de autenticación no disponible). Más los errores de red.
+- **Configuración (no reintentar, avisar al dueño):** `0111` sin perfil para enviar, `0154` el RUC del archivo
+  no corresponde al usuario, `1078` emisor no autorizado en SEE desde sistemas del contribuyente,
+  `1086` sujeto sin capacidad operativa, `2325` certificado distinto al comunicado a SUNAT,
+  `2326` certificado de baja, `2335` documento alterado (la firma no coincide).
+- **Errores propios, aunque estén en 0xxx (corregir el código):** `0151` nombre de ZIP, `0155` a `0158` ZIP
+  vacío, corrupto o con más de un archivo, `0159` a `0161` nombre del XML, `0306` XML no parseable o que
+  no cumple el XSD.
+- **`0127` El ticket no existe:** probado en el beta; llega como `statusCode` dentro de un HTTP 200, no como SOAP Fault.
+  El cliente debe leer el `statusCode` de cada respuesta.
+- **`1079` "Solo puede enviar el comprobante en un resumen diario":** es lo que devuelve `sendBill` para una boleta.
+  Confirma que las boletas van por Resumen Diario.
+- **`1032` y `1033`:** comprobante ya informado como anulado o rechazado, y comprobante registrado antes con
+  otros datos. Al reintentar hay que reenviar exactamente el mismo XML, sin cambiar datos.
+- **Observaciones dentro del rango 2000-3999:** 24 códigos son observación aunque el rango diga rechazo,
+  como `2901` a `2919` (formato de nombre comercial, urbanización, provincia, distrito, dirección), `2404`,
+  `2988` y `3228`. Se acepta el comprobante y se guardan las advertencias.
+- **Observaciones que migraron a error:** el listado "Observaciones que migran a Error" mapea cada código
+  4xxx a un 3xxx (por ejemplo `4287` a `3270`, `4293` a `3292`, `4301` a `3294`). Son diferencias aritméticas:
+  precio unitario, valor de venta por ítem, base imponible, sumatorias por tipo de operación e IGV.
+  Ahora **rechazan**. Hay que calcular y redondear los totales exactamente y validarlos antes de firmar,
+  porque un rechazo de factura consume el número. Los dos archivos "Listado de observaciones…" del repo son idénticos.
 
 ## 6. Estado del ticket (`getStatus`)
 
@@ -104,7 +134,8 @@ Reglas:
 1. **Error de transporte** (timeout, conexión cortada, HTTP 5xx, caída de SUNAT): reintentar con backoff
    exponencial y jitter. Antes de reenviar una factura, consultar `getStatusCdr`: si SUNAT ya la recibió,
    usar ese CDR y no reenviar (idempotencia).
-2. **Excepción 0100-0999**: reintentar hasta un máximo y luego alertar. No reintentar los de credenciales o permisos.
+2. **`0100` y `0109`** (transitorios de SUNAT): reintentar con backoff hasta el plazo de envío.
+   **El resto de 0xxx** (`0111`, `0151` a `0161`, `0306`...): no reintentar; son de configuración o del XML o ZIP.
 3. **Excepción 1000-1999**: no reintentar. Pasar a `ERROR_DATOS` y alertar para corregir la causa.
 4. **Rechazo 2000-3999**: no reintentar el mismo documento. Una factura rechazada se reemite con un nuevo número;
    un RC o baja rechazado se corrige y se reenvía con el mismo nombre.
@@ -159,4 +190,4 @@ Reglas:
 - Leer las páginas 35-54 del manual (estructura del CDR y Anexo 2).
 - Verificar en el beta: `sendBill` con boleta, firma con certificado de pruebas, si acepta el RUC 10 propio,
   y si el contenido del ZIP necesita la carpeta `dummy`.
-- Definir qué códigos 0100-0999 son reintentables.
+- Probar en el beta qué responde SUNAT al reenviar un comprobante ya aceptado (¿el mismo CDR o el error `1033`?).

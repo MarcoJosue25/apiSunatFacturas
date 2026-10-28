@@ -1,0 +1,870 @@
+codigo,tipo,hojas,descripcion
+0100,ERROR,General,El sistema no puede responder su solicitud. Intente nuevamente o comuníquese con su Administrador
+0109,ERROR,General,El sistema no puede responder su solicitud. (El servicio de autenticación no está disponible)
+0111,ERROR,General,No tiene el perfil para enviar comprobantes electronicos
+0127,ERROR,Comunicación de Baja1_0;Resumen Diario1_1;Resumen de reversiones1_0,El ticket no existe
+0151,ERROR,General,El nombre del archivo ZIP es incorrecto
+0154,ERROR,General,El RUC del archivo no corresponde al RUC del usuario o el proveedor no esta autorizado a enviar comprobantes del contribuyente
+0155,ERROR,General,El archivo ZIP esta vacio
+0156,ERROR,General,El archivo ZIP esta corrupto
+0157,ERROR,General,El archivo ZIP no contiene comprobantes
+0158,ERROR,General,El archivo ZIP contiene demasiados comprobantes para este tipo de envío
+0159,ERROR,General,El nombre del archivo XML es incorrecto
+0160,ERROR,General,El archivo XML esta vacio
+0161,ERROR,General,El nombre del archivo XML no coincide con el nombre del archivo ZIP
+0306,ERROR,General,No se puede leer (parsear) el archivo XML
+1001,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Percepciones1_0;Retenciones1_0,ID - El dato SERIE-CORRELATIVO no cumple con el formato de acuerdo al tipo de comprobante
+1003,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0,InvoiceTypeCode - El valor del tipo de documento es invalido o no coincide con el nombre del archivo
+1004,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0,El XML no contiene el tag o no existe informacion de InvoiceTypeCode
+1007,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0,El dato ingresado no cumple con el estandar
+1008,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0,El XML no contiene el tag o no existe informacion en tipo de documento del emisor.
+1032,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El comprobante ya esta informado y se encuentra con estado anulado o rechazado
+1033,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Percepciones1_0;Retenciones1_0,El comprobante fue registrado previamente con otros datos
+1034,ERROR,Boleta2_0;Comunicación de Baja1_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Percepciones1_0;Resumen Diario1_1;Resumen de reversiones1_0;Retenciones1_0,Número de RUC del nombre del archivo no coincide con el consignado en el contenido del archivo XML
+1035,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,Numero de Serie del nombre del archivo no coincide con el consignado en el contenido del archivo XML
+1036,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,Número de documento en el nombre del archivo no coincide con el consignado en el contenido del XML
+1037,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Percepciones1_0;Retenciones1_0,El XML no contiene el tag o no existe informacion de RegistrationName del emisor del documento
+1038,ERROR,Percepciones1_0;Retenciones1_0,RegistrationName - El nombre o razon social del emisor no cumple con el estandar
+1049,ERROR,Percepciones1_0;Retenciones1_0,ID - Serie y Número del archivo no coincide con el consignado en el contenido del XML.
+1078,ERROR,Boleta2_0;Factura2_0;General;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,El emisor no se encuentra autorizado a emitir en el SEE-Desde los sistemas del contribuyente
+1079,ERROR,Boleta2_0;NotaCredito2_0;NotaDebito2_0,Solo puede enviar el comprobante en un resumen diario
+1080,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,Debe enviar su comprobante por el SEE-Empresas supervisadas
+1083,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DOAE-Atribución;Factura2_0;NotaCredito2_0;NotaDebito2_0,El numero de RUC del receptor no existe
+1084,ERROR,Boleta2_0;NotaCredito2_0;NotaDebito2_0,"Comprobante de contingencia ya fue informado por su resumen, si desea modificarse debe realizarse por su primer canal de presentación"
+1086,ERROR,DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El emisor electronico es un Sujeto sin capacidad operativa (SSCO)
+2010,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El contribuyente no esta activo
+2011,ERROR,Boleta2_0;Comunicación de Baja1_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El contribuyente no esta habido
+2014,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;Resumen Diario1_1,El XML no contiene el tag o no existe informacion del número de documento de identidad del receptor del documento
+2015,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;Resumen Diario1_1,El XML no contiene el tag o no existe informacion del tipo de documento de identidad del receptor del documento
+2016,ERROR,DAE-Operador2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,El dato ingresado en el tipo de documento de identidad del receptor no cumple con el estandar o no esta permitido.
+2017,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DOAE-Atribución;Factura2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,El numero de documento de identidad del receptor debe ser RUC
+2021,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag o no existe informacion de RegistrationName del receptor del documento
+2022,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,RegistrationName - El dato ingresado no cumple con el estandar
+2023,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0,El Numero de orden del item no cumple con el formato establecido
+2024,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0,El XML no contiene el tag InvoicedQuantity en el detalle de los Items o es cero (0)
+2025,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0,InvoicedQuantity El dato ingresado no cumple con el estandar
+2026,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0,El XML no contiene el tag cac:Item/cbc:Description en el detalle de los Items
+2027,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0,El XML no contiene el tag o no existe informacion de cac:Item/cbc:Description del item
+2028,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,Debe existir el tag cac:AlternativeConditionPrice
+2031,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado en total valor de venta no cumple con el estandar
+2033,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en TaxAmount de la linea no cumple con el formato establecido
+2036,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El codigo del tributo es invalido
+2037,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag cac:TaxCategory/cac:TaxScheme/cbc:ID del Item
+2040,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El tipo de afectacion del IGV es incorrecto
+2041,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0,El sistema de calculo del ISC es incorrecto
+2042,ERROR,DAE-Adquirente2_0,Debe indicar el IGV. Es un campo obligatorio
+2043,ERROR,DOAE-Atribución,El dato ingresado en PayableAmount no cumple con el formato establecido
+2048,ERROR,Boleta2_0;DAE-Operador2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,El dato ingresado en TaxAmount no cumple con el formato establecido
+2052,ERROR,Boleta2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag código de tributo internacional de impuestos globales
+2054,ERROR,Boleta2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag TaxScheme Name de impuestos globales
+2062,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en PayableAmount no cumple con el formato establecido
+2064,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en ChargeTotalAmount no cumple con el formato establecido
+2065,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0,El dato ingresado en el campo Total Descuentos no cumple con el formato establecido
+2067,ERROR,DOAE-Atribución,cac:Price/cbc:PriceAmount - El dato ingresado no cumple con el estandar
+2068,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0,El XML no contiene el tag cac:Price/cbc:PriceAmount en el detalle de los Items
+2070,ERROR,Boleta2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag o no existe informacion de DocumentCurrencyCode
+2071,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,La moneda debe ser la misma en todo el documento. Salvo las percepciones que sólo son en moneda nacional
+2072,ERROR,Boleta2_0;Comunicación de Baja1_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1;Resumen de reversiones1_0,CustomizationID - La versión del documento no es la correcta
+2073,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML no existe informacion de CustomizationID
+2074,ERROR,Boleta2_0;Comunicación de Baja1_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1;Resumen de reversiones1_0,UBLVersionID - La versión del UBL no es correcta
+2075,ERROR,Boleta2_0;Comunicación de Baja1_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1;Resumen de reversiones1_0,El XML no contiene el tag o no existe informacion de UBLVersionID
+2076,ERROR,Firma,cac:Signature/cbc:ID - Falta el identificador de la firma
+2077,ERROR,Firma,El tag cac:Signature/cbc:ID debe contener informacion
+2078,ERROR,Firma,cac:Signature/cac:SignatoryParty/cac:PartyIdentification/cbc:ID - Debe ser igual al RUC del emisor
+2079,ERROR,Firma,El XML no contiene el tag cac:Signature/cac:SignatoryParty/cac:PartyIdentification/cbc:ID
+2080,ERROR,Firma,cac:Signature/cac:SignatoryParty/cac:PartyName/cbc:Name - No cumple con el estandar
+2081,ERROR,Firma,El XML no contiene el tag cac:Signature/cac:SignatoryParty/cac:PartyName/cbc:Name
+2082,ERROR,Firma,cac:Signature/cac:DigitalSignatureAttachment/cac:ExternalReference/cbc:URI - No cumple con el estandar
+2083,ERROR,Firma,El XML no contiene el tag cac:Signature/cac:DigitalSignatureAttachment/cac:ExternalReference/cbc:URI
+2084,ERROR,Firma,ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent/ds:Signature/@Id - No cumple con el estandar
+2085,ERROR,Firma,El XML no contiene el tag ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent/ds:Signature/@Id
+2086,ERROR,Firma,ext:UBLExtensions/.../ds:Signature/ds:SignedInfo/ds:CanonicalizationMethod/@Algorithm - No cumple con el estandar
+2087,ERROR,Firma,El XML no contiene el tag ext:UBLExtensions/.../ds:Signature/ds:SignedInfo/ds:CanonicalizationMethod/@Algorithm
+2088,ERROR,Firma,ext:UBLExtensions/.../ds:Signature/ds:SignedInfo/ds:SignatureMethod/@Algorithm - No cumple con el estandar
+2089,ERROR,Firma,El XML no contiene el tag ext:UBLExtensions/.../ds:Signature/ds:SignedInfo/ds:SignatureMethod/@Algorithm
+2090,ERROR,Firma,ext:UBLExtensions/.../ds:Signature/ds:SignedInfo/ds:Reference/@URI - Debe estar vacio para id
+2091,ERROR,Firma,El XML no contiene el tag ext:UBLExtensions/.../ds:Signature/ds:SignedInfo/ds:Reference/@URI
+2092,ERROR,Firma,ext:UBLExtensions/.../ds:Signature/ds:SignedInfo/.../ds:Transform@Algorithm - No cumple con el estandar
+2093,ERROR,Firma,El XML no contiene el tag ext:UBLExtensions/.../ds:Signature/ds:SignedInfo/ds:Reference/ds:Transform@Algorithm
+2094,ERROR,Firma,ext:UBLExtensions/.../ds:Signature/ds:SignedInfo/ds:Reference/ds:DigestMethod/@Algorithm - No cumple con el estandar
+2095,ERROR,Firma,El XML no contiene el tag ext:UBLExtensions/.../ds:Signature/ds:SignedInfo/ds:Reference/ds:DigestMethod/@Algorithm
+2097,ERROR,Firma,El XML no contiene el tag ext:UBLExtensions/.../ds:Signature/ds:SignedInfo/ds:Reference/ds:DigestValue
+2098,ERROR,Firma,ext:UBLExtensions/.../ds:Signature/ds:SignatureValue - No cumple con el estandar
+2099,ERROR,Firma,El XML no contiene el tag ext:UBLExtensions/.../ds:Signature/ds:SignatureValue
+2100,ERROR,Firma,ext:UBLExtensions/.../ds:Signature/ds:KeyInfo/ds:X509Data/ds:X509Certificate - No cumple con el estandar
+2101,ERROR,Firma,El XML no contiene el tag ext:UBLExtensions/.../ds:Signature/ds:KeyInfo/ds:X509Data/ds:X509Certificate
+2105,ERROR,Comunicación de Baja1_0,Comprobante a dar de baja no se encuentra registrado en SUNAT
+2108,ERROR,DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,Presentacion fuera de fecha
+2110,ERROR,Percepciones1_0;Retenciones1_0,UBLVersionID - La versión del UBL no es correcta
+2111,ERROR,Percepciones1_0;Retenciones1_0,El XML no contiene el tag o no existe informacion de UBLVersionID
+2112,ERROR,Percepciones1_0;Retenciones1_0,CustomizationID - La version del documento no es correcta
+2113,ERROR,Percepciones1_0;Retenciones1_0,El XML no contiene el tag o no existe informacion de CustomizationID
+2116,ERROR,NotaCredito2_0,El tipo de documento modificado por la Nota de credito debe ser factura electronica o ticket
+2117,ERROR,NotaCredito2_0,La serie o numero del documento modificado por la Nota de Credito no cumple con el formato establecido
+2119,ERROR,NotaCredito2_0,El documento modificado en la Nota de credito no esta registrada.
+2120,ERROR,NotaCredito2_0,El documento modificado en la Nota de credito se encuentra de baja
+2121,ERROR,NotaCredito2_0,El documento modificado en la Nota de credito esta registrada como rechazada
+2128,ERROR,NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag o no existe informacion de ResponseCode
+2133,ERROR,Percepciones1_0;Retenciones1_0,RegistrationName - El dato ingresado no cumple con el estandar
+2134,ERROR,Percepciones1_0;Retenciones1_0,El XML no contiene el tag o no existe informacion de RegistrationName del receptor del documento
+2135,ERROR,NotaCredito2_0;NotaDebito2_0,cac:DiscrepancyResponse/cbc:Description - El dato ingresado no cumple con la estructura
+2136,ERROR,NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag o no existe informacion de cac:DiscrepancyResponse/cbc:Description
+2137,ERROR,NotaCredito2_0;NotaDebito2_0,El Numero de orden del item no cumple con el formato establecido
+2138,ERROR,NotaCredito2_0,CreditedQuantity/@unitCode - El dato ingresado no cumple con el estandar
+2139,ERROR,NotaCredito2_0;NotaDebito2_0,CreditedQuantity - El dato ingresado no cumple con el estandar
+2172,ERROR,NotaCredito2_0;NotaDebito2_0,ResponseCode - El dato ingresado no cumple con la estructura
+2188,ERROR,NotaDebito2_0,DebitedQuantity/@unitCode El dato ingresado no cumple con el estandar
+2199,ERROR,NotaCredito2_0;NotaDebito2_0,El sistema de calculo del ISC es incorrecto
+2204,ERROR,NotaDebito2_0,"El tipo de documento modificado por la Nota de Debito debe ser factura electronica, ticket o documento autorizado"
+2205,ERROR,NotaDebito2_0,La serie o numero del documento modificado por la Nota de Debito no cumple con el formato establecido
+2207,ERROR,NotaDebito2_0,El documento modificado en la Nota de debito se encuentra de baja
+2208,ERROR,NotaDebito2_0,El documento modificado en la Nota de debito esta registrada como rechazada
+2209,ERROR,NotaDebito2_0,El documento modificado en la Nota de debito no esta registrada
+2218,ERROR,Resumen Diario1_1,AdditionalAccountID - El dato ingresado no cumple con el estandar
+2219,ERROR,Resumen Diario1_1,El XML no contiene el tag AdditionalAccountID del emisor del documento
+2220,ERROR,Comunicación de Baja1_0;Resumen Diario1_1;Resumen de reversiones1_0,El ID debe coincidir con el nombre del archivo
+2223,ERROR,Resumen Diario1_1;Resumen de reversiones1_0,El archivo ya fue presentado anteriormente
+2228,ERROR,Comunicación de Baja1_0;Resumen Diario1_1;Resumen de reversiones1_0,RegistrationName - El dato ingresado no cumple con el estandar
+2229,ERROR,Comunicación de Baja1_0;Resumen Diario1_1;Resumen de reversiones1_0,El XML no contiene el tag RegistrationName del emisor del documento
+2236,ERROR,Resumen Diario1_1,La fecha del IssueDate no debe ser mayor a la fecha de recepción
+2238,ERROR,Resumen Diario1_1,LineID - El dato ingresado no cumple con el estandar
+2239,ERROR,Resumen Diario1_1,LineID - El dato ingresado debe ser correlativo mayor a cero
+2241,ERROR,Resumen Diario1_1,DocumentTypeCode - El valor del tipo de documento es invalido
+2242,ERROR,Resumen Diario1_1,El XML no contiene el tag DocumentTypeCode
+2251,ERROR,Resumen Diario1_1,El dato ingresado en TotalAmount debe ser numerico mayor o igual a cero
+2254,ERROR,Resumen Diario1_1,PaidAmount - El dato ingresado no cumple con el estandar
+2255,ERROR,Resumen Diario1_1,El XML no contiene el tag PaidAmount
+2256,ERROR,Resumen Diario1_1,InstructionID - El dato ingresado no cumple con el estandar
+2257,ERROR,Resumen Diario1_1,El XML no contiene el tag InstructionID
+2261,ERROR,Resumen Diario1_1,cbc:Amount - El dato ingresado no cumple con el estandar
+2263,ERROR,Resumen Diario1_1,ChargeIndicator - El dato ingresado no cumple con el estandar
+2266,OBSERV,Resumen Diario1_1,Debe indicar cargos mayores o iguales a cero
+2268,ERROR,Resumen Diario1_1,El codigo del tributo es invalido
+2269,ERROR,Resumen Diario1_1,El XML no contiene el tag TaxScheme ID de Información acerca del importe total de un tipo particular de impuesto
+2271,ERROR,Resumen Diario1_1,El XML no contiene el tag TaxScheme Name de impuesto
+2275,ERROR,Resumen Diario1_1,"Si el codigo de tributo es 2000, el nombre del tributo debe ser ISC"
+2276,ERROR,Resumen Diario1_1,"Si el codigo de tributo es 1000, el nombre del tributo debe ser IGV"
+2278,ERROR,DAE-Operador2_0;Resumen Diario1_1,Debe indicar Información acerca del importe total de IGV/IVAP
+2282,ERROR,Resumen Diario1_1,Existe documento ya informado anteriormente
+2287,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,AdditionalAccountID - El dato ingresado no cumple con el estandar
+2288,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,El XML no contiene el tag AdditionalAccountID del emisor del documento
+2301,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,La fecha del IssueDate no debe ser mayor a la fecha de recepción
+2305,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,LineID - El dato ingresado no cumple con el estandar
+2306,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,LineID - El dato ingresado debe ser correlativo mayor a cero
+2307,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,El tag LineID de VoidedDocumentsLine esta vacío
+2308,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,DocumentTypeCode - El valor del tipo de documento es invalido
+2309,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,El tag DocumentTypeCode es vacío
+2310,ERROR,Comunicación de Baja1_0,El dato ingresado no cumple con el patron SERIE
+2311,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,El tag DocumentSerialID es vacío
+2312,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,El dato ingresado en DocumentNumberID debe ser numerico y como maximo de 8 digitos
+2313,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,El tag DocumentNumberID esta vacío
+2315,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,El tag VoidReasonDescription esta vacío
+2323,ERROR,Comunicación de Baja1_0,Existe documento ya informado anteriormente en una comunicacion de baja
+2324,ERROR,Comunicación de Baja1_0,El archivo de comunicacion de baja ya fue presentado anteriormente
+2325,ERROR,General,El certificado usado no es el comunicado a SUNAT
+2326,ERROR,General,El certificado usado se encuentra de baja
+2329,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La fecha de emision se encuentra fuera del limite permitido
+2335,ERROR,General,El documento electrónico ingresado ha sido alterado
+2337,ERROR,DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;LiquidacionCompra2_0,La moneda debe ser la misma en todo el documento
+2344,ERROR,Resumen Diario1_1,El XML no contiene el tag cac:TaxTotal/cac:TaxSubtotal/cbc:TaxAmount
+2345,ERROR,Resumen de reversiones1_0,La serie no corresponde al tipo de comprobante
+2346,ERROR,Comunicación de Baja1_0;Resumen Diario1_1;Resumen de reversiones1_0,La fecha de generación del resumen debe ser igual a la fecha consignada en el nombre del archivo
+2348,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,Los documentos informados en el archivo XML se encuentran duplicados
+2355,ERROR,Resumen Diario1_1,Debe consignar solo un elemento cac:TaxTotal a nivel de item por codigo de tributo
+2357,ERROR,Resumen Diario1_1,No debe existir un elemento sac:BillingPayment a nivel de item con el mismo valor de cbc:InstructionID
+2364,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El comprobante contiene un tipo y número de Guía de Remisión repetido
+2365,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El comprobante contiene un tipo y número de Documento Relacionado repetido
+2367,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en PriceAmount del Precio de venta unitario por item no cumple con el formato establecido
+2369,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en PriceAmount del Valor de venta unitario por item no cumple con el formato establecido
+2370,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en LineExtensionAmount del item no cumple con el formato establecido
+2371,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag cbc:TaxExemptionReasonCode de Afectacion al IGV
+2373,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,Si existe monto de ISC en el ITEM debe especificar el sistema de calculo
+2375,ERROR,Comunicación de Baja1_0,Fecha de emision del comprobante no coincide con la fecha de emision consignada en la comunicación
+2377,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El Name o TaxTypeCode debe corresponder al codigo de tributo del item
+2398,ERROR,Comunicación de Baja1_0;Resumen de reversiones1_0,El documento a dar de baja se encuentra rechazado
+2399,ERROR,NotaCredito2_0,El tipo de documento modificado por la Nota de credito debe ser boleta electronica
+2400,ERROR,NotaDebito2_0,El tipo de documento modificado por la Nota de debito debe ser boleta electronica
+2404,OBSERV,NotaCredito2_0;NotaDebito2_0,Documento afectado por la nota electronica no se encuentra autorizado
+2409,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,Existe mas de un tag cac:AlternativeConditionPrice con el mismo cbc:PriceTypeCode
+2410,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,Se ha consignado un valor invalido en el campo cbc:PriceTypeCode
+2411,ERROR,Resumen Diario1_1,Ha consignado mas de un elemento cac:AllowanceCharge con el mismo campo cbc:ChargeIndicator
+2416,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,Si existe leyenda Transferencia Gratuita debe consignar Total Valor de Venta de Operaciones Gratuitas
+2426,ERROR,NotaCredito2_0;NotaDebito2_0,Documentos relacionados duplicados en el comprobante.
+2450,ERROR,LiquidacionCompra2_0,Número de DNI no existe
+2451,ERROR,LiquidacionCompra2_0,Vendedor supera el monto permitido para la emision de una liquidacion de compra
+2452,ERROR,LiquidacionCompra2_0,El XML no contiene el tag o no existe informacion de la dirección completa y detallada en domicilio del vendedor
+2453,ERROR,LiquidacionCompra2_0,El XML no contiene el tag o no existe información del ubigeo del domicilio del vendedor
+2454,ERROR,LiquidacionCompra2_0,El XML no contiene el tag o no existe informacion de la dirección completa y detallada del lugar donde se realiza la operación
+2455,ERROR,LiquidacionCompra2_0,El XML no contiene el tag o no existe información del ubigeo del lugar donde se realiza la operación
+2456,ERROR,LiquidacionCompra2_0,Debe consignar el tipo de domicilio del vendedor
+2457,ERROR,LiquidacionCompra2_0,El dato ingresado en el tipo de domicilio del vendedor no corresponde al valor esperado
+2458,ERROR,LiquidacionCompra2_0,Debe consignar el tipo de ubicación del lugar donde se realiza la operación
+2459,ERROR,LiquidacionCompra2_0,El dato ingresado en el tipo de ubicación del lugar donde se realiza la operación no corresponde al valor esperado
+2460,ERROR,LiquidacionCompra2_0,Número de DNI corresponde a una persona fallecida a la fecha de emision
+2461,ERROR,LiquidacionCompra2_0,Número de DNI corresponde a una persona menor de edad
+2462,ERROR,LiquidacionCompra2_0,Número de DNI tiene un Numero de RUC asignado activo
+2463,ERROR,LiquidacionCompra2_0,Emisor no se encuentra afecto a Renta de tercera categoría
+2464,ERROR,LiquidacionCompra2_0,El producto de la tasa por el monto base de la afectación de la retención de renta no corresponde al monto de afectacion de linea
+2465,ERROR,LiquidacionCompra2_0,Tipo de comprobante que realizo el anticipo debe ser 10-Liquidacion de compra
+2466,ERROR,LiquidacionCompra2_0,El XML no contiene el tag de Comercializacion del oro: Codigo unico de concesion minera
+2467,ERROR,LiquidacionCompra2_0,El XML no contiene el tag de Comercializacion del oro: Ley mineral
+2468,ERROR,LiquidacionCompra2_0,El XML no contiene el tag de Comercializacion del oro: Naturaleza del mineral
+2469,ERROR,LiquidacionCompra2_0,El XML no contiene el tag de Comercializacion del oro: Nombre del derecho minero
+2470,ERROR,LiquidacionCompra2_0,El monto base de la retencion de renta global no cumple con el formato establecido
+2471,ERROR,Resumen de reversiones1_0,La liquidacion de compra a dar de baja no debe tener pagos registrados
+2472,ERROR,DAE-Adquirente2_0,El documento no contiene la fecha de inicio del periodo de abono
+2473,ERROR,DAE-Adquirente2_0,El documento no contiene la fecha de fin del periodo de abono
+2474,ERROR,DAE-Adquirente2_0,El documento no contiene el 'Tipo de canal facturado'
+2475,ERROR,DAE-Adquirente2_0,El dato ingresado como 'Tipo de canal facturado' es incorrecto
+2476,ERROR,DAE-Adquirente2_0,Debe registrarse el 'Indicador de tipo de comisión'
+2477,ERROR,DAE-Adquirente2_0,El dato ingresado en el 'Indicador de tipo de comisión' no corresponde al valor esperado
+2478,ERROR,DAE-Adquirente2_0,Para Bancos emisores debe ingresar el 'Indicador de institución financiera'
+2479,ERROR,DAE-Adquirente2_0,El dato ingresado en el 'Indicador de institución financiera' no corresponde al valor esperado
+2480,ERROR,DAE-Adquirente2_0;DAE-Operador2_0,Debe consignar el tag /cac:InvoiceLine/cac:ItemPriceExtension
+2481,ERROR,DAE-Adquirente2_0;DAE-Operador2_0,El dato ingresado en el tag /cac:InvoiceLine/cac:ItemPriceExtension/cbc:Amount no cumple con el formato establecido
+2482,ERROR,DAE-Adquirente2_0;DAE-Operador2_0,Debe consignar el tag /cac:SubInvoiceLine/cac:ItemPriceExtension
+2483,ERROR,DAE-Adquirente2_0;DAE-Operador2_0,El dato ingresado en el tag cac:InvoiceLine/cac:SubInvoiceLine/cac:ItemPriceExtension/cbc:Amount no cumple con el formato establecido
+2484,ERROR,DAE-Adquirente2_0,Para Bancos emisores locales debe ingresar el Numero de RUC
+2485,ERROR,DAE-Adquirente2_0,Tipo de documento de identidad debe ser RUC
+2486,ERROR,DAE-Adquirente2_0;DAE-Operador2_0,El dato ingresado en el tag /cac:SubInvoiceLine/cbc:LineExtensionAmount no cumple con el formato establecido
+2487,ERROR,DAE-Adquirente2_0;DAE-Operador2_0,El XML no contiene el tag cac:LegalMonetaryTotal/cbc:LineExtensionAmount
+2488,ERROR,DAE-Adquirente2_0;DAE-Operador2_0,El dato ingresado en el tag cac:LegalMonetaryTotal/cbc:LineExtensionAmount no cumple con el formato establecido
+2489,ERROR,DAE-Operador2_0,El dato ingresado en el 'Tipo de documento de identidad' no cumple el formato establecido
+2490,ERROR,DAE-Operador2_0,Existe más de un Tag UBL cac:OriginatorParty/cac:PartyIdentification
+2491,ERROR,DAE-Operador2_0,Debe consignar el Tag UBL cac:OriginatorParty/cac:PartyIdentification/cbc:ID
+2492,ERROR,DAE-Operador2_0,El dato ingresado en el tag cac:SubInvoiceLine/cbc:ID no cumple con el formato establecido
+2493,ERROR,DAE-Operador2_0,El dato ingresado en el tag /cac:SubInvoiceLine/cbc:ID no debe repetirse en el mismo cac:InvoiceLine
+2494,ERROR,DAE-Operador2_0,No existe el tag cac:TaxTotal en el /Invoice/cac:InvoiceLine/cac:SubInvoiceLine
+2495,ERROR,DAE-Operador2_0,El tag cac:TaxTotal no debe repetirse en el /Invoice/cac:InvoiceLine/cac:SubInvoiceLine
+2496,ERROR,DAE-Operador2_0,El dato ingresado en el tag /cac:SubInvoiceLine/cac:TaxTotal/cbc:TaxAmount no cumple el formato establecido
+2497,ERROR,DAE-Adquirente2_0;DAE-Operador2_0,El dato ingresado en el tag /cac:SubInvoiceLine/cac:TaxTotal/cac:TaxSubtotal/cbc:TaxAmount no cumple el formato establecido
+2498,ERROR,DAE-Operador2_0,El XML no contiene el tag cac:TaxCategory/cac:TaxScheme/cbc:ID del /cac:SubInvoiceLine
+2499,ERROR,DAE-Operador2_0,El código de tributo no debe repetirse a nivel del /cac:SubInvoiceLine
+2503,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,PaidAmount: monto anticipado por documento debe ser mayor a cero.
+2505,ERROR,Boleta2_0;Factura2_0,Código de documento de referencia debe ser 02 o 03.
+2509,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,Total de anticipos diferente a los montos anticipados por documento.
+2511,ERROR,NotaCredito2_0;NotaDebito2_0;Percepciones1_0;Retenciones1_0,El tipo de documento no es aceptado.
+2512,ERROR,Resumen Diario1_1,No existe información de serie o número.
+2513,ERROR,Resumen Diario1_1,Dato no cumple con formato de acuerdo al tipo de documento
+2514,ERROR,Resumen Diario1_1,No existe información de receptor de documento.
+2516,ERROR,DAE-Adquirente2_0;DAE-Operador2_0;Percepciones1_0;Retenciones1_0,Debe indicar tipo de documento.
+2517,ERROR,Resumen Diario1_1,Dato no cumple con formato establecido.
+2520,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El tipo documento del emisor que realiza el anticipo debe ser 6 del catalogo de tipo de documento.
+2521,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado debe indicar SERIE-CORRELATIVO del documento que se realizo el anticipo.
+2522,ERROR,Resumen Diario1_1,No existe información del documento del anticipo.
+2524,ERROR,NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,Debe indicar el documento afectado por la nota
+2529,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,RUC que emitio documento de anticipo no existe.
+2548,ERROR,Percepciones1_0;Retenciones1_0,El valor del país inválido.
+2581,ERROR,Comunicación de Baja1_0,No puede dar de baja 'Recibos de servicios publicos' por SEE-Desde los sistemas del contribuyente
+2582,ERROR,Resumen Diario1_1,Solo se debe incluir el tag de Comprobante de referencia cuando se trata de una nota de credito o debito
+2583,ERROR,Resumen Diario1_1,Debe consignar tipo de documento que modifica
+2584,ERROR,DAE-Operador2_0,El XML debe contener al menos un tributo de IGV en el /cac:SubInvoiceLine
+2585,ERROR,DAE-Operador2_0,El dato ingresado como indicador de cargo/descuento a nivel de /cac:SubInvoiceLine no corresponde al valor esperado
+2586,ERROR,DAE-Operador2_0,El XML no contiene el tag o no existe informacion de codigo de motivo de cargo/descuento a nivel de /cac:SubInvoiceLine
+2587,ERROR,DAE-Operador2_0,El factor de cargo/descuento a nivel de /cac:SubInvoiceLine no cumple con el formato establecido
+2588,ERROR,DAE-Operador2_0,El dato ingresado en el tag cac:SubInvoiceLine/cac:Allowancecharge/cbc:Amount no cumple con el formato establecido
+2589,ERROR,DAE-Operador2_0,El Monto base de cargo/descuento a nivel de /cac:SubInvoiceLine no cumple con el formato establecido
+2590,ERROR,DAE-Adquirente2_0;DAE-Operador2_0,El dato ingresado en el tag /cac:SubInvoiceLine/cac:TaxTotal/cac:TaxSubtotal/cbc:TaxableAmount no cumple el formato establecido
+2591,ERROR,LiquidacionCompra2_0,No existe el tag cac:LegalMonetaryTotal/cbc:LineExtensionAmount
+2592,ERROR,LiquidacionCompra2_0,No existe el tag cac:LegalMonetaryTotal/cbc:TaxInclusiveAmount
+2593,ERROR,LiquidacionCompra2_0,La dirección completa y detallada del domicilio del vendedor no cumple con el formato establecido
+2594,ERROR,NotaCredito2_0;NotaDebito2_0,El tipo de documento modificado por la nota electronica no es valido
+2595,ERROR,Boleta2_0,Falta consignar informacion del CUSPP
+2596,ERROR,Boleta2_0,Falta consignar informacion del Periodo
+2597,ERROR,Boleta2_0,Falta consignar información del monto de interes moratorio
+2600,ERROR,Percepciones1_0;Retenciones1_0,El comprobante fue enviado fuera del plazo permitido.
+2601,ERROR,Resumen Diario1_1,Senor contribuyente a la fecha no se encuentra registrado ó habilitado con la condición de Agente de percepción.
+2602,ERROR,Percepciones1_0,El régimen percepción enviado no corresponde con su condición de Agente de percepción.
+2603,ERROR,Percepciones1_0,La tasa de percepción enviada no corresponde con el régimen de percepción.
+2604,ERROR,Percepciones1_0,El Cliente no puede ser el mismo que el Emisor del comprobante de percepción.
+2605,ERROR,DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;Percepciones1_0;Resumen Diario1_1,Número de RUC no existe.
+2607,ERROR,Percepciones1_0,La moneda del importe de cobro debe ser la misma que la del documento relacionado.
+2608,ERROR,Percepciones1_0;Resumen Diario1_1,"Los montos de pago, percibidos y montos cobrados consignados para el documento relacionado no son correctos."
+2609,ERROR,Percepciones1_0,El comprobante electrónico enviado no se encuentra registrado en la SUNAT.
+2610,ERROR,Percepciones1_0,"La fecha de emisión, Importe total del comprobante y la moneda del comprobante electrónico enviado no son los registrados en los Sistemas de SUNAT."
+2612,ERROR,Percepciones1_0,La fecha de cobro debe estar entre el primer día calendario del mes al cual corresponde la fecha de emisión del comprobante de percepción o desde la fecha de emisión del comprobante relacionado.
+2617,ERROR,Retenciones1_0,Senor contribuyente a la fecha no se encuentra registrado ó habilitado con la condición de Agente de retención.
+2618,ERROR,Retenciones1_0,El régimen retención enviado no corresponde con su condición de Agente de retención.
+2619,ERROR,Retenciones1_0,La tasa de retención enviada no corresponde con el régimen de retención.
+2620,ERROR,Retenciones1_0,El Proveedor no puede ser el mismo que el Emisor del comprobante de retención.
+2621,ERROR,Retenciones1_0,Número de RUC del Proveedor no existe.
+2622,ERROR,Retenciones1_0,La moneda del importe de pago debe ser la misma que la del documento relacionado.
+2623,ERROR,Retenciones1_0,"Los montos de pago, retenidos y montos pagados consignados para el documento relacionado no son correctos."
+2625,ERROR,Retenciones1_0,La fecha de pago debe estar entre el primer día calendario del mes al cual corresponde la fecha de emisión del comprobante de retención o desde la fecha de emisión del comprobante relacionado.
+2626,ERROR,Percepciones1_0;Retenciones1_0,El Nro. de documento con el número de pago ya se encuentra en la Relación de Documentos Relacionados agregados.
+2628,ERROR,Retenciones1_0,Importe total retenido debe ser igual a la suma de los importes retenidos por cada documento relacionado.
+2629,ERROR,Retenciones1_0,Importe total pagado debe ser igual a la suma de los importes pagados por cada documento relacionado.
+2635,ERROR,NotaCredito2_0,Debe existir DocumentTypeCode de Otros documentos relacionados con valor 99 para un tipo codigo Nota Credito 10.
+2636,ERROR,NotaCredito2_0,No existe datos del ID de los documentos relacionados con valor 99 para un tipo codigo Nota Credito 10.
+2637,ERROR,NotaCredito2_0,No existe datos del DocumentType de los documentos relacionados con valor 99 para un tipo codigo Nota Credito 10.
+2638,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,"Si tiene operaciones de un tributo en alguna línea, debe consignar el tag del total del tributo"
+2640,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,"Operacion gratuita, solo debe consignar un monto referencial"
+2641,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,"Operacion gratuita, debe consignar Total valor venta - operaciones gratuitas mayor a cero"
+2642,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,"Operaciones de exportacion, deben consignar Tipo Afectacion igual a 40"
+2643,ERROR,NotaDebito2_0,Factura de operacion sujeta IVAP debe consignar Monto de impuestos por item
+2644,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,Comprobante operacion sujeta IVAP solo debe tener ítems con código de afectación del IGV igual a 17
+2650,ERROR,Boleta2_0;Factura2_0,"Factura de operacion sujeta al IVAP , no debe consignar valor para ISC o debe ser 0"
+2659,ERROR,Percepciones1_0,"La fecha de cobro de cada documento relacionado deben ser del mismo Periodo (mm/aaaa), asimismo estas fechas podrán ser menores o iguales a la fecha de emisión del comprobante de percepción"
+2661,ERROR,Retenciones1_0,"La fecha de cobro de cada documento relacionado deben ser del mismo Periodo (mm/aaaa), asimismo estas fechas podrán ser menores o iguales a la fecha de emisión del comprobante de retencion"
+2663,ERROR,Resumen Diario1_1,El documento indicado no existe no puede ser modificado
+2667,ERROR,Percepciones1_0,Importe total percibido debe ser igual a la suma de los importes percibidos por cada documento relacionado.
+2668,ERROR,Percepciones1_0,Importe total cobrado debe ser igual a la suma de los importes cobrados por cada documento relacionado.
+2669,ERROR,Percepciones1_0;Retenciones1_0,El dato ingresado en TotalInvoiceAmount debe ser numérico mayor a cero
+2671,ERROR,Comunicación de Baja1_0;Resumen Diario1_1;Resumen de reversiones1_0,La fecha de generación de la comunicación/resumen debe ser mayor o igual a la fecha de generación/emisión de los documentos
+2674,ERROR,Resumen de reversiones1_0,"El dato ingresado no cumple con el formato de DocumentSerialID, para DocumentTypeCode con valor 20."
+2675,ERROR,Resumen de reversiones1_0,"El dato ingresado no cumple con el formato de DocumentSerialID, para DocumentTypeCode con valor 40."
+2677,ERROR,DAE-SEAE,El valor ingresado como número de RUC del emisor es incorrecto
+2678,ERROR,Percepciones1_0;Retenciones1_0,El XML no contiene el atributo o no existe información del tipo de documento del emisor
+2679,ERROR,NotaCredito2_0;NotaDebito2_0;Percepciones1_0,El XML no contiene el tag o no existe información del número de documento de identidad del cliente
+2680,ERROR,Percepciones1_0,El valor ingresado como documento de identidad del cliente es incorrecto
+2685,ERROR,Percepciones1_0;Resumen Diario1_1,El valor de la moneda del Importe total Percibido debe ser PEN
+2687,ERROR,Percepciones1_0,El dato ingresado en SUNATTotalCashed debe ser numérico mayor a cero
+2690,ERROR,Percepciones1_0;Resumen Diario1_1,El valor de la moneda del Importe total Cobrado debe ser PEN
+2691,ERROR,Percepciones1_0;Retenciones1_0,El XML no contiene el tag o no existe información del tipo de documento relacionado
+2692,ERROR,Percepciones1_0;Retenciones1_0,El tipo de documento relacionado no es válido
+2693,ERROR,Percepciones1_0;Retenciones1_0,El XML no contiene el tag o no existe información del número de documento relacionado
+2694,ERROR,Percepciones1_0;Retenciones1_0,El número de documento relacionado no está permitido o no es valido
+2696,ERROR,Percepciones1_0;Retenciones1_0,El dato ingresado en el importe total documento relacionado debe ser numérico mayor a cero
+2697,ERROR,Percepciones1_0,El XML no contiene el tag o no existe información del número de cobro
+2698,ERROR,Percepciones1_0,El dato ingresado en el número de cobro no es válido
+2699,ERROR,Percepciones1_0,El XML no contiene el tag o no existe información del Importe del cobro
+2700,ERROR,Percepciones1_0,El dato ingresado en el Importe del cobro debe ser numérico mayor a cero
+2702,ERROR,Percepciones1_0,El XML no contiene el tag o no existe información de la fecha de cobro del documento Relacionado
+2705,ERROR,Percepciones1_0,El dato ingresado en el Importe percibido debe ser numérico mayor a cero
+2707,ERROR,Percepciones1_0,El valor de la moneda de importe percibido debe ser PEN
+2711,ERROR,Percepciones1_0,El dato ingresado en el Monto total a cobrar debe ser numérico mayor a cero
+2713,ERROR,Percepciones1_0,El valor de la moneda del Monto total a cobrar debe ser PEN
+2715,ERROR,Percepciones1_0;Retenciones1_0,El valor de la moneda objetivo para la Tasa de Cambio debe ser PEN
+2716,ERROR,Percepciones1_0;Retenciones1_0,El dato ingresado en el tipo de cambio debe ser numérico mayor a cero
+2719,ERROR,Percepciones1_0;Retenciones1_0,El XML no contiene el tag o no existe información de la moneda de referencia para el tipo de cambio
+2721,ERROR,Percepciones1_0;Retenciones1_0,El XML no contiene el tag o no existe información del tipo de cambio
+2722,ERROR,Percepciones1_0;Retenciones1_0,El XML no contiene el tag o no existe información de la fecha de cambio
+2723,ERROR,Retenciones1_0,El XML no contiene el tag o no existe información del número de documento de identidad del proveedor
+2724,ERROR,Retenciones1_0,El valor ingresado como documento de identidad del proveedor es incorrecto
+2728,ERROR,Retenciones1_0,El valor de la moneda del Importe total Retenido debe ser PEN
+2730,ERROR,Retenciones1_0,El dato ingresado en SUNATTotalPaid debe ser numérico mayor a cero
+2732,ERROR,Retenciones1_0,El valor de la moneda del Importe total Pagado debe ser PEN
+2733,ERROR,Retenciones1_0,El XML no contiene el tag o no existe información del número de pago
+2734,ERROR,Retenciones1_0,El dato ingresado en el número de pago no es válido
+2735,ERROR,Retenciones1_0,El XML no contiene el tag o no existe información del Importe del pago
+2736,ERROR,Retenciones1_0,El dato ingresado en el Importe del pago debe ser numérico mayor a cero
+2737,ERROR,Retenciones1_0,El XML no contiene el tag o no existe información de la fecha de pago del documento Relacionado
+2740,ERROR,Retenciones1_0,El dato ingresado en el Importe retenido debe ser numérico mayor a cero
+2742,ERROR,Retenciones1_0,El valor de la moneda de importe retenido debe ser PEN
+2746,ERROR,Retenciones1_0,El dato ingresado en el Importe total a pagar (neto) debe ser numérico mayor a cero
+2748,ERROR,Retenciones1_0,El valor de la Moneda del monto neto pagado debe ser PEN
+2749,ERROR,Percepciones1_0;Retenciones1_0,La moneda de referencia para el tipo de cambio debe ser la misma que la del documento relacionado
+2750,ERROR,Resumen de reversiones1_0,El comprobante que desea revertir no existe.
+2751,ERROR,Resumen de reversiones1_0,El comprobante fue informado previamente en una reversión.
+2752,ERROR,Boleta2_0;Comunicación de Baja1_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1;Resumen de reversiones1_0,El número de ítem no puede estar duplicado.
+2778,ERROR,LiquidacionCompra2_0,El valor ingresado como direccion completa y detallada no cumple con el estandar.
+2788,ERROR,Boleta2_0;Factura2_0,El dato ingresado en moneda debe ser PEN
+2792,ERROR,Boleta2_0;Factura2_0,El dato ingresado en moneda del monto de cargo/descuento para percepcion debe ser PEN
+2797,ERROR,Boleta2_0;Factura2_0,El Monto de percepcion no puede ser mayor al importe total del comprobante.
+2798,ERROR,Boleta2_0;Factura2_0,El Monto de percepcion no tiene el valor correcto según el tipo de percepcion.
+2800,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0,El dato ingresado en el tipo de documento de identidad del receptor no esta permitido.
+2801,ERROR,DAE-Operador2_0;Factura2_0,El DNI ingresado no cumple con el estandar.
+2802,ERROR,DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado como numero de documento de identidad del receptor no cumple con el formato establecido
+2805,ERROR,DAE-SEAE,El XML no contiene el tag IssueTime
+2883,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0,Es obligatorio indicar la unidad de medida del ítem
+2884,ERROR,NotaCredito2_0;NotaDebito2_0,Los comprobantes modificados por la nota deben ser del mismo tipo
+2885,ERROR,NotaCredito2_0;NotaDebito2_0,La fecha de emisión de la nota debe ser mayor o igual a la fecha de emisión de los documentos que modifica
+2891,ERROR,Resumen Diario1_1,La tasa de percepción no existe en el catálogo
+2892,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El valor del tag no cumple con el formato establecido
+2893,ERROR,Resumen Diario1_1,El valor no cumple con el formato establecido o es menor o igual a cero (0)
+2895,ERROR,Resumen Diario1_1,El valor no cumple con el formato establecido o es menor o igual a cero (0)
+2896,ERROR,Resumen Diario1_1,El código ingresado como estado del ítem no existe en el catálogo
+2897,ERROR,Resumen Diario1_1,El valor no cumple con el formato establecido o es menor o igual a cero (0)
+2898,ERROR,Boleta2_0;Factura2_0,"Para los tipos de seguro 1 y 2, debe consignar el numero de poliza, la fecha de cobertura y el monto asegurado"
+2899,ERROR,Boleta2_0;Factura2_0,Para el tipo de seguro 3 - Otros debe consignar el numero de poliza
+2901,OBSERV,Percepciones1_0;Retenciones1_0,El nombre comercial del emisor no cumple con el formato establecido
+2902,OBSERV,Percepciones1_0;Retenciones1_0,La urbanización del domicilio fiscal del emisor no cumple con el formato establecido
+2903,OBSERV,Percepciones1_0;Retenciones1_0,La provincia del domicilio fiscal del emisor no cumple con el formato establecido
+2904,OBSERV,Percepciones1_0;Retenciones1_0,El departamento del domicilio fiscal del emisor no cumple con el formato establecido
+2905,OBSERV,Percepciones1_0;Retenciones1_0,El distrito del domicilio fiscal del emisor no cumple con el formato establecido
+2906,OBSERV,Retenciones1_0,El nombre comercial del proveedor no cumple con el formato establecido
+2907,OBSERV,Retenciones1_0,La urbanización del domicilio fiscal del proveedor no cumple con el formato establecido
+2908,OBSERV,Retenciones1_0,La provincia del domicilio fiscal del proveedor no cumple con el formato establecido
+2909,OBSERV,Retenciones1_0,El departamento del domicilio fiscal del proveedor no cumple con el formato establecido
+2910,OBSERV,Retenciones1_0,El distrito del domicilio fiscal del proveedor no cumple con el formato establecido
+2911,OBSERV,Percepciones1_0,El nombre comercial del cliente no cumple con el formato establecido
+2912,OBSERV,Percepciones1_0,La urbanización del domicilio fiscal del cliente no cumple con el formato establecido
+2913,OBSERV,Percepciones1_0,La provincia del domicilio fiscal del cliente no cumple con el formato establecido
+2914,OBSERV,Percepciones1_0,El departamento del domicilio fiscal del cliente no cumple con el formato establecido
+2915,OBSERV,Percepciones1_0,El distrito del domicilio fiscal del cliente no cumple con el formato establecido
+2916,OBSERV,Percepciones1_0;Retenciones1_0,La dirección completa y detallada del domicilio fiscal del emisor no cumple con el formato establecido
+2917,ERROR/OBSERV,LiquidacionCompra2_0;Percepciones1_0;Retenciones1_0,Debe corresponder a algún valor válido establecido en el catálogo 13
+2918,OBSERV,Retenciones1_0,La dirección completa y detallada del domicilio fiscal del proveedor no cumple con el formato establecido
+2919,OBSERV,Percepciones1_0,La dirección completa y detallada del domicilio fiscal del cliente no cumple con el formato establecido
+2920,ERROR,Resumen Diario1_1,Dato no cumple con formato de acuerdo al tipo de documento
+2936,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como unidad de medida no corresponde al valor esperado
+2949,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El impuesto ICBPER no se encuentra vigente
+2954,ERROR,Boleta2_0;Factura2_0,El valor ingresado como codigo de motivo de cargo/descuento por linea no es valido (catalogo 53)
+2955,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0,El formato ingresado en el tag cac:InvoiceLine/cac:Allowancecharge/cbc:Amount no cumple con el formato establecido
+2956,ERROR,Boleta2_0;DAE-Operador2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El Monto total de impuestos es obligatorio
+2957,ERROR,Comunicación de Baja1_0;Resumen Diario1_1,El comprobante no puede ser dado de baja por exceder el plazo desde su fecha de emision
+2958,ERROR,Resumen de reversiones1_0,El comprobante no puede ser dado de baja por exceder el plazo desde su fecha de recepcion
+2961,ERROR,Boleta2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El valor del tag codigo de tributo internacional no corresponde al esperado.
+2964,ERROR,Boleta2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El valor del tag nombre del tributo no corresponde al esperado.
+2968,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado en cac:AllowanceCharge/cbc:Amount no cumple con el formato establecido.
+2985,ERROR,Retenciones1_0,Solo se acepta comprobantes con fecha de emisión hasta el 28/02/2014 si la tasa del comprobante de retencion 6%
+2986,ERROR,Resumen Diario1_1,Solo se acepta informacion de percepcion para nuevas boletas.
+2987,ERROR,Resumen Diario1_1,El comprobante ya fue informado y se encuentra anulado o rechazado.
+2988,OBSERV,Resumen Diario1_1,"El comprobante (fisico) a la que hace referencia la nota, no se encuentra autorizado."
+2989,ERROR,Resumen Diario1_1,"El comprobante (electronico) a la que hace referencia la nota, no se encuentra informado."
+2990,ERROR,Resumen Diario1_1,"El comprobante (electronico) a la que hace referencia la nota, se encuentra anulado o rechazada."
+2992,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,El XML no contiene el tag de la tasa del tributo de la línea
+2993,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El factor de afectación de IGV por linea debe ser diferente a 0.00.
+2996,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag o no existe información del nombre de tributo de la línea
+2999,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en el total valor de venta globales no cumple con el formato establecido
+3000,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El monto total del impuestos sobre el valor de venta de operaciones gratuitas/inafectas/exoneradas debe ser igual a 0.00
+3003,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag o no existe información de total valor de venta globales
+3006,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en descripcion de leyenda no cumple con el formato establecido.
+3007,ERROR,Boleta2_0;DAE-Operador2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como codigo de tributo global no corresponde al valor esperado.
+3014,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El codigo de leyenda no debe repetirse en el comprobante.
+3016,ERROR,Boleta2_0;Factura2_0,El dato ingresado en base monto por cargo/descuento globales no cumple con el formato establecido
+3019,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado en total precio de venta no cumple con el formato establecido
+3020,ERROR,Boleta2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en el monto total de impuestos no cumple con el formato establecido
+3021,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en el monto total de impuestos por línea no cumple con el formato establecido
+3024,ERROR,Boleta2_0;DAE-Operador2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El tag cac:TaxTotal no debe repetirse a nivel de totales
+3025,ERROR,Boleta2_0;Factura2_0,El dato ingresado en factor de cargo o descuento global no cumple con el formato establecido.
+3026,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El tag cac:TaxTotal no debe repetirse a nivel de Item
+3027,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El valor del atributo no se encuentra en el catálogo
+3029,ERROR,NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag o no existe información del tipo de documento de identidad del emisor
+3030,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag o no existe información del código de local anexo del emisor
+3031,ERROR,Boleta2_0;DAE-Adquirente2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en TaxableAmount de la linea no cumple con el formato establecido
+3033,ERROR,Boleta2_0;Factura2_0;NotaDebito2_0,El codigo de bien o servicio sujeto a detracción no existe en el listado.
+3034,ERROR,Boleta2_0;Factura2_0;NotaDebito2_0,El xml no contiene el tag o no existe información en el nro de cuenta de detracción
+3035,ERROR,Boleta2_0;Factura2_0;NotaDebito2_0,El xml no contiene el tag o no existe información en el monto de detraccion
+3037,ERROR,Boleta2_0;Factura2_0;NotaDebito2_0,El dato ingresado en monto de detraccion no cumple con el formato establecido
+3050,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,Afectación de IGV no corresponde al código de tributo de la linea.
+3051,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,Nombre de tributo no corresponde al código de tributo de la linea.
+3052,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0,El factor de cargo/descuento por linea no cumple con el formato establecido.
+3053,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0,El Monto base de cargo/descuento por linea no cumple con el formato establecido.
+3059,ERROR,Boleta2_0;DAE-Operador2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag o no existe información de código de tributo.
+3063,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de matricula de embarcación en Detracciones para recursos hidrobiologicos.
+3064,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene tag o no existe información del valor del concepto por linea.
+3065,ERROR,Boleta2_0;Factura2_0,El XML no contiene tag de la fecha del concepto por linea.
+3067,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El código de tributo no debe repetirse a nivel de item
+3068,ERROR,Boleta2_0;DAE-Operador2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El código de tributo no debe repetirse a nivel de totales
+3071,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado como codigo de motivo de cargo/descuento global no es valido (catalogo nro 53)
+3072,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El XML no contiene el tag o no existe informacion de codigo de motivo de cargo/descuento global.
+3073,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0,El XML no contiene el tag o no existe informacion de codigo de motivo de cargo/descuento por item.
+3074,ERROR,Boleta2_0;Factura2_0,El monto del cargo para el para FISE debe ser igual mayor a 0.00
+3088,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El valor ingresado como moneda del comprobante no es valido (catalogo nro 02).
+3089,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0,El XML contiene mas de un tag como elemento de numero de documento del emisor
+3090,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0,El XML contiene mas de un tag como elemento de numero de documento del receptor.
+3092,ERROR,Boleta2_0;Factura2_0,"Para cargo/descuento FISE, debe ingresar monto base y debe ser mayor a 0.00"
+3093,ERROR,Boleta2_0;Factura2_0,"Si operación es sujeta a percepción y la forma de pago es Contado, debe ingresar cargo para Percepción"
+3094,ERROR,Resumen Diario1_1,"El comprobante más ""código de operación del ítem"" no debe repetirse"
+3095,ERROR,Resumen Diario1_1,El comprobante no debe ser emitido y editado en el mismo envío
+3096,ERROR,Resumen Diario1_1,El comprobante no debe ser editado y anulado en el mismo envío
+3097,ERROR,Boleta2_0;Factura2_0,El emisor a la fecha no se encuentra registrado ó habilitado en el Registro de exportadores de servicios SUNAT
+3098,ERROR,Boleta2_0;Factura2_0,"El XML no contiene el tag o no existe información del pais de uso, exploración o aprovechamiento"
+3099,ERROR,Boleta2_0;Factura2_0,"El dato ingresado como pais de uso, exploracion o aprovechamiento es incorrecto."
+3101,ERROR,NotaDebito2_0,"El factor de afectación de IGV por linea debe ser igual a 0.00 para Exoneradas, Inafectas, Exportación, Gratuitas de exoneradas o Gratuitas de inafectas."
+3102,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,El dato ingresado como factor de afectacion por linea no cumple con el formato establecido.
+3103,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El producto del factor y monto base de la afectación del IGV/IVAP no corresponde al monto de afectacion de linea.
+3104,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El factor de afectación de ISC por linea debe ser diferente a 0.00.
+3105,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El XML debe contener al menos un tributo por linea de afectacion por IGV
+3107,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como codigo de tributo global es invalido para tipo de operación.
+3108,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El producto del factor y monto base de la afectación del ISC no corresponde al monto de afectacion de linea.
+3109,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El producto del factor y monto base de la afectación de otros tributos no corresponde al monto de afectacion de linea.
+3110,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,"El monto de afectacion de IGV por linea debe ser igual a 0.00 para Exoneradas, Inafectas, Exportación, Gratuitas de exoneradas o Gratuitas de inafectas."
+3111,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El monto de afectación de IGV por linea debe ser diferente a 0.00.
+3114,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado como indicador de cargo/descuento no corresponde al valor esperado.
+3115,ERROR,Boleta2_0;Factura2_0,El dato ingresado como unidad de medida de cantidad de especie vendidas no corresponde al valor esperado.
+3116,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag o no existe información del ubigeo de punto de origen en Detracciones - Servicio de transporte de carga.
+3117,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag o no existe información de la dirección del punto de origen en Detracciones - Servicio de transporte de carga.
+3118,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag o no existe información del ubigeo de punto de destino en Detracciones - Servicio de transporte de carga.
+3119,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag o no existe información de la dirección del punto de destino en Detracciones - Servicio de transporte de carga.
+3120,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag o no existe información del Detalle del viaje en Detracciones - Servicio de transporte de carga.
+3122,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag o no existe información del monto del valor referencial en Detracciones - Servicios de transporte de carga.
+3123,ERROR,Boleta2_0;Factura2_0,El dato ingresado como monto valor referencial en Detracciones - Servicios de transporte de carga no cumple con el formato establecido.
+3124,ERROR,Boleta2_0;Factura2_0,"Detracciones - Servicio de transporte de carga, debe tener un (y solo uno) Valor Referencial del Servicio de Transporte."
+3125,ERROR,Boleta2_0;Factura2_0,"Detracciones - Servicio de transporte de carga, debe tener un (y solo uno) Valor Referencial sobre la carga efectiva."
+3126,ERROR,Boleta2_0;Factura2_0,"Detracciones - Servicio de transporte de carga, debe tener un (y solo uno) Valor Referencial sobre la carga util nominal."
+3127,ERROR,Boleta2_0;Factura2_0;NotaDebito2_0,El XML no contiene el tag o no existe información del Codigo de BBSS de detracción para el tipo de operación.
+3128,ERROR,Boleta2_0;Factura2_0,El XML contiene información de codigo de bien y servicio de detracción que no corresponde al tipo de operación.
+3129,ERROR,Boleta2_0;Factura2_0,El dato ingresado como codigo de BBSS de detracción no corresponde al valor esperado.
+3130,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de nombre de embarcación en Detracciones para recursos hidrobiologicos.
+3131,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de tipo de especie vendidas en Detracciones para recursos hidrobiologicos.
+3132,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de lugar de descarga en Detracciones para recursos hidrobiologicos.
+3133,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de cantidad de especies vendidas en Detracciones para recursos hidrobiologicos.
+3134,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de fecha de descarga en Detracciones para recursos hidrobiologicos.
+3135,ERROR,Boleta2_0;Factura2_0,El XML no contiene tag de la cantidad del concepto por linea.
+3136,ERROR,Factura2_0,El XML no contiene el tag de numero de documentos del huesped.
+3137,ERROR,Factura2_0,El XML no contiene el tag de tipo de documentos del huesped.
+3138,ERROR,Factura2_0,El XML no contiene el tag de codigo de pais de emision del documento de identidad
+3139,ERROR,Factura2_0,El XML no contiene el tag de apellidos y nombres del huesped.
+3140,ERROR,Factura2_0,El XML no contiene el tag de codigo del pais de residencia.
+3141,ERROR,Factura2_0,El XML no contiene el tag de fecha de ingreso del pais.
+3142,ERROR,Factura2_0,El XML no contiene el tag de fecha de ingreso al establecimiento.
+3143,ERROR,Factura2_0,El XML no contiene el tag de fecha de salida del establecimiento.
+3144,ERROR,Factura2_0,El XML no contiene el tag de fecha de consumo.
+3145,ERROR,Factura2_0,El XML no contiene el tag de numero de dias de permanencia.
+3146,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de Proveedores Estado: Número de Expediente
+3147,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de Proveedores Estado: Código de Unidad Ejecutora
+3148,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de Proveedores Estado: N° de Proceso de Selección
+3149,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de Proveedores Estado: N° de Contrato
+3150,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag de Créditos Hipotecarios: Tipo de préstamo
+3151,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag de Créditos Hipotecarios: Partida Registral
+3152,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag de Créditos Hipotecarios: Número de contrato
+3153,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag de Créditos Hipotecarios: Fecha de otorgamiento del crédito
+3154,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag de Créditos Hipotecarios: Dirección del predio - Código de ubigeo
+3155,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag de Créditos Hipotecarios: Dirección del predio - Dirección completa
+3156,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Agente de Viajes: Numero de Ruc
+3157,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Agente de Viajes: Tipo de documento
+3158,ERROR,Boleta2_0;Factura2_0,El dato ingresado como Agente de Viajes-Tipo de documento no corresponde al valor esperado.
+3159,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Pasajero - Apellidos y Nombres
+3160,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Pasajero - Tipo de documento de identidad
+3161,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Servicio transporte: Ciudad o lugar de origen - Código de ubigeo
+3162,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Servicio transporte: Ciudad o lugar de origen - Dirección detallada
+3163,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Servicio transporte: Ciudad o lugar de destino - Código de ubigeo
+3164,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Servicio transporte: Ciudad o lugar de destino - Dirección detallada
+3165,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Servicio transporte:Número de asiento
+3166,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Servicio transporte: Hora programada de inicio de viaje
+3167,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Servicio transporte: Fecha programada de inicio de viaje
+3168,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de Carta Porte Aéreo: Lugar de origen - Código de ubigeo
+3169,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de Carta Porte Aéreo: Lugar de origen - Dirección detallada
+3170,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de Carta Porte Aéreo: Lugar de destino - Código de ubigeo
+3171,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de Carta Porte Aéreo: Lugar de destino - Dirección detallada
+3172,ERROR,Boleta2_0;Factura2_0,El XML no contiene tag de la Hora del concepto por linea.
+3173,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Servicio transporte: Forma de Pago
+3174,ERROR,Boleta2_0;Factura2_0;NotaDebito2_0,El dato ingreso como Forma de Pago o Medio de Pago no corresponde al valor esperado (catalogo nro 59)
+3175,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Servicio de transporte: Número de autorización de la transacción
+3181,ERROR,Factura2_0,El dato ingresado como Codigo de producto SUNAT no corresponde al valor esperado para tipo de operación.
+3194,ERROR,NotaCredito2_0;NotaDebito2_0,Solo es permitido registrar un documento que modifica.
+3195,ERROR,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El xml no contiene el tag de impuesto por linea (TaxtTotal).
+3203,ERROR,NotaCredito2_0;NotaDebito2_0,El tipo de nota es un dato único
+3204,ERROR,Boleta2_0;Factura2_0,El XML no contiene el tag de BVME transporte ferroviario: Pasajero - Número de documento de identidad
+3205,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,Debe consignar el tipo de operación
+3206,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado como tipo de operación no corresponde a un valor esperado (catálogo nro. 51)
+3207,ERROR,Boleta2_0;DAE-Operador2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Percepciones1_0;Resumen Diario1_1;Retenciones1_0,Comprobante físico no se encuentra autorizado
+3208,ERROR,Boleta2_0;Factura2_0;NotaDebito2_0,La moneda del monto de la detracción debe ser PEN
+3209,ERROR,NotaCredito2_0;NotaDebito2_0,El tipo de moneda de la nota debe ser el mismo que el declarado en el documento que modifica
+3210,ERROR,Boleta2_0;DAE-Operador2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,Solo debe consignar sistema de calculo si el tributo es ISC
+3211,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,Falta identificador del pago del Monto de anticipo para relacionarlo con el comprobante que se realizo el anticipo
+3212,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El comprobante contiene un identificador de pago repetido en los montos anticipados
+3213,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El comprobante contiene un pago anticipado pero no se ha consignado el documento que se realizo el anticipo
+3214,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,No existe información del Monto Anticipado para el comprobante que se realizo el anticipo
+3215,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El comprobante contiene un identificador de pago repetido en los comprobantes que se realizo el anticipo
+3216,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,Falta identificador del pago del comprobante para relacionarlo con el monto de anticipo
+3217,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,Debe consignar Numero de RUC del emisor del comprobante de anticipo
+3218,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El comprobante que se realizo el anticipo no existe
+3219,ERROR/OBSERV,Factura2_0;LiquidacionCompra2_0,El comprobante que se realizo el anticipo no se encuentra autorizado
+3220,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,Si consigna montos de anticipo debe informar el Total de Anticipos
+3221,ERROR,NotaCredito2_0;NotaDebito2_0,El dato ingresado como codigo de tributo global es invalido para tipo de nota
+3223,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La combinación de tributos no es permitida
+3224,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,"Si existe 'Valor referencial unitario en operac. no onerosas' con monto mayor a cero, la operacion debe ser gratuita (codigo de tributo 9996)"
+3228,OBSERV,Percepciones1_0,El Comprobante de Pago no está autorizado en los Sistemas de la SUNAT.
+3230,ERROR,NotaCredito2_0;NotaDebito2_0,Tipo de nota debe ser 'Ajustes afectos al IVAP'
+3233,ERROR,Boleta2_0;Factura2_0,"Para cargo Percepción, debe ingresar monto base y debe ser mayor a 0.00"
+3234,ERROR,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El código de precio '02' es sólo para operaciones gratuitas
+3236,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El valor ingresado en el campo cac:TaxSubtotal/cbc:BaseUnitMeasure no corresponde al valor esperado
+3237,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,Debe consignar el campo cac:TaxSubtotal/cbc:BaseUnitMeasure a nivel de ítem
+3238,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El valor ingresado en el campo cac:TaxSubtotal/cbc:PerUnitAmount del ítem no corresponde al valor esperado
+3239,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El código de local anexo consignado no se encuentra declarado en el RUC
+3240,ERROR,Boleta2_0,El impuesto ICBPER no aplica para el NRUS
+3241,ERROR,Boleta2_0;Factura2_0,"Para el tipo de operación 2100, 2101 y 2102 (Creditos) debe consignar Numero de contrato, Fecha de otorgamiento y Monto del crédito otorgado (capital)"
+3242,ERROR,Boleta2_0;Factura2_0,"Para el tipo de operación 2104 - Empresas del sistema de seguros, debe consignar Información adicional a nivel de ítem"
+3243,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene tag o no existe información de la fecha del concepto por linea
+3244,ERROR,Factura2_0,Debe consignar la informacion del tipo de transaccion del comprobante
+3245,ERROR,Factura2_0;NotaCredito2_0,Debe informar si el tipo de transaccion es al Contado o al Credito
+3246,ERROR,Factura2_0;NotaCredito2_0,El tipo de transaccion o el identificador de la cuota no cumple con el formato esperado
+3247,ERROR,Factura2_0,El tipo de transaccion no puede ser a la vez al Contado y al Credito
+3248,ERROR,Factura2_0;NotaCredito2_0,El tipo de transaccion o el identificador de la cuota no debe repetirse en el comprobante
+3249,ERROR,Factura2_0;NotaCredito2_0,Si el tipo de transaccion es al Credito debe existir al menos información de una cuota de pago
+3250,ERROR,Factura2_0;NotaCredito2_0,El Monto neto pendiente de pago no cumple el formato definido
+3251,ERROR,Factura2_0;NotaCredito2_0,Si el tipo de transaccion es al Credito debe consignarse el Monto neto pendiente de pago
+3252,ERROR,Factura2_0;NotaCredito2_0,"Si existe información de cuota de pago, el tipo de transaccion debe ser al credito"
+3253,ERROR,Factura2_0;NotaCredito2_0,El Monto del pago único o de las cuotas no cumple el formato definido
+3254,ERROR,Factura2_0;NotaCredito2_0,"Si se consigna información de la cuota de pago, debe indicarse el monto de la cuota"
+3255,ERROR,Factura2_0;NotaCredito2_0,Fecha del pago único o de las cuotas no cumple el formato definido
+3256,ERROR,Factura2_0;NotaCredito2_0,"Si se consigna información de la cuota de pago, debe indicarse la fecha del pago único o de las cuotas"
+3257,ERROR,NotaCredito2_0,Para el tipo de nota de credito 13 debe consignar información de la operación al credito
+3259,ERROR,NotaCredito2_0,Para el tipo de nota de credito 13 el documento afectado debe ser Factura
+3260,ERROR,NotaCredito2_0,Para el tipo de nota de credito 13 el documento afectado debe ser Factura al credito
+3261,ERROR,NotaCredito2_0,No se puede modificar mas de un comprobante con la nota
+3262,ERROR,Factura2_0,"Si existe retencion de IGV en el comprobante, el receptor debe ser un Agente de Retencion"
+3263,ERROR,Factura2_0,El Importe de la retencion no tiene el valor correcto
+3264,ERROR,Factura2_0,El importe total de la operación (base imponible de retencion) no puede ser mayor al importe total del comprobante.
+3265,ERROR,Factura2_0,El Monto neto pendiente de pago debe ser menor o igual al Importe total del comprobante
+3266,ERROR,Factura2_0,El Monto del pago único o de las cuotas debe ser menor o igual al Importe total del comprobante
+3267,ERROR,Factura2_0,Fecha del pago único o de las cuotas no puede ser anterior o igual a la fecha de emisión del comprobante
+3269,ERROR,Factura2_0,"Si existe retencion de IGV en el comprobante, el emisor no debe ser un Agente de Retencion"
+3270,ERROR,Factura2_0;NotaDebito2_0,El precio unitario de la operación que está informando difiere de los cálculos realizados en base a la información remitida
+3271,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El valor de venta por ítem difiere de los importes consignados.
+3272,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La base imponible a nivel de línea difiere de la información consignada en el comprobante
+3273,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - Exportaciones de línea no corresponden al total
+3274,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - operaciones inafectas de línea no corresponden al total
+3275,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - operaciones exoneradas de línea no corresponden al total
+3276,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - operaciones gratuitas de línea no corresponden al total
+3277,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - operaciones gravadas de línea no corresponden al total
+3278,ERROR,Factura2_0,La sumatoria de valor de venta no corresponde a los importes consignados
+3279,ERROR,DAE-SEAE;Factura2_0,La sumatoria del Total del valor de venta más los impuestos no concuerda con la base imponible
+3280,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El importe total del comprobante no coincide con el valor calculado
+3281,ERROR,Factura2_0,El emisor electrónico no se encuentra inscrito en el Registro de Establecimientos Autorizados (REA)
+3282,ERROR,Boleta2_0;Factura2_0,Si se informa descuentos globales por anticipo debe existir 'Total de anticipos' con monto mayor a cero
+3283,ERROR,Factura2_0,"Si se utiliza la leyenda con código 2001, el total de operaciones exoneradas debe ser mayor a 0.00"
+3284,ERROR,Factura2_0,"Si se utiliza la leyenda con código 2002, el total de operaciones exoneradas debe ser mayor a 0.00"
+3285,ERROR,Factura2_0,"Si se utiliza la leyenda con código 2003, el total de operaciones exoneradas debe ser mayor a 0.00"
+3286,ERROR,NotaCredito2_0,El monto total de la nota de credito debe ser menor o igual al monto del documento que modifica
+3287,ERROR,Boleta2_0;Factura2_0,Si se informa 'Total de anticipos' debe consignar los descuentos globales por anticipo con monto mayor a cero
+3288,ERROR,Factura2_0,Debe consignar el Total Valor de Venta
+3289,ERROR,Factura2_0,"Si se utiliza la leyenda con código 2008, el total de operaciones exoneradas debe ser mayor a 0.00"
+3290,ERROR,Factura2_0,El valor de cargo/descuento por ítem difiere de los importes consignados.
+3291,ERROR,DAE-SEAE;Factura2_0;NotaCredito2_0;NotaDebito2_0,El cálculo del IGV es Incorrecto
+3292,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El importe total de impuestos por línea no coincide con la sumatoria de los impuestos por línea.
+3293,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - IVAP de línea no corresponden al total
+3294,ERROR,DAE-SEAE;Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria de impuestos globales no corresponde al monto total de impuestos.
+3295,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,El importe del IVAP no corresponden al determinado por la informacion consignada.
+3296,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del monto base - ISC de línea no corresponden al total
+3297,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del monto base - Otros tributos de línea no corresponden al total
+3298,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total del importe del tributo ISC de línea no corresponden al total
+3299,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total del importe del tributo Otros tributos de línea no corresponden al total
+3300,ERROR,Factura2_0,La sumatoria consignados en descuentos globales no corresponden al total.
+3301,ERROR,Factura2_0,La sumatoria consignados en cargos globales no corresponden al total
+3302,ERROR,Factura2_0;NotaDebito2_0,La sumatoria de los IGV de operaciones gratuitas de la línea (codigo tributo 9996) no corresponden al total
+3303,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0;Percepciones1_0;Retenciones1_0,El monto para el redondeo del Importe Total excede el valor permitido
+3304,ERROR,Percepciones1_0;Retenciones1_0,La moneda del monto para el redondeo debe ser PEN
+3305,ERROR,Factura2_0,Debe consignar el Total Precio de Venta
+3306,ERROR,Factura2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total del importe del tributo ICBPER de línea no corresponden al total
+3307,ERROR,Factura2_0,El valor de cargo/descuento global difiere de los importes consignados
+3308,ERROR,Boleta2_0;Factura2_0,Solo debe consignar informacion de percepciones si el tipo de operación es 2001-Operación sujeta a Percepcion
+3309,ERROR,Boleta2_0;Factura2_0,Si forma de pago es Contado debe consignar un Payment Terms con indicador Percepcion
+3310,ERROR,Boleta2_0;Factura2_0,Debe consignar el Monto total incluido la percepcion
+3311,ERROR,Boleta2_0;Factura2_0,El Monto total incluido la percepción no cumple con el formato establecido
+3312,ERROR,Percepciones1_0,El documento relacionado tiene monto informado de percepción
+3313,ERROR,NotaDebito2_0,"Si consigna información del codigo bien sujeto a detraccion, debe informar la cuenta de BN y montos de la detraccion"
+3314,ERROR,NotaDebito2_0,"Si consigna cuenta de BN y montos de la detraccion, debe informar el codigo bien sujeto a detraccion"
+3315,ERROR,NotaCredito2_0,"Si el tipo de nota de credito es 13, el Importe total debe ser cero"
+3316,ERROR,Factura2_0,"Si el tipo de operación es 2002, debe informar los datos de la retención de segunda categoria"
+3317,ERROR,Factura2_0,"Si consigna infomacion de la retencion de segunda categoria, el tipo de operacion debe ser 2002"
+3318,ERROR,Factura2_0,Debe consignar la base de la retencion de segunda categoria
+3319,ERROR,Factura2_0;NotaCredito2_0,La suma de las cuotas debe ser igual al Monto neto pendiente de pago.
+3320,ERROR,NotaCredito2_0,El monto neto pendiente de pago debe ser menor o igual al monto de la factura
+3321,ERROR,NotaCredito2_0,La fecha de la cuota debe ser mayor a la fecha de emisión de la factura
+3322,ERROR,Percepciones1_0,El valor debe ser 01 que corresponde a Emisión de Percepción Excepcional
+3323,ERROR,Percepciones1_0,Solo se permite 1 documento relacionado cuando el Indicador de emisión excepcional es '01'
+3324,ERROR,Percepciones1_0,Solo se permite '01' para el Tipo de documento relacionado cuando el valor del Indicador de emisión excepcional es '01'
+3325,ERROR,Percepciones1_0,Se permite emitir comprobante de percepción excepcional cuando el documento de referencia es al contado.
+3326,ERROR,Percepciones1_0,Solo se permite referenciar siempre y cuando el comprobante de percepción excepcional en el que se referencia al documento relacionado haya sido revertido.
+3327,ERROR,Percepciones1_0,No esta permitido referenciar el Código del régimen de percepción con el regimen del documento relacionado.
+3328,ERROR,Percepciones1_0,La boleta de venta relacionada tiene monto informado de percepción.
+3329,ERROR,Percepciones1_0,Se permite emitir comprobante de percepción (no excepcional) cuando documento de referencia es al crédito o no tiene indicador de forma de pago.
+3330,ERROR,Factura2_0,"Solo debe consignar información de percepciones si la forma de pago es ""Contado"""
+3460,ERROR,DAE-SEAE,El dato ingresado como codigo del aeropuerto no corresponde a un valor esperado
+3461,ERROR,Factura2_0,La forma de pago y/o número de cuota no pueden estar contenidos en el mismo cac:PaymentTerms
+3462,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,La tasa del IGV debe ser la misma en todas las líneas o ítems del documento y debe corresponder con una tasa vigente.
+3496,ERROR,LiquidacionCompra2_0,El Código producto de SUNAT no es válido
+3497,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El tipo de contrato debe ser 1-ventas o 2-adquisiciones
+3498,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,No se permite mas de un numero de contrato de colaboracion empresarial
+3499,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,"Si informa Numero de contrato, debe consignar el Tipo de contrato, la Descripcion de contrato y el Porcentaje de participacion"
+3500,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El Porcentaje de participacion no cumple con el formato o longitud especificada
+3501,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El Numero del contrato de colaboracion empresarial no cumple el formato o longitud establecida
+3502,ERROR,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,La Descripcion del contrato de colaboracion empresarial no cumple el formato o longitud establecida
+3503,ERROR,NotaCredito2_0,El monto consignado supera al importe documento que modifica
+3504,ERROR,Resumen Diario1_1,La tasa del tributo de la línea no corresponde al valor esperado
+3506,ERROR,LiquidacionCompra2_0,El XML no contiene el tag cac:InvoiceLine/cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode
+3507,ERROR,NotaDebito2_0,Las penalidades son operaciones inafectas del IGV
+3508,ERROR,DAE-Operador2_0,La sumatoria de valor de venta no corresponde a los importes consignados
+3509,ERROR,DAE-Operador2_0,El cálculo del IGV es Incorrecto
+3510,ERROR,DAE-Operador2_0,La sumatoria del total del importe del tributo ISC de línea no corresponden al total
+3511,ERROR,DAE-Operador2_0,La sumatoria de impuestos globales no corresponde al monto total de impuestos
+3512,ERROR,DAE-Operador2_0,La sumatoria consignados en descuentos globales no corresponden al total
+3513,ERROR,DAE-Operador2_0,La sumatoria consignados en cargos globales no corresponden al total
+3514,ERROR,DAE-Operador2_0,El importe total del comprobante no coincide con el valor calculado
+3545,ERROR,DOAE-Atribución,El XML no contiene el tag o no existe información del periodo tributario de atribución
+3546,ERROR,DOAE-Atribución,El periodo tributario de atribución no cumple con el formato establecido
+3547,ERROR,DOAE-Atribución,El mes indicado en el periodo tributario de atribución no es válido
+3548,ERROR,DOAE-Atribución,El año indicado en el periodo tributario de atribución es mayor al año actual
+3550,ERROR,DOAE-Atribución,Debe consignar el Número de resolución
+3551,ERROR,DOAE-Atribución,Debe consignar el Numero de contrato
+3552,ERROR,DOAE-Atribución,Debe consigar el porcentaje de participacion
+3553,ERROR,DOAE-Atribución,El dato ingresado en el campo Porcentaje de Atribución no cumple con el formato establecido.
+3554,ERROR,DOAE-Atribución,El indicador de tipo de monto no cumple con el formato establecido
+3555,ERROR,DOAE-Atribución,"El indicador de tipo de monto es diferente de '1', '2', '3' y '4'"
+3556,ERROR,DOAE-Atribución,Solo debe consignar un indicador de tipo de monto a atribuir en el documento
+3557,ERROR,DOAE-Atribución,Debe consignar el monto atribuido
+3558,ERROR,DOAE-Atribución,"El dato ingresado en el campo Valor de Operaciones afectas IGV debe ser ""cero""."
+3559,ERROR,DOAE-Atribución,"El dato ingresado en el campo IGV de operaciones afectas debe ser ""cero"""
+3560,ERROR,DOAE-Atribución,"El dato ingresado en el campo Monto atribuido debe ser ""cero""."
+3561,ERROR,DOAE-Atribución,El dato ingresado en el campo Monto atribuido es diferente al % de atribución.
+3562,ERROR,DOAE-Atribución,La sumatoria de los montos atribuidos no es correcta.
+3563,ERROR,DOAE-Atribución,El dato ingresado en el campo Régimen de recuperación anticipada no cumple con el formato establecido.
+3564,ERROR,DOAE-Atribución,"Si consigna monto de IGV-Recuperacion anticipada, debe informar la norma de sustento"
+3583,ERROR,DAE-SEAE,IssueTime - El dato ingresado no cumple con el patrón hh:mm:ss
+3587,ERROR,DAE-SEAE,Debe informar el Total valor del servicio
+3588,ERROR,DAE-SEAE,El total valor del servicio no cumple con el formato establecido
+3589,ERROR,DAE-SEAE,La sumatoria del valor del servicio gravado no corresponden con el total valor del servicio gravado
+3590,ERROR,DAE-SEAE,El XML no contiene el tag o no existe información relacionada con el código de concepto SEAE
+3592,ERROR,DAE-SEAE,El XML no contiene el tag o no existe información relacionada con el tipo de documento
+3593,ERROR,DAE-SEAE,El XML no contiene el tag o no existe información relacionada con el número de asiento
+3594,ERROR,DAE-SEAE,El XML no contiene el tag de la tasa del tributo
+3595,ERROR,DAE-SEAE,El dato ingresado como factor de afectacion no cumple con el formato establecido.
+3596,ERROR,DAE-SEAE,El dato ingresado no corresponde a una tasa vigente del IGV
+3598,ERROR,DAE-SEAE,El XML no contiene el tag o no existe información relacionada con el número de boleto
+3599,ERROR,DAE-SEAE,El XML no contiene el tag o no existe informacion del tipo de vuelo.
+3600,ERROR,DAE-SEAE,El XML no contiene el tag o no existe información relacionada con el número de vuelo
+3601,ERROR,DAE-SEAE,El dato ingresado como tipo de vuelo no corresponde a un valor esperado.
+3602,ERROR,DAE-SEAE,El XML no contiene el tag o no existe información relacionada con la fecha de vuelo
+3603,ERROR,DAE-SEAE,El dato ingresado como número de asiento no cumple con el formato establecido
+4005,OBSERV,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El DocumentTypeCode de las guias debe ser 09 o 31
+4006,OBSERV,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El ID de las guias debe tener informacion de la SERIE-NUMERO de guia.
+4009,OBSERV,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El DocumentTypeCode de Otros documentos relacionados tiene valores incorrectos.
+4010,OBSERV,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El ID de los documentos relacionados no cumplen con el estandar.
+4013,OBSERV,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DOAE-Atribución;Factura2_0;NotaCredito2_0;NotaDebito2_0,El RUC del receptor no esta activo
+4014,OBSERV,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DOAE-Atribución;Factura2_0;NotaCredito2_0;NotaDebito2_0,El RUC del receptor no esta habido
+4019,OBSERV,Resumen Diario1_1,El calculo del IGV no es correcto
+4022,OBSERV,Boleta2_0;LiquidacionCompra2_0,"Si se utiliza la leyenda con código 2001, el total de operaciones exoneradas debe ser mayor a 0.00"
+4023,OBSERV,Boleta2_0;LiquidacionCompra2_0,"Si se utiliza la leyenda con código 2002, el total de operaciones exoneradas debe ser mayor a 0.00"
+4024,OBSERV,Boleta2_0;LiquidacionCompra2_0,"Si se utiliza la leyenda con código 2003, el total de operaciones exoneradas debe ser mayor a 0.00"
+4027,OBSERV,Resumen Diario1_1,El importe total no coincide con la sumatoria de los valores de venta mas los tributos mas los cargos
+4028,OBSERV,NotaCredito2_0,El monto total de la nota de credito debe ser menor o igual al monto del documento que modifica
+4041,OBSERV,Boleta2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El codigo de pais debe ser PE
+4084,OBSERV,DAE-SEAE;NotaCredito2_0;NotaDebito2_0,Descripción del Ítem - El dato ingresado no cumple con el formato establecido.
+4086,OBSERV,Percepciones1_0;Resumen Diario1_1,El emisor y el cliente son Agentes de percepción de combustible en la fecha de emisión.
+4089,OBSERV,Percepciones1_0;Resumen Diario1_1,La operación con este cliente está excluida del sistema de percepción. Es agente de retención.
+4090,OBSERV,Percepciones1_0;Resumen Diario1_1,La operación con este cliente está excluida del sistema de percepción. Es entidad exceptuada de la percepción.
+4091,OBSERV,Retenciones1_0,"La operación con este proveedor está excluida del sistema de retención. Es agente de percepción, agente de retención o buen contribuyente."
+4092,OBSERV,Boleta2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El nombre comercial del emisor no cumple con el formato establecido
+4093,OBSERV,Boleta2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El codigo de ubigeo del domicilio fiscal del emisor no es válido
+4094,OBSERV,Boleta2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La dirección completa y detallada del domicilio fiscal del emisor no cumple con el formato establecido
+4095,OBSERV,Boleta2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La urbanización del domicilio fiscal del emisor no cumple con el formato establecido
+4096,OBSERV,Boleta2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La provincia del domicilio fiscal del emisor no cumple con el formato establecido
+4097,OBSERV,Boleta2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El departamento del domicilio fiscal del emisor no cumple con el formato establecido
+4098,OBSERV,Boleta2_0;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El distrito del domicilio fiscal del emisor no cumple con el formato establecido
+4099,OBSERV,DAE-Adquirente2_0,El nombre comercial del cliente no cumple con el formato establecido
+4198,OBSERV,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene el tag o no existe información del código de local anexo del emisor
+4199,OBSERV,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El código de local anexo consignado no se encuentra declarado en el RUC
+4200,OBSERV,Boleta2_0;Factura2_0,Debe corresponder a algún valor válido establecido en el catálogo 13
+4202,OBSERV,Boleta2_0;Factura2_0,El valor ingresado como numero de DAM no cumple con el estandar
+4203,OBSERV,Comunicación de Baja1_0;Resumen de reversiones1_0,El dato ingresado en VoidReasonDescription debe contener información válida
+4204,OBSERV,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,Comprobante físico no se encuentra autorizado como comprobante de contingencia
+4207,OBSERV,Boleta2_0;DAE-Adquirente2_0;Resumen Diario1_1,El DNI debe tener 8 caracteres numéricos
+4208,OBSERV,Boleta2_0;DAE-Adquirente2_0;Resumen Diario1_1,El dato ingresado como numero de documento de identidad del receptor no cumple con el formato establecido
+4210,OBSERV,LiquidacionCompra2_0,Vendedor supera el monto permitido para la emision de una liquidacion de compra
+4212,OBSERV,Boleta2_0,Debe consignar el Total Valor de Venta
+4231,OBSERV,Boleta2_0;DAE-Adquirente2_0;Factura2_0,El código de Ubigeo no existe en el listado.
+4233,OBSERV,Factura2_0,El dato ingresado en order de compra no cumple con el formato establecido.
+4234,OBSERV,NotaCredito2_0;NotaDebito2_0,El código de producto no cumple con el formato establecido
+4235,OBSERV,Boleta2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,No existe información en el nombre del concepto.
+4236,OBSERV,Boleta2_0;Factura2_0,El dato ingresado como direccion completa y detallada no cumple con el formato establecido.
+4237,OBSERV,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La tasa del tributo de la línea no corresponde al valor esperado
+4238,OBSERV,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado como urbanización no cumple con el formato establecido
+4239,OBSERV,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado como provincia no cumple con el formato establecido
+4240,OBSERV,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado como departamento no cumple con el formato establecido
+4241,OBSERV,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado como distrito no cumple con el formato establecido
+4242,OBSERV,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como local anexo no cumple con el formato establecido
+4244,OBSERV,Boleta2_0;LiquidacionCompra2_0,"Si se utiliza la leyenda con código 2008, el total de operaciones exoneradas debe ser mayor a 0.00"
+4251,OBSERV,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como atributo @listAgencyName es incorrecto.
+4252,OBSERV,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como atributo @listName es incorrecto.
+4253,OBSERV,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como atributo @listURI es incorrecto.
+4254,OBSERV,Boleta2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como atributo @listID es incorrecto.
+4255,OBSERV,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como atributo @schemeName es incorrecto.
+4256,OBSERV,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como atributo @schemeAgencyName es incorrecto.
+4257,OBSERV,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como atributo @schemeURI es incorrecto.
+4258,OBSERV,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como atributo @unitCodeListID es incorrecto.
+4259,OBSERV,Boleta2_0;DAE-Operador2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como atributo @unitCodeListAgencyName es incorrecto.
+4260,OBSERV,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado como atributo @name es incorrecto.
+4261,OBSERV,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado como atributo @listSchemeURI es incorrecto.
+4264,OBSERV,Boleta2_0;Factura2_0,El XML no contiene el codigo de leyenda 2007 para el tipo de operación IVAP
+4265,OBSERV,Boleta2_0;Factura2_0,El XML no contiene el codigo de leyenda 2006 para tipo de operación de detracciones
+4266,OBSERV,Boleta2_0;Factura2_0,El XML no contiene el codigo de leyenda 2005 para el tipo de operación Venta itinerante
+4268,OBSERV,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;Factura2_0,El dato ingresado como cargo/descuento no es valido a nivel de ítem.
+4269,OBSERV,Boleta2_0;Factura2_0;LiquidacionCompra2_0,El dato ingresado como codigo de producto no cumple con el formato establecido.
+4270,OBSERV,Boleta2_0;Factura2_0,El dato ingresado como detalle del viaje no cumple con el formato establecido.
+4271,OBSERV,Boleta2_0;Factura2_0,El dato ingresado como descripcion del tramo no cumple con el formato establecido.
+4272,OBSERV,Boleta2_0;Factura2_0,El dato ingresado como valor refrencia del tramo virtual no cumple con el formato establecido.
+4273,OBSERV,Boleta2_0;Factura2_0,El dato ingresado como configuración vehicular no cumple con el formato establecido.
+4274,OBSERV,Boleta2_0;Factura2_0,El dato ingresado como tipo de carga util es incorrecto.
+4275,OBSERV,Boleta2_0;Factura2_0,El XML no contiene el tag o no existe información del valor de la carga en TM.
+4276,OBSERV,Boleta2_0;Factura2_0,El dato ingresado como valor de la carga en TM cumple con el formato establecido.
+4277,OBSERV,Boleta2_0;Factura2_0,El dato ingresado como unidad de medida de la carga del vehiculo no corresponde al valor esperado.
+4278,OBSERV,Boleta2_0;Factura2_0,El dato ingresado como valor referencial de carga util nominal no cumple con el formato establecido.
+4280,OBSERV,Boleta2_0;DAE-SEAE;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como valor del concepto de la linea no cumple con el formato establecido.
+4281,OBSERV,Boleta2_0;Factura2_0,El dato ingresado como cantidad del concepto de la linea no cumple con el formato establecido.
+4282,OBSERV,Factura2_0,La fecha de ingreso al establecimiento es mayor a la fecha de salida al establecimiento.
+4285,OBSERV,Percepciones1_0,El emisor a la fecha no se encuentra registrado ó habilitado con la condición de Agente de percepción
+4287,OBSERV,Boleta2_0;LiquidacionCompra2_0;NotaDebito2_0,El precio unitario de la operación que está informando difiere de los cálculos realizados en base a la información remitida
+4288,OBSERV,Boleta2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El valor de venta por ítem difiere de los importes consignados.
+4289,OBSERV,Boleta2_0;DAE-Operador2_0,El valor de cargo/descuento por ítem difiere de los importes consignados.
+4290,OBSERV,Boleta2_0;DAE-Operador2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El cálculo del IGV es Incorrecto
+4291,OBSERV,Boleta2_0;Factura2_0,El dato ingresado como cargo/descuento no es valido a nivel global.
+4293,OBSERV,Boleta2_0;DAE-Operador2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El importe total de impuestos por línea no coincide con la sumatoria de los impuestos por línea.
+4294,OBSERV,Boleta2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La base imponible a nivel de línea difiere de la información consignada en el comprobante
+4295,OBSERV,Boleta2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - Exportaciones de línea no corresponden al total
+4296,OBSERV,Boleta2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - operaciones inafectas de línea no corresponden al total
+4297,OBSERV,Boleta2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - operaciones exoneradas de línea no corresponden al total
+4298,OBSERV,Boleta2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - operaciones gratuitas de línea no corresponden al total
+4299,OBSERV,Boleta2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - operaciones gravadas de línea no corresponden al total
+4300,OBSERV,Boleta2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total valor de venta - IVAP de línea no corresponden al total
+4301,OBSERV,Boleta2_0;DAE-Operador2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria de impuestos globales no corresponde al monto total de impuestos.
+4302,OBSERV,Boleta2_0;NotaCredito2_0;NotaDebito2_0;Resumen Diario1_1,El importe del IVAP no corresponden al determinado por la informacion consignada.
+4303,OBSERV,Boleta2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del monto base - ISC de línea no corresponden al total
+4304,OBSERV,Boleta2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del monto base - Otros tributos de línea no corresponden al total
+4305,OBSERV,Boleta2_0;DAE-Operador2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total del importe del tributo ISC de línea no corresponden al total
+4306,OBSERV,Boleta2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total del importe del tributo Otros tributos de línea no corresponden al total
+4307,OBSERV,Boleta2_0;DAE-Operador2_0,La sumatoria consignados en descuentos globales no corresponden al total.
+4308,OBSERV,Boleta2_0;DAE-Operador2_0,La sumatoria consignados en cargos globales no corresponden al total
+4309,OBSERV,Boleta2_0;DAE-Operador2_0;LiquidacionCompra2_0,La sumatoria de valor de venta no corresponde a los importes consignados
+4310,OBSERV,Boleta2_0;LiquidacionCompra2_0,La sumatoria del Total del valor de venta más los impuestos no concuerda con la base imponible
+4311,OBSERV,Boleta2_0;LiquidacionCompra2_0;NotaDebito2_0,La sumatoria de los IGV de operaciones gratuitas de la línea (codigo tributo 9996) no corresponden al total
+4312,OBSERV,Boleta2_0;DAE-Operador2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El importe total del comprobante no coincide con el valor calculado
+4313,OBSERV,Factura2_0,El dato ingresado como unidad de medida de los dias de permanencia no corresponde al valor esperado.
+4314,OBSERV,Boleta2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El monto para el redondeo del Importe Total excede el valor permitido
+4317,OBSERV,Boleta2_0,Debe consignar el Total Precio de Venta
+4318,OBSERV,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado en el campo cac:TaxSubtotal/cbc:TaxAmount del ítem no coincide con el valor calculado
+4320,OBSERV,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El dato ingresado como unidad de medida no corresponde al valor esperado
+4321,OBSERV,Boleta2_0;NotaCredito2_0;NotaDebito2_0,La sumatoria del total del importe del tributo ICBPER de línea no corresponden al total
+4322,OBSERV,Boleta2_0,El valor de cargo/descuento global difiere de los importes consignados
+4331,OBSERV,Boleta2_0;Factura2_0,Debe consignar obligatoriamente Codigo de producto SUNAT o Codigo de producto GTIN
+4332,OBSERV,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El Código producto de SUNAT no es válido
+4333,OBSERV,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,Si utiliza el estandar GS1 debe especificar el tipo de estructura GTIN
+4334,OBSERV,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El código de producto GS1 no cumple el estandar
+4335,OBSERV,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El tipo de estructura GS1 no tiene un valor permitido
+4337,OBSERV,Boleta2_0;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,El Codigo de producto SUNAT debe especificarse como minimo al tercer nivel jerarquico (a nivel de clase del codigo UNSPSC)
+4338,OBSERV,Boleta2_0;DAE-Adquirente2_0;DAE-Operador2_0;DAE-SEAE;DOAE-Atribución;Factura2_0;LiquidacionCompra2_0;NotaCredito2_0;NotaDebito2_0,RegistrationName - El nombre o razon social del emisor no cumple con el estandar
+4339,OBSERV,LiquidacionCompra2_0,El codigo de ubigeo del domicilio del vendedor no es válido
+4341,OBSERV,LiquidacionCompra2_0,La urbanización del domicilio del vendedor no cumple con el formato establecido
+4342,OBSERV,LiquidacionCompra2_0,La provincia del domicilio del vendedor no cumple con el formato establecido
+4343,OBSERV,LiquidacionCompra2_0,El departamento del domicilio del vendedor no cumple con el formato establecido
+4344,OBSERV,LiquidacionCompra2_0,El distrito del domicilio del vendedor no cumple con el formato establecido
+4345,OBSERV,LiquidacionCompra2_0,El monto base global de la retencion de renta no coincide con el valor calculado
+4346,OBSERV,LiquidacionCompra2_0,El importe de la retencion de renta no coincide con el valor calculado
+4347,OBSERV,LiquidacionCompra2_0,El comprobante fue enviado fuera del plazo permitido.
+4348,OBSERV,DAE-Adquirente2_0;DAE-Operador2_0,El importe del campo /cac:InvoiceLine/cac:ItemPriceExtension/cbc:Amount no coincide con el valor calculado
+4349,OBSERV,DAE-Adquirente2_0;DAE-Operador2_0,El importe del campo /cac:InvoiceLine/cac:SubInvoiceLine/cac:ItemPriceExtension/cbc:Amount no coincide con el valor calculado
+4350,OBSERV,DAE-Adquirente2_0;DAE-Operador2_0,El nombre o razon social registrado no cumple con el estandar
+4351,OBSERV,DAE-Operador2_0,El Numero de RUC no esta activo
+4352,OBSERV,DAE-Operador2_0,El Numero de RUC es no habido
+4354,OBSERV,DAE-Adquirente2_0;DAE-Operador2_0,El importe del campo /cac:InvoiceLine/cbc:LineExtensionAmount no coincide con el valor calculado
+4355,OBSERV,DAE-Operador2_0,El importe del campo /cac:InvoiceLine/cac:SubInvoiceLine/cbc:LineExtensionAmount no coincide con el valor calculado
+4356,OBSERV,DAE-Operador2_0,El importe del campo /cac:SubInvoiceLine/cac:TaxTotal/cbc:TaxAmount no coincide con el valor calculado
+4357,OBSERV,DAE-Operador2_0,El dato ingresado como cargo/descuento no es valido a nivel de /cac:SubInvoiceLine
+4358,OBSERV,DAE-Operador2_0,El valor de cargo/descuento a nivel de /cac:SubInvoiceLine difiere de los importes consignados.
+4359,OBSERV,DAE-Operador2_0,El monto de ISC de la línea no coincide con el valor calculado
+4360,OBSERV,DAE-Adquirente2_0;DAE-Operador2_0,El monto de IGV de la línea no coincide con el valor calculado
+4362,OBSERV,DAE-Operador2_0,El codigo de leyenda no debe repetirse en el comprobante
+4363,OBSERV,DAE-Adquirente2_0,El importe del campo /cac:LegalMonetaryTotal/cbc:PayableAmount no coincide con el valor calculado
+4364,OBSERV,DAE-Adquirente2_0,Para entidades emisoras locales debe informar el detalle de las comisiones y cargos
+4365,OBSERV,DAE-Adquirente2_0;DAE-Operador2_0,El monto de IGV a nivel de /cac:SubInvoiceLine no coincide con el valor calculado
+4366,OBSERV,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El XML no contiene tag o no existe información de la fecha del concepto por linea
+4367,OBSERV,NotaCredito2_0,"El tipo de nota de crédito 04, 05 y 08 no debería estar vinculado a una boleta"
+4368,OBSERV,NotaCredito2_0;NotaDebito2_0,El tipo de moneda de la nota debe ser el mismo que el declarado en el documento que modifica
+4439,OBSERV,Boleta2_0;Factura2_0;NotaCredito2_0;NotaDebito2_0,El emisor no se encuentra en el Padrón de Tasa especial del IGV - Restaurantes y hoteles
+4441,OBSERV,Boleta2_0,El comprobante que se realizo el anticipo no se encuentra autorizado
+4443,OBSERV,Resumen Diario1_1,El comprobante fue informado fuera del plazo establecido
+4445,OBSERV,DOAE-Atribución,El periodo tributario de atribución no corresponde con el mes y año de la fecha de emisión
+4446,OBSERV,DOAE-Atribución,El dato ingresado en el campo Número de Resolución no cumple con el formato establecido.
+4447,OBSERV,DOAE-Atribución,El dato ingresado en el campo Número de Contrato no cumple con el formato establecido.
+4448,OBSERV,DOAE-Atribución,La descripción del monto no cumple con el formato establecido
+4449,OBSERV,DOAE-Atribución,El dato ingresado en el campo IGV de operaciones afectas es mayor al 18% de las adquisiciones gravadas.
+4450,OBSERV,DOAE-Atribución,El dato ingresado en el campo Norma del Régimen de recuperación anticipada no cumple con el formato establecido.
+4451,OBSERV,DOAE-Atribución,El dato ingresado en el campo Tipo de documento relacionado no cumple con el formato establecido.
+4469,OBSERV,DAE-SEAE,RegistrationName - El nombre y apellido del pasajero no cumple con el estandar
+4470,OBSERV,DAE-SEAE,El dato ingresado como número de asiento no cumple con el formato establecido
+4471,OBSERV,DAE-SEAE,El dato ingresado como número de boleto no cumple con el formato establecido.
+4472,OBSERV,DAE-SEAE,El dato ingresado como número de vuelo no cumple con el formato establecido
+4473,OBSERV,DAE-SEAE,El dato ingresado como número de la tarjeta de embarque no cumple con el formato establecido
