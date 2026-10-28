@@ -29,4 +29,6 @@ public interface ComprobanteRepository extends JpaRepository<Comprobante, Long> 
     List<Long> idsBoletasPendientesDeResumen();
 
     List<Comprobante> findByResumenIdOrderByCorrelativo(Long resumenId);
+
+    long countByResumenId(Long resumenId);
 }

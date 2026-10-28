@@ -29,8 +29,8 @@ class ResumenDiarioTest {
     // --- Transiciones permitidas, escritas a mano ---
 
     private static final Set<String> PERMITIDAS = Set.of(
-            "GENERADO>ENVIADO", "GENERADO>ERROR_TEMPORAL", "GENERADO>REVISAR",
-            "ERROR_TEMPORAL>ENVIADO", "ERROR_TEMPORAL>REVISAR",
+            "GENERADO>ENVIADO", "GENERADO>ERROR_TEMPORAL", "GENERADO>RECHAZADO", "GENERADO>REVISAR",
+            "ERROR_TEMPORAL>ENVIADO", "ERROR_TEMPORAL>RECHAZADO", "ERROR_TEMPORAL>REVISAR",
             "ENVIADO>ACEPTADO", "ENVIADO>ACEPTADO_CON_OBSERVACIONES", "ENVIADO>RECHAZADO", "ENVIADO>REVISAR",
             "RECHAZADO>GENERADO");
 
@@ -51,9 +51,9 @@ class ResumenDiarioTest {
     }
 
     @Test
-    void hayCuatroTransicionesDeSalidaDelEstadoEnviadoYSoloDiezEnTotal() {
+    void hayDoceTransicionesPermitidasEntreSieteEstados() {
         assertThat(values()).hasSize(7);
-        assertThat(PERMITIDAS).hasSize(10);
+        assertThat(PERMITIDAS).hasSize(12);
     }
 
     @ParameterizedTest

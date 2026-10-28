@@ -23,8 +23,8 @@ public enum EstadoResumen {
 
     public boolean puedePasarA(EstadoResumen destino) {
         return switch (this) {
-            case GENERADO -> destino == ENVIADO || destino == ERROR_TEMPORAL || destino == REVISAR;
-            case ERROR_TEMPORAL -> destino == ENVIADO || destino == REVISAR;
+            case GENERADO -> destino == ENVIADO || destino == ERROR_TEMPORAL || destino == RECHAZADO || destino == REVISAR;
+            case ERROR_TEMPORAL -> destino == ENVIADO || destino == RECHAZADO || destino == REVISAR;
             case ENVIADO -> destino == ACEPTADO || destino == ACEPTADO_CON_OBSERVACIONES || destino == RECHAZADO || destino == REVISAR;
             case RECHAZADO -> destino == GENERADO;
             default -> false;
