@@ -98,17 +98,17 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 **Clases que aparecen:** `sunat/calculo/CalculadoraIgv` (con `LineaCalculada` y `TotalesDocumento`), `util/MontoEnLetras` y `util/NumeracionUtil`. El `Clock` y la fecha y hora de Lima pasan a la fase 3, porque hasta el XML nadie los usa.
 
 - [x] Leer las reglas de cálculo (guía XML de factura 2.1, hoja `Factura2_0` de las Reglas de validación, y los códigos 3270 a 3294) y anotar las fórmulas y tolerancias en `docs/sunat/CALCULOS.md`. Sin esto no se programa nada.
-- [ ] Calculadora de línea: valor unitario, precio unitario (con IGV), valor de venta del ítem e IGV de la línea. Solo operación gravada (afectación 10) al principio.
+- [x] Calculadora de línea: valor unitario, precio unitario (con IGV), valor de venta del ítem e IGV de la línea. Solo operación gravada (afectación 10) al principio.
 - [ ] Totales del documento: suma de valores de venta, IGV total e importe total.
-- [ ] Redondeo a 2 decimales y precisión del valor unitario, según lo anotado.
-- [ ] Monto en letras para la leyenda 1000 ("CUATROCIENTOS VEINTITRÉS Y 00/100 SOLES").
+- [x] Redondeo a 2 decimales y precisión del valor unitario, según lo anotado.
+- [ ] Monto en letras para la leyenda 1000, con el formato de la guía: `MIL OCHOCIENTOS CINCUENTA Y OCHO CON 59/100 SOLES` (mayúsculas y sin tildes).
 - [ ] Serie y correlativo: formato `F001-00000001` y validación del formato.
 
 **Tests**
-- [ ] Redondeo: 0.005, 0.015, 0.004999, 0.01, montos grandes y los límites.
-- [ ] Líneas: cantidades con decimales, precios con muchos decimales, descuentos y cantidad cero (rechazada).
+- [x] Redondeo: 0.005, 0.015, 0.004999, 0.01, montos grandes y los límites.
+- [x] Líneas: cantidades con decimales, precios con muchos decimales y cantidad cero (rechazada). Los descuentos no entran todavía (L-002).
 - [ ] Coherencia: el total siempre es la suma de las líneas y el IGV de la línea cuadra con su base. Con muchos casos generados con semilla fija.
-- [ ] Ida y vuelta: del precio con IGV al valor unitario y de regreso no pierde centavos.
+- [x] Ida y vuelta: del precio con IGV al valor unitario y de regreso no pierde centavos.
 - [ ] Monto en letras: 0, 1, 15, 21, 100 ("CIEN"), 101, 1000, 1001, 21000, 1000000 ("UN MILLÓN"), centavos, y negativos rechazados.
 - [ ] Serie y correlativo: `F001`, `F999`, `B001`, serie inválida, correlativo 0 o de más de 8 dígitos.
 
