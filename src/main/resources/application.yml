@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: api-sunat-facturas
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# Ver docs/sunat/NOTAS.md §2 y §3. Las credenciales reales nunca se commitean:
+# se inyectan por variables de entorno.
+sunat:
+  bill-service-url: https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService
+  ruc: ${SUNAT_RUC:}
+  usuario-sol: ${SUNAT_USUARIO_SOL:MODDATOS}
+  clave-sol: ${SUNAT_CLAVE_SOL:MODDATOS}
