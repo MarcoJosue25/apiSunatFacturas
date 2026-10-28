@@ -19,6 +19,7 @@ import apisunat.api_sunat.service.FacturaService;
 import apisunat.api_sunat.service.SerieService;
 import apisunat.api_sunat.sunat.calculo.CalculadoraIgv;
 import apisunat.api_sunat.sunat.calculo.LineaCalculada;
+import apisunat.api_sunat.sunat.errores.PoliticaBackoff;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -52,6 +53,7 @@ public class ComprobanteServiceImpl implements ComprobanteService {
     private final TransactionTemplate transaccion;
     private final SerieService serieService;
     private final FacturaService facturaService;
+    private final PoliticaBackoff backoff;
     private final ComprobanteRepository comprobantes;
     private final EnvioIntentoRepository intentos;
 
@@ -108,7 +110,8 @@ public class ComprobanteServiceImpl implements ComprobanteService {
         }
         LocalDateTime ahora = ahora();
         Comprobante comprobante = Comprobante.nuevo(request.getIdExterno(), serie, correlativo, emision,
-                request.getCliente().getRuc(), request.getCliente().getRazonSocial(), importeTotal(request), xml, ahora);
+                request.getCliente().getRuc(), request.getCliente().getRazonSocial(), importeTotal(request), xml, ahora,
+                ahora.plus(backoff.espera(1)));   // si la petición se cae antes de enviar, el reintento la recoge pasado este tiempo
         // flush: así un idExterno repetido falla aquí, dentro de la transacción, y no al terminarla
         return comprobantes.saveAndFlush(comprobante);
     }
@@ -136,7 +139,7 @@ public class ComprobanteServiceImpl implements ComprobanteService {
         return transaccion.execute(estado -> {
             Comprobante c = comprobantes.findById(id).orElseThrow(() -> new ComprobanteNoEncontradoException(id));
             LocalDateTime ahora = ahora();
-            c.registrarResultado(resultado, ahora);
+            c.registrarResultado(resultado, ahora, ahora.plus(backoff.espera(c.getIntentosFallidos() + 1)));
             comprobantes.saveAndFlush(c);
             intentos.save(EnvioIntento.builder().comprobanteId(id).fecha(ahora).resultado(resultado.getClase().name())
                     .codigo(resultado.getCodigo()).descripcion(recortar(resultado.getDescripcion())).build());
@@ -149,7 +152,7 @@ public class ComprobanteServiceImpl implements ComprobanteService {
         return transaccion.execute(estado -> {
             Comprobante c = comprobantes.findById(id).orElseThrow(() -> new ComprobanteNoEncontradoException(id));
             LocalDateTime ahora = ahora();
-            c.marcarErrorTemporal(recortar(motivo), ahora);
+            c.marcarErrorTemporal(recortar(motivo), ahora, ahora.plus(backoff.espera(c.getIntentosFallidos() + 1)));
             comprobantes.saveAndFlush(c);
             intentos.save(EnvioIntento.builder().comprobanteId(id).fecha(ahora).resultado(RESULTADO_SIN_RESPUESTA)
                     .descripcion(recortar(motivo)).build());

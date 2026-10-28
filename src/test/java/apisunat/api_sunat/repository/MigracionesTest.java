@@ -54,7 +54,7 @@ class MigracionesTest {
         var resultado = flyway().migrate();
 
         assertThat(resultado.success).isTrue();
-        assertThat(resultado.migrationsExecuted).isEqualTo(1);
+        assertThat(resultado.migrationsExecuted).isEqualTo(2);
         assertThat(consultar("SELECT table_name FROM information_schema.tables WHERE table_schema = '" + ESQUEMA + "' ORDER BY 1"))
                 .contains("series", "comprobantes", "envio_intentos", "flyway_schema_history");
     }
@@ -96,5 +96,39 @@ class MigracionesTest {
         flyway().migrate();
         assertThat(consultar("SELECT data_type FROM information_schema.columns WHERE table_schema = '" + ESQUEMA
                 + "' AND table_name = 'comprobantes' AND column_name IN ('xml_firmado', 'cdr_zip')")).containsExactly("longblob", "longblob");
+    }
+
+    @Test
+    void laMigracionDeReintentosAgregaLasColumnasYElIndice() throws SQLException {
+        flyway().migrate();
+        assertThat(consultar("SELECT column_name FROM information_schema.columns WHERE table_schema = '" + ESQUEMA
+                + "' AND table_name = 'comprobantes' AND column_name IN ('intentos_fallidos', 'proximo_intento') ORDER BY 1"))
+                .containsExactly("intentos_fallidos", "proximo_intento");
+        assertThat(consultar("SELECT DISTINCT index_name FROM information_schema.statistics WHERE table_schema = '" + ESQUEMA
+                + "' AND index_name = 'ix_comprobantes_reintento'")).containsExactly("ix_comprobantes_reintento");
+    }
+
+    @Test
+    void laMigracionDeReintentosConservaLosComprobantesQueYaExistian() throws SQLException {
+        // Se aplica solo la V1, se inserta un comprobante y luego se aplica la V2 sobre esos datos
+        Flyway soloV1 = Flyway.configure()
+                .dataSource(ConexionTest.urlDeEsquema(ESQUEMA), ConexionTest.usuario(), ConexionTest.clave())
+                .locations("classpath:db/migration").target("1").load();
+        try (Connection c = ConexionTest.conectarSinEsquema(); Statement s = c.createStatement()) {
+            s.execute("CREATE DATABASE " + ESQUEMA + " CHARACTER SET utf8mb4");
+        }
+        soloV1.migrate();
+        try (Connection c = java.sql.DriverManager.getConnection(ConexionTest.urlDeEsquema(ESQUEMA), ConexionTest.usuario(), ConexionTest.clave());
+             Statement s = c.createStatement()) {
+            s.execute("INSERT INTO comprobantes (id_externo, tipo_documento, serie, correlativo, fecha_emision, ruc_cliente, razon_social_cliente,"
+                    + " importe_total, estado, creado_en, actualizado_en) VALUES ('viejo', '01', 'F001', 1, NOW(), '20123456786', 'X', 10.00,"
+                    + " 'ACEPTADO', NOW(3), NOW(3))");
+        }
+
+        Flyway.configure().dataSource(ConexionTest.urlDeEsquema(ESQUEMA), ConexionTest.usuario(), ConexionTest.clave())
+                .locations("classpath:db/migration").load().migrate();
+
+        assertThat(consultar("SELECT CONCAT(intentos_fallidos, '/', IFNULL(proximo_intento, 'null')) FROM comprobantes WHERE id_externo = 'viejo'"))
+                .containsExactly("0/null");
     }
 }

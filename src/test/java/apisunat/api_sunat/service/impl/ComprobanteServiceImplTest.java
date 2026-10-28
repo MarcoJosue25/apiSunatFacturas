@@ -241,6 +241,31 @@ class ComprobanteServiceImplTest {
     }
 
     @Test
+    void cadaFalloProgramaElSiguienteIntentoConLaEsperaQueCorresponde() {
+        when(cliente.sendBill(anyString(), any())).thenThrow(new SunatNoDisponibleException("sin conexión", false, null));
+
+        FacturaResponse r = servicio.emitir(factura("pedido-1")).factura();
+        Comprobante primero = comprobantes.findById(r.getId()).orElseThrow();
+        assertThat(primero.getIntentosFallidos()).isEqualTo(1);
+        // espera de 1 minuto después del primer fallo
+        assertThat(java.time.Duration.between(primero.getActualizadoEn(), primero.getProximoIntento())).isEqualTo(java.time.Duration.ofMinutes(1));
+
+        servicio.enviar(r.getId());
+        Comprobante segundo = comprobantes.findById(r.getId()).orElseThrow();
+        assertThat(segundo.getIntentosFallidos()).isEqualTo(2);
+        assertThat(java.time.Duration.between(segundo.getActualizadoEn(), segundo.getProximoIntento())).isEqualTo(java.time.Duration.ofMinutes(2));
+    }
+
+    @Test
+    void unaFacturaAceptadaNoTieneProximoIntento() {
+        sunatAcepta();
+        FacturaResponse r = servicio.emitir(factura("pedido-1")).factura();
+        Comprobante c = comprobantes.findById(r.getId()).orElseThrow();
+        assertThat(c.getProximoIntento()).isNull();
+        assertThat(c.getIntentosFallidos()).isZero();
+    }
+
+    @Test
     void unaRespuestaIlegibleDeLaSunatTambienDejaLaFacturaParaReintentar() {
         when(cliente.sendBill(anyString(), any())).thenThrow(new SunatRespuestaInvalidaException("html"));
 

@@ -87,6 +87,14 @@ public class Comprobante {
     @Column(name = "cdr_zip")
     private byte[] cdrZip;
 
+    // Cuántas veces falló el envío sin una respuesta definitiva de la SUNAT
+    @Column(name = "intentos_fallidos", nullable = false)
+    private int intentosFallidos;
+
+    // Cuándo toca volver a intentar (solo mientras está PENDIENTE o ERROR_TEMPORAL)
+    @Column(name = "proximo_intento")
+    private LocalDateTime proximoIntento;
+
     @Version
     private Long version;
 
@@ -98,12 +106,13 @@ public class Comprobante {
 
     // Un comprobante nuevo: ya tiene su número y su XML firmado, y espera ser enviado
     public static Comprobante nuevo(String idExterno, String serie, long correlativo, LocalDateTime fechaEmision, String rucCliente,
-                                    String razonSocialCliente, BigDecimal importeTotal, byte[] xmlFirmado, LocalDateTime ahora) {
+                                    String razonSocialCliente, BigDecimal importeTotal, byte[] xmlFirmado, LocalDateTime ahora,
+                                    LocalDateTime primerIntento) {
         return Comprobante.builder()
                 .idExterno(idExterno).tipoDocumento(TIPO_FACTURA).serie(serie).correlativo(correlativo)
                 .fechaEmision(fechaEmision).rucCliente(rucCliente).razonSocialCliente(razonSocialCliente)
                 .importeTotal(importeTotal).xmlFirmado(xmlFirmado).estado(EstadoComprobante.PENDIENTE)
-                .creadoEn(ahora).actualizadoEn(ahora).build();
+                .proximoIntento(primerIntento).creadoEn(ahora).actualizadoEn(ahora).build();
     }
 
     // Serie y número tal como van en el XML, por ejemplo F001-4355
@@ -116,8 +125,14 @@ public class Comprobante {
     }
 
     // Guarda lo que contestó la SUNAT y pasa al estado que corresponde a esa respuesta
-    public void registrarResultado(ResultadoEmision resultado, LocalDateTime ahora) {
+    // Si la respuesta es una falla pasajera (ERROR_TEMPORAL), queda programado el próximo intento para esa fecha
+    public void registrarResultado(ResultadoEmision resultado, LocalDateTime ahora, LocalDateTime proximoIntentoSiFallaPasajera) {
         cambiarA(EstadoComprobante.desde(resultado.getClase()), ahora);
+        if (estado == EstadoComprobante.ERROR_TEMPORAL) {
+            programarReintento(proximoIntentoSiFallaPasajera);
+        } else {
+            this.proximoIntento = null;
+        }
         this.codigoSunat = resultado.getCodigo();
         this.descripcionSunat = resultado.getDescripcion();
         this.cdrZip = resultado.getCdrZip();
@@ -126,9 +141,24 @@ public class Comprobante {
     }
 
     // La SUNAT no contestó: no se sabe si recibió el comprobante
-    public void marcarErrorTemporal(String motivo, LocalDateTime ahora) {
+    public void marcarErrorTemporal(String motivo, LocalDateTime ahora, LocalDateTime proximoIntento) {
         cambiarA(EstadoComprobante.ERROR_TEMPORAL, ahora);
         this.descripcionSunat = motivo;
+        programarReintento(proximoIntento);
+    }
+
+    // Pasó el plazo de envío: ya no se intenta más
+    public void marcarVencido(LocalDateTime ahora) {
+        cambiarA(EstadoComprobante.VENCIDO, ahora);
+        this.proximoIntento = null;
+    }
+
+    private void programarReintento(LocalDateTime proximo) {
+        if (proximo == null) {
+            throw new IllegalArgumentException("Falta la fecha del próximo intento");
+        }
+        this.intentosFallidos++;
+        this.proximoIntento = proximo;
     }
 
     private static String lineaDe(CdrResultado.Observacion o) {

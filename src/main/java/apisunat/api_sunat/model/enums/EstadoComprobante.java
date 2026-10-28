@@ -28,14 +28,17 @@ public enum EstadoComprobante {
     ERROR_TEMPORAL,
 
     // La SUNAT contestó algo que no se sabe interpretar, o dijo que ya lo tenía: alguien debe mirarlo
-    REVISAR;
+    REVISAR,
+
+    // Pasó el plazo de envío sin que la SUNAT lo recibiera: ya no se puede enviar (la SUNAT lo rechazaría por fuera de plazo)
+    VENCIDO;
 
     private static final Set<EstadoComprobante> DESDE_ENVIANDO = EnumSet.of(
             ACEPTADO, ACEPTADO_CON_OBSERVACIONES, RECHAZADO, ERROR_DE_DATOS, ERROR_DE_CONFIGURACION, ERROR_TEMPORAL, REVISAR);
 
     public boolean puedePasarA(EstadoComprobante destino) {
         return switch (this) {
-            case PENDIENTE, ERROR_TEMPORAL -> destino == ENVIANDO;
+            case PENDIENTE, ERROR_TEMPORAL -> destino == ENVIANDO || destino == VENCIDO;
             case ENVIANDO -> DESDE_ENVIANDO.contains(destino);
             default -> false;
         };

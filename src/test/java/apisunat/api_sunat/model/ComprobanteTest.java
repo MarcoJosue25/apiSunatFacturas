@@ -20,7 +20,7 @@ class ComprobanteTest {
     private static final LocalDateTime T2 = T0.plusSeconds(9);
 
     private static Comprobante nuevo() {
-        return Comprobante.nuevo("pedido-77", "F001", 4355, T0, "20123456786", "CLIENTE SAC", new BigDecimal("70.00"), new byte[]{1, 2, 3}, T0);
+        return Comprobante.nuevo("pedido-77", "F001", 4355, T0, "20123456786", "CLIENTE SAC", new BigDecimal("70.00"), new byte[]{1, 2, 3}, T0, T0.plusMinutes(1));
     }
 
     private static ResultadoEmision resultado(ClaseResultado clase, String codigo, String descripcion, List<CdrResultado.Observacion> obs, byte[] cdr) {
@@ -45,7 +45,7 @@ class ComprobanteTest {
 
     @Test
     void elNumeroNoLlevaCerosALaIzquierda() {
-        Comprobante c = Comprobante.nuevo("a", "F001", 1, T0, "20123456786", "X", BigDecimal.TEN, new byte[]{1}, T0);
+        Comprobante c = Comprobante.nuevo("a", "F001", 1, T0, "20123456786", "X", BigDecimal.TEN, new byte[]{1}, T0, T0.plusMinutes(1));
         assertThat(c.numero()).isEqualTo("F001-1");
     }
 
@@ -56,7 +56,7 @@ class ComprobanteTest {
         assertThat(c.getEstado()).isEqualTo(EstadoComprobante.ENVIANDO);
         assertThat(c.getActualizadoEn()).isEqualTo(T1);
 
-        c.registrarResultado(resultado(ClaseResultado.ACEPTADO, "0", "La Factura numero F001-4355, ha sido aceptada", List.of(), new byte[]{9, 9}), T2);
+        c.registrarResultado(resultado(ClaseResultado.ACEPTADO, "0", "La Factura numero F001-4355, ha sido aceptada", List.of(), new byte[]{9, 9}), T2, T0.plusMinutes(5));
 
         assertThat(c.getEstado()).isEqualTo(EstadoComprobante.ACEPTADO);
         assertThat(c.getCodigoSunat()).isEqualTo("0");
@@ -73,7 +73,7 @@ class ComprobanteTest {
         c.marcarEnviando(T1);
         c.registrarResultado(resultado(ClaseResultado.ACEPTADO_CON_OBSERVACIONES, "0", "ok",
                 List.of(new CdrResultado.Observacion("4031", "Debe indicar el nombre comercial"), new CdrResultado.Observacion(null, "Aviso suelto")),
-                new byte[]{1}), T2);
+                new byte[]{1}), T2, T0.plusMinutes(5));
 
         assertThat(c.getEstado()).isEqualTo(EstadoComprobante.ACEPTADO_CON_OBSERVACIONES);
         assertThat(c.getObservaciones()).isEqualTo("4031 - Debe indicar el nombre comercial\nAviso suelto");
@@ -83,7 +83,7 @@ class ComprobanteTest {
     void unRechazoGuardaElCodigoDelErrorYNoPierdeElNumero() {
         Comprobante c = nuevo();
         c.marcarEnviando(T1);
-        c.registrarResultado(resultado(ClaseResultado.RECHAZO, "3270", "diferencia de montos", List.of(), new byte[]{1}), T2);
+        c.registrarResultado(resultado(ClaseResultado.RECHAZO, "3270", "diferencia de montos", List.of(), new byte[]{1}), T2, T0.plusMinutes(5));
 
         assertThat(c.getEstado()).isEqualTo(EstadoComprobante.RECHAZADO);
         assertThat(c.getCodigoSunat()).isEqualTo("3270");
@@ -94,7 +94,7 @@ class ComprobanteTest {
     void unErrorSoapNoTraeConstanciaYElCdrQuedaNulo() {
         Comprobante c = nuevo();
         c.marcarEnviando(T1);
-        c.registrarResultado(resultado(ClaseResultado.ERROR_DE_DATOS, "0306", "xml mal", List.of(), null), T2);
+        c.registrarResultado(resultado(ClaseResultado.ERROR_DE_DATOS, "0306", "xml mal", List.of(), null), T2, T0.plusMinutes(5));
 
         assertThat(c.getEstado()).isEqualTo(EstadoComprobante.ERROR_DE_DATOS);
         assertThat(c.getCdrZip()).isNull();
@@ -104,7 +104,7 @@ class ComprobanteTest {
     void sinRespuestaDeLaSunatQuedaEnErrorTemporalConElMotivo() {
         Comprobante c = nuevo();
         c.marcarEnviando(T1);
-        c.marcarErrorTemporal("La SUNAT no respondió a tiempo", T2);
+        c.marcarErrorTemporal("La SUNAT no respondió a tiempo", T2, T0.plusMinutes(5));
 
         assertThat(c.getEstado()).isEqualTo(EstadoComprobante.ERROR_TEMPORAL);
         assertThat(c.getDescripcionSunat()).isEqualTo("La SUNAT no respondió a tiempo");
@@ -115,7 +115,7 @@ class ComprobanteTest {
     void despuesDeUnErrorTemporalSePuedeVolverAEnviar() {
         Comprobante c = nuevo();
         c.marcarEnviando(T1);
-        c.marcarErrorTemporal("x", T1);
+        c.marcarErrorTemporal("x", T1, T0.plusMinutes(5));
         c.marcarEnviando(T2);
         assertThat(c.getEstado()).isEqualTo(EstadoComprobante.ENVIANDO);
     }
@@ -123,7 +123,7 @@ class ComprobanteTest {
     @Test
     void noSePuedeRegistrarUnResultadoSinHaberEnviado() {
         Comprobante c = nuevo();
-        assertThatThrownBy(() -> c.registrarResultado(resultado(ClaseResultado.ACEPTADO, "0", "x", List.of(), null), T1))
+        assertThatThrownBy(() -> c.registrarResultado(resultado(ClaseResultado.ACEPTADO, "0", "x", List.of(), null), T1, T0.plusMinutes(5)))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Un comprobante PENDIENTE no puede pasar a ACEPTADO");
         assertThat(c.getEstado()).isEqualTo(EstadoComprobante.PENDIENTE);
@@ -134,7 +134,7 @@ class ComprobanteTest {
     void unComprobanteAceptadoNoSePuedeVolverAEnviar() {
         Comprobante c = nuevo();
         c.marcarEnviando(T1);
-        c.registrarResultado(resultado(ClaseResultado.ACEPTADO, "0", "ok", List.of(), new byte[]{1}), T1);
+        c.registrarResultado(resultado(ClaseResultado.ACEPTADO, "0", "ok", List.of(), new byte[]{1}), T1, T0.plusMinutes(5));
 
         assertThatThrownBy(() -> c.marcarEnviando(T2))
                 .isInstanceOf(IllegalStateException.class)
@@ -147,9 +147,9 @@ class ComprobanteTest {
     void unaTransicionProhibidaNoCambiaNingunDato() {
         Comprobante c = nuevo();
         c.marcarEnviando(T1);
-        c.registrarResultado(resultado(ClaseResultado.RECHAZO, "3270", "malo", List.of(), new byte[]{7}), T1);
+        c.registrarResultado(resultado(ClaseResultado.RECHAZO, "3270", "malo", List.of(), new byte[]{7}), T1, T0.plusMinutes(5));
 
-        assertThatThrownBy(() -> c.registrarResultado(resultado(ClaseResultado.ACEPTADO, "0", "ok", List.of(), new byte[]{8}), T2))
+        assertThatThrownBy(() -> c.registrarResultado(resultado(ClaseResultado.ACEPTADO, "0", "ok", List.of(), new byte[]{8}), T2, T0.plusMinutes(5)))
                 .isInstanceOf(IllegalStateException.class);
         assertThat(c.getCodigoSunat()).isEqualTo("3270");
         assertThat(c.getCdrZip()).containsExactly(7);
@@ -157,6 +157,104 @@ class ComprobanteTest {
 
     @Test
     void noSePuedeMarcarErrorTemporalSinEstarEnviando() {
-        assertThatThrownBy(() -> nuevo().marcarErrorTemporal("x", T1)).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> nuevo().marcarErrorTemporal("x", T1, T0.plusMinutes(5))).isInstanceOf(IllegalStateException.class);
+    }
+
+    // --- Reintentos y plazo ---
+
+    @Test
+    void unComprobanteNuevoTraeProgramadoSuPrimerIntentoYCeroFallos() {
+        Comprobante c = nuevo();
+        assertThat(c.getProximoIntento()).isEqualTo(T0.plusMinutes(1));
+        assertThat(c.getIntentosFallidos()).isZero();
+    }
+
+    @Test
+    void cadaFalloPasajeroSumaUnIntentoYProgramaElSiguiente() {
+        Comprobante c = nuevo();
+        c.marcarEnviando(T1);
+        c.marcarErrorTemporal("sin conexión", T1, T1.plusMinutes(1));
+        assertThat(c.getIntentosFallidos()).isEqualTo(1);
+        assertThat(c.getProximoIntento()).isEqualTo(T1.plusMinutes(1));
+
+        c.marcarEnviando(T2);
+        c.marcarErrorTemporal("timeout", T2, T2.plusMinutes(2));
+        assertThat(c.getIntentosFallidos()).isEqualTo(2);
+        assertThat(c.getProximoIntento()).isEqualTo(T2.plusMinutes(2));
+    }
+
+    @Test
+    void unaRespuestaPasajeraDeLaSunatTambienProgramaElReintento() {
+        Comprobante c = nuevo();
+        c.marcarEnviando(T1);
+        c.registrarResultado(resultado(ClaseResultado.TRANSITORIO, "0100", "intente nuevamente", List.of(), null), T1, T1.plusMinutes(7));
+
+        assertThat(c.getEstado()).isEqualTo(EstadoComprobante.ERROR_TEMPORAL);
+        assertThat(c.getIntentosFallidos()).isEqualTo(1);
+        assertThat(c.getProximoIntento()).isEqualTo(T1.plusMinutes(7));
+    }
+
+    @Test
+    void unaRespuestaDefinitivaBorraElProximoIntentoYNoSumaFallos() {
+        Comprobante c = nuevo();
+        c.marcarEnviando(T1);
+        c.registrarResultado(resultado(ClaseResultado.ACEPTADO, "0", "ok", List.of(), new byte[]{1}), T1, T1.plusMinutes(7));
+
+        assertThat(c.getProximoIntento()).isNull();
+        assertThat(c.getIntentosFallidos()).isZero();
+    }
+
+    @Test
+    void unRechazoNoSeReintenta() {
+        Comprobante c = nuevo();
+        c.marcarEnviando(T1);
+        c.registrarResultado(resultado(ClaseResultado.RECHAZO, "3270", "x", List.of(), new byte[]{1}), T1, T1.plusMinutes(7));
+        assertThat(c.getProximoIntento()).isNull();
+    }
+
+    @Test
+    void sinFechaDeProximoIntentoUnFalloPasajeroSeRechaza() {
+        Comprobante c = nuevo();
+        c.marcarEnviando(T1);
+        assertThatThrownBy(() -> c.marcarErrorTemporal("x", T1, null)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void unComprobantePendienteOEnErrorTemporalPuedeVencer() {
+        Comprobante pendiente = nuevo();
+        pendiente.marcarVencido(T2);
+        assertThat(pendiente.getEstado()).isEqualTo(EstadoComprobante.VENCIDO);
+        assertThat(pendiente.getProximoIntento()).isNull();
+        assertThat(pendiente.getActualizadoEn()).isEqualTo(T2);
+
+        Comprobante conError = nuevo();
+        conError.marcarEnviando(T1);
+        conError.marcarErrorTemporal("x", T1, T1.plusMinutes(1));
+        conError.marcarVencido(T2);
+        assertThat(conError.getEstado()).isEqualTo(EstadoComprobante.VENCIDO);
+        assertThat(conError.getIntentosFallidos()).isEqualTo(1);
+    }
+
+    @Test
+    void unComprobanteVencidoNoSePuedeEnviar() {
+        Comprobante c = nuevo();
+        c.marcarVencido(T1);
+        assertThatThrownBy(() -> c.marcarEnviando(T2)).isInstanceOf(IllegalStateException.class)
+                .hasMessage("Un comprobante VENCIDO no puede pasar a ENVIANDO");
+    }
+
+    @Test
+    void unComprobanteAceptadoNoPuedeVencer() {
+        Comprobante c = nuevo();
+        c.marcarEnviando(T1);
+        c.registrarResultado(resultado(ClaseResultado.ACEPTADO, "0", "ok", List.of(), new byte[]{1}), T1, T1);
+        assertThatThrownBy(() -> c.marcarVencido(T2)).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void unComprobanteQueSeEstaEnviandoNoPuedeVencer() {
+        Comprobante c = nuevo();
+        c.marcarEnviando(T1);
+        assertThatThrownBy(() -> c.marcarVencido(T2)).isInstanceOf(IllegalStateException.class);
     }
 }

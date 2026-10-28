@@ -41,7 +41,7 @@ class ComprobanteRepositoryTest {
     }
 
     private static Comprobante nuevo(String idExterno, long correlativo, byte[] xml) {
-        return Comprobante.nuevo(idExterno, "F001", correlativo, T0, "20123456786", "CLIENTE SAC ñandú áéíóú", new BigDecimal("70.00"), xml, T0);
+        return Comprobante.nuevo(idExterno, "F001", correlativo, T0, "20123456786", "CLIENTE SAC ñandú áéíóú", new BigDecimal("70.00"), xml, T0, T0.plusMinutes(1));
     }
 
     @Test
@@ -73,7 +73,7 @@ class ComprobanteRepositoryTest {
         Comprobante c = nuevo("pedido-grande", 1, xml);
         c.marcarEnviando(T0);
         c.registrarResultado(ResultadoEmision.builder().clase(ClaseResultado.ACEPTADO).codigo("0").descripcion("ok")
-                .observaciones(List.of()).cdrZip(cdr).build(), T0);
+                .observaciones(List.of()).cdrZip(cdr).build(), T0, T0.plusMinutes(5));
         Long id = comprobantes.saveAndFlush(c).getId();
 
         Comprobante leido = comprobantes.findById(id).orElseThrow();
@@ -87,7 +87,7 @@ class ComprobanteRepositoryTest {
         Comprobante c = nuevo("pedido-2", 2, new byte[]{1});
         c.marcarEnviando(T0.plusSeconds(1));
         c.registrarResultado(ResultadoEmision.builder().clase(ClaseResultado.ACEPTADO_CON_OBSERVACIONES).codigo("0").descripcion("aceptada")
-                .observaciones(List.of(new CdrResultado.Observacion("4031", "Debe indicar el nombre comercial"))).cdrZip(new byte[]{5}).build(), T0.plusSeconds(2));
+                .observaciones(List.of(new CdrResultado.Observacion("4031", "Debe indicar el nombre comercial"))).cdrZip(new byte[]{5}).build(), T0.plusSeconds(2), T0.plusMinutes(5));
         Long id = comprobantes.saveAndFlush(c).getId();
 
         Comprobante leido = comprobantes.findById(id).orElseThrow();
@@ -124,7 +124,7 @@ class ComprobanteRepositoryTest {
     @Test
     void elMismoCorrelativoEnOtraSerieSiSePuede() {
         comprobantes.saveAndFlush(nuevo("a", 7, new byte[]{1}));
-        Comprobante otraSerie = Comprobante.nuevo("b", "F002", 7, T0, "20123456786", "X", BigDecimal.TEN, new byte[]{1}, T0);
+        Comprobante otraSerie = Comprobante.nuevo("b", "F002", 7, T0, "20123456786", "X", BigDecimal.TEN, new byte[]{1}, T0, T0.plusMinutes(1));
 
         assertThat(comprobantes.saveAndFlush(otraSerie).getId()).isNotNull();
     }
@@ -171,5 +171,19 @@ class ComprobanteRepositoryTest {
         comprobantes.flush();
 
         assertThat(comprobantes.findById(id).orElseThrow().getXmlFirmado()).containsExactly(1, 1, 1);
+    }
+
+    @Test
+    void guardaLosIntentosFallidosYElProximoIntento() {
+        Comprobante c = nuevo("con-reintento", 1, new byte[]{1});
+        c.marcarEnviando(T0.plusSeconds(1));
+        c.marcarErrorTemporal("timeout", T0.plusSeconds(2), T0.plusMinutes(2));
+        Long id = comprobantes.saveAndFlush(c).getId();
+
+        Comprobante leido = comprobantes.findById(id).orElseThrow();
+
+        assertThat(leido.getEstado()).isEqualTo(EstadoComprobante.ERROR_TEMPORAL);
+        assertThat(leido.getIntentosFallidos()).isEqualTo(1);
+        assertThat(leido.getProximoIntento()).isEqualTo(T0.plusMinutes(2));
     }
 }

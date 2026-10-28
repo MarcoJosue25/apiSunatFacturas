@@ -19,8 +19,8 @@ class EstadoComprobanteTest {
 
     // Todas las transiciones permitidas, escritas a mano; cualquier otra combinación debe estar prohibida
     private static final Set<String> PERMITIDAS = Set.of(
-            "PENDIENTE>ENVIANDO",
-            "ERROR_TEMPORAL>ENVIANDO",
+            "PENDIENTE>ENVIANDO", "PENDIENTE>VENCIDO",
+            "ERROR_TEMPORAL>ENVIANDO", "ERROR_TEMPORAL>VENCIDO",
             "ENVIANDO>ACEPTADO", "ENVIANDO>ACEPTADO_CON_OBSERVACIONES", "ENVIANDO>RECHAZADO", "ENVIANDO>ERROR_DE_DATOS",
             "ENVIANDO>ERROR_DE_CONFIGURACION", "ENVIANDO>ERROR_TEMPORAL", "ENVIANDO>REVISAR");
 
@@ -41,14 +41,14 @@ class EstadoComprobanteTest {
     }
 
     @Test
-    void hayNueveEstadosYNueveTransicionesPermitidas() {
-        assertThat(values()).hasSize(9);
-        assertThat(PERMITIDAS).hasSize(9);
+    void hayDiezEstadosYOnceTransicionesPermitidas() {
+        assertThat(values()).hasSize(10);
+        assertThat(PERMITIDAS).hasSize(11);
     }
 
     @ParameterizedTest
     @EnumSource(value = EstadoComprobante.class, names = {"ACEPTADO", "ACEPTADO_CON_OBSERVACIONES", "RECHAZADO", "ERROR_DE_DATOS",
-            "ERROR_DE_CONFIGURACION", "REVISAR"})
+            "ERROR_DE_CONFIGURACION", "REVISAR", "VENCIDO"})
     void losEstadosFinalesNoPuedenPasarANingunOtro(EstadoComprobante estado) {
         for (EstadoComprobante destino : values()) {
             assertThat(estado.puedePasarA(destino)).as(estado + " a " + destino).isFalse();
@@ -59,6 +59,17 @@ class EstadoComprobanteTest {
     @EnumSource(EstadoComprobante.class)
     void nadiePuedeQuedarseEnElMismoEstado(EstadoComprobante estado) {
         assertThat(estado.puedePasarA(estado)).isFalse();
+    }
+
+    @Test
+    void soloLosQueTodaviaNoSeEnviaronNiTuvieronRespuestaPuedenVencer() {
+        Set<EstadoComprobante> origenes = EnumSet.noneOf(EstadoComprobante.class);
+        for (EstadoComprobante e : values()) {
+            if (e.puedePasarA(VENCIDO)) {
+                origenes.add(e);
+            }
+        }
+        assertThat(origenes).containsExactlyInAnyOrder(PENDIENTE, ERROR_TEMPORAL);
     }
 
     @Test
