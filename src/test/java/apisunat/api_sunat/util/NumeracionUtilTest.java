@@ -72,4 +72,29 @@ class NumeracionUtilTest {
     void elNumeroSiempreCumpleLaReglaOficial(String serie, long correlativo) {
         assertThat(NumeracionUtil.numeroFactura(serie, correlativo)).matches("F[A-Z0-9]{3}-[0-9]{1,8}");
     }
+
+    // --- Nombre del archivo ---
+
+    @ParameterizedTest
+    @CsvSource({"20100066603,F001,1,20100066603-01-F001-1", "20100066603,F001,4355,20100066603-01-F001-4355",
+            "10123456781,FA01,99999999,10123456781-01-FA01-99999999", "20512345678,FS21,12,20512345678-01-FS21-12"})
+    void elNombreDelArchivoEsRucTipoSerieYNumeroSinCeros(String ruc, String serie, long correlativo, String esperado) {
+        assertThat(NumeracionUtil.nombreArchivoFactura(ruc, serie, correlativo)).isEqualTo(esperado);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"2010006660", "201000666033", "2010006660a", " 20100066603", "20100066603\n", "20100066603-"})
+    void elNombreDelArchivoExigeUnRucDeOnceDigitos(String ruc) {
+        assertThatThrownBy(() -> NumeracionUtil.nombreArchivoFactura(ruc, "F001", 1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("RUC");
+    }
+
+    @Test
+    void elNombreDelArchivoRechazaUnaSerieOUnCorrelativoInvalidos() {
+        assertThatThrownBy(() -> NumeracionUtil.nombreArchivoFactura("20100066603", "B001", 1)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> NumeracionUtil.nombreArchivoFactura("20100066603", "F001", 0)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> NumeracionUtil.nombreArchivoFactura("20100066603", "F001", 100_000_000L)).isInstanceOf(IllegalArgumentException.class);
+    }
 }

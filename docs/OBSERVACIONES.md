@@ -156,3 +156,15 @@ Al probar la firma con 999 líneas del mismo precio, el armador rechazó la fact
 
 ### O-046 Los mensajes de error de assertj pueden ser enormes (fase 4)
 Un `isEqualTo` entre dos XML largos imprime ambos completos. Para comparar XML conviene un helper que dé una diferencia corta, o recortar la salida al leer los resultados.
+
+### O-047 El mismo XML da siempre el mismo ZIP (fase 5)
+`ZipUtil.comprimir` usa una fecha fija dentro del ZIP (2000-01-01) en vez de la hora actual. Así un reintento manda exactamente los mismos bytes que el primer intento. El ZIP guarda la hora de a 2 segundos, por eso el test espera 2.2 s entre las dos compresiones; con 1.1 s la mutación (usar la hora real) no se detectaba.
+
+### O-048 La constancia (CDR) se lee con un tope de 5 MB descomprimidos (fase 5)
+Una constancia real pesa unos pocos KB. `ZipUtil.leerXmlUnico` corta si lo descomprimido pasa de 5 MB sumando todos los archivos del ZIP, para que una respuesta rara (un "zip bomb": 6 MB de ceros caben en pocos KB comprimidos) no llene la memoria. Un test usa justo el tope y otro lo pasa.
+
+### O-049 No hacía falta revisar si una entrada del ZIP es carpeta (fase 5)
+Una carpeta como `dummy/` termina en `/`, no en `.xml`, así que ya se descarta por el nombre. Se probó quitando la comprobación y los tests siguieron igual: era código de más y se quitó.
+
+### O-050 La `dummy/` de la SUNAT se ignora al leer, pero al enviar no se agrega (fase 5)
+Algunos ejemplos antiguos de la SUNAT mandan el ZIP con una carpeta `dummy/` vacía. Por ahora se manda solo el XML; si el beta lo rechazara por eso se agrega (queda como punto a verificar en el plan).

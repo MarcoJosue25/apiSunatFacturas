@@ -5,6 +5,7 @@ import apisunat.api_sunat.dto.ClienteRequest;
 import apisunat.api_sunat.dto.FacturaRequest;
 import apisunat.api_sunat.dto.ItemRequest;
 import apisunat.api_sunat.util.Fixtures;
+import apisunat.api_sunat.util.NumeracionUtil;
 import apisunat.api_sunat.util.ReglasSunatXml;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -579,5 +580,19 @@ class FacturaXmlBuilderTest {
             assertThat(errores(xml)).as(caso + ": esquema").isEmpty();
             assertThat(ReglasSunatXml.verificar(doc(xml), new BigDecimal("0.50"))).as(caso + ": reglas de la SUNAT").isEmpty();
         }
+    }
+
+    // --- El nombre del archivo coincide con lo que lleva el XML ---
+
+    @ParameterizedTest
+    @CsvSource({"F001,1", "F001,4355", "FA01,99999999", "FS21,12"})
+    void elNombreDelArchivoCoincideConElRucLaSerieYElNumeroDelXml(String serie, long correlativo) {
+        byte[] xml = new FacturaXmlBuilder(propiedades()).construir(facturaBasica(), serie, correlativo, EMISION);
+        Document doc = doc(xml);
+
+        String nombre = NumeracionUtil.nombreArchivoFactura("20100066603", serie, correlativo);
+        assertThat(nombre).isEqualTo(valor(doc, "/inv:Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyIdentification/cbc:ID")
+                + "-01-" + valor(doc, "/inv:Invoice/cbc:ID"));
+        assertThat(valor(doc, "/inv:Invoice/cbc:InvoiceTypeCode")).isEqualTo("01");
     }
 }

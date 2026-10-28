@@ -186,7 +186,8 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 **Clases que aparecen:** `util/ZipUtil`, `sunat/cdr/CdrParser`, `sunat/cdr/CdrResultado`, `sunat/errores/CatalogoCodigos`, `sunat/errores/ClasificadorErrores`, `model/enums/ClaseError`, y un servicio que arma el recorrido completo.
 
-- [ ] Nombre del archivo `RUC-01-SERIE-NUMERO` y ZIP con el XML adentro. Probar si el beta pide la carpeta `dummy` **(verificar)**.
+- [x] Nombre del archivo `RUC-01-SERIE-NUMERO` (`NumeracionUtil.nombreArchivoFactura`) y ZIP con el XML adentro (`ZipUtil`).
+- [ ] Probar en el beta si pide la carpeta `dummy` **(verificar)**.
 - [ ] `sendBill` en el cliente SOAP, con el ZIP en base64. Probar si hace falta MTOM **(verificar)**.
 - [ ] `CdrParser`: descomprime la respuesta y lee el `ApplicationResponse` (código, descripción y observaciones).
 - [ ] Mover `codigos_sunat.csv` a `src/main/resources` y cargarlo al arrancar.
@@ -195,8 +196,8 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [ ] Servicio que arma el recorrido: calcular, XML, XSD, firmar, ZIP, enviar, leer el CDR, clasificar. Todavía sin base de datos.
 
 **Tests**
-- [ ] ZIP: contiene exactamente un XML y los nombres coinciden.
-- [ ] El nombre del archivo (`RUC-01-F001-1`) coincide con el RUC, la serie y el número que lleva el XML (se movió de la fase 3 porque el nombre se arma con el ZIP).
+- [x] ZIP: contiene exactamente un XML y los nombres coinciden.
+- [x] El nombre del archivo (`RUC-01-F001-1`) coincide con el RUC, la serie y el número que lleva el XML (se movió de la fase 3 porque el nombre se arma con el ZIP).
 - [ ] CDR de ejemplo: aceptado, rechazado y con observaciones.
 - [ ] SOAP Fault con `0111`, `0151` y `0306`.
 - [ ] Cada regla de clasificación de las notas (por ejemplo `0100` y `0109` transitorios, `0306` no).

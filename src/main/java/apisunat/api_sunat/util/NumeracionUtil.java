@@ -9,6 +9,7 @@ public final class NumeracionUtil {
     public static final long MAX_CORRELATIVO = 99_999_999L;
 
     private static final Pattern SERIE_FACTURA = Pattern.compile("F[A-Z0-9]{3}");
+    private static final Pattern RUC = Pattern.compile("\\d{11}");
 
     private NumeracionUtil() {
     }
@@ -26,5 +27,14 @@ public final class NumeracionUtil {
             throw new IllegalArgumentException("El correlativo debe estar entre 1 y " + MAX_CORRELATIVO);
         }
         return serie + "-" + correlativo;
+    }
+
+    // El nombre del archivo que pide la SUNAT: RUC-tipo de documento-serie-correlativo, por ejemplo 20100066603-01-F001-4355.
+    // El tipo 01 es factura. El ZIP y el XML que lleva adentro se llaman igual (cambia solo la extensión).
+    public static String nombreArchivoFactura(String ruc, String serie, long correlativo) {
+        if (ruc == null || !RUC.matcher(ruc).matches()) {
+            throw new IllegalArgumentException("El RUC del nombre del archivo debe tener 11 dígitos");
+        }
+        return ruc + "-01-" + numeroFactura(serie, correlativo);
     }
 }
