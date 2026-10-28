@@ -157,6 +157,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 **Clases que aparecen:** `sunat/firma/CertificadoLoader`, `sunat/firma/XmlSigner`, y las propiedades del certificado.
 
 - [ ] Certificados de prueba generados con `keytool` y guardados en `src/test/resources`: uno válido, uno vencido y uno con otro RUC. Documentar el comando.
+- [x] `Clock` inyectable con la zona de Lima (`config/ClockConfig`), con su test. Se movió desde la fase 5 porque `CertificadoLoader` lo necesita para saber si el certificado está vigente.
 - [ ] Propiedades `sunat.certificado.ruta` y `sunat.certificado.clave`.
 - [ ] `CertificadoLoader`: lee el `.p12`, valida la vigencia y obtiene la clave privada y la cadena.
 - [ ] `XmlSigner`: XMLDSig dentro de `ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent`, sobre todo el documento.
@@ -191,7 +192,6 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [ ] Mover `codigos_sunat.csv` a `src/main/resources` y cargarlo al arrancar.
 - [ ] `ClasificadorErrores` con las clases: aceptado, aceptado con observaciones, rechazo, error de datos, error de configuración y transitorio. Las reglas salen de `docs/sunat/NOTAS.md`.
 - [ ] Un código desconocido nunca se reintenta.
-- [ ] `Clock` inyectable con la zona de Lima (fecha y hora de emisión), con su test. Se hace aquí porque lo usa el servicio de abajo, y no el armador del XML, que recibe la fecha como parámetro.
 - [ ] Servicio que arma el recorrido: calcular, XML, XSD, firmar, ZIP, enviar, leer el CDR, clasificar. Todavía sin base de datos.
 
 **Tests**

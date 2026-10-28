@@ -102,3 +102,9 @@ El tipo de documento de identidad es siempre `6` (RUC), la afectación del IGV e
 ### O-028 El detalle de la guía se contrasta con las Reglas, no con la guía (fase 3)
 Para saber qué elementos son obligatorios sirve más la lista de errores de las Reglas de validación (`No existe el Tag UBL...`) que la guía, porque es lo que la SUNAT realmente exige. Ejemplos que solo se ven ahí: la forma de pago (`FormaPago`, error `3244`) y el atributo `listID` del tipo de operación (error `3205`).
 
+
+### O-029 El `Clock` pasó de la fase 5 a la fase 4 (fase 4)
+El `Clock` con la zona de Lima se iba a crear en la fase 5, pero la validación de la vigencia del certificado (fase 4) también necesita saber la fecha actual. Se creó antes (`config/ClockConfig`) para no usar `Instant.now()` suelto, que no se puede probar con fechas controladas.
+
+### O-030 Lima no tiene horario de verano (fase 4)
+`America/Lima` es siempre UTC-5. Aun así se usa la zona con nombre y no un desplazamiento fijo, para que el código diga claramente que son fechas de Perú. Un test comprueba los 12 meses.
