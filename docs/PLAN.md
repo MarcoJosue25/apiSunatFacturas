@@ -67,7 +67,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 - [x] `SunatProperties` con `@ConfigurationProperties("sunat")`: url del servicio, ruc, usuario, clave y timeouts. Valida al arrancar y falla rápido si falta algo.
 - [x] Credenciales por variables de entorno (`SUNAT_RUC`, `SUNAT_USUARIO`, `SUNAT_CLAVE`) y un `.env.example`. Por defecto apunta al beta con usuario `MODDATOS`.
-- [ ] `SoapEnvelopeBuilder`: sobre SOAP con la cabecera WS-Security UsernameToken (`RUC` + `usuario` juntos como username) y el cuerpo de `getStatus`. Escapa los caracteres especiales de XML.
+- [x] `SoapEnvelopeBuilder`: sobre SOAP con la cabecera WS-Security UsernameToken (`RUC` + `usuario` juntos como username) y el cuerpo de `getStatus`. Escapa los caracteres especiales de XML.
 - [ ] `SoapResponseParser`: lee `statusCode` y `content` de `getStatusResponse`, y también el SOAP Fault.
 - [ ] `BillServiceClient` con `RestClient`: POST con `SOAPAction: urn:getStatus`, timeout de conexión y de lectura.
 - [ ] `SunatService.consultarTicket(ticket)`.
@@ -77,7 +77,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 **Tests**
 - [x] Propiedades: el arranque falla si falta el RUC, la URL es inválida o un timeout es 0 o negativo.
-- [ ] Sobre SOAP: XML exacto esperado, namespaces correctos, RUC y usuario concatenados, y escape de `& < > " '` en credenciales y ticket.
+- [x] Sobre SOAP: XML exacto esperado, namespaces correctos, RUC y usuario concatenados, y escape de `& < > " '` en credenciales y ticket.
 - [ ] Parser: la respuesta real `0127` (guardada como archivo de prueba), `statusCode` 0, 98 y 99 con y sin `content`, SOAP Fault, XML vacío, XML que no es SOAP, `statusCode` ausente y tildes en UTF-8.
 - [ ] Cliente con servidor simulado: cabeceras y cuerpo correctos, 200, 500, 503, timeout de lectura, conexión rechazada, respuesta HTML de un proxy y respuesta enorme.
 - [ ] Servicio con Mockito: delega bien y traduce las excepciones.
