@@ -411,3 +411,13 @@ Reglas de este archivo:
 ### L-038 La imagen de Docker no tiene healthcheck
 - [ ] Estado: diferido
 - **Qué significa:** no hay un endpoint de salud (no se usa Actuator) y `docker compose` no sabe si la API responde; solo si el proceso vive (`restart: unless-stopped`).
+
+### L-039 Un `HTTP 401` se reintenta aunque la causa sea una clave mala
+- [ ] Estado: pendiente (se ve con la SUNAT real)
+- **Qué significa:** el beta devolvió `HTTP 401` en 8 de 500 envíos en paralelo con credenciales correctas, y se recuperaron al reintentar (O-138). Por eso el 401 se trata como pasajero. Pero no sé qué responde la SUNAT real con una clave SOL incorrecta; si fuera un 401, la API reintentaría sin avisar hasta que venza el plazo.
+- **Qué hacer cuando se sepa:** si el 401 persiste en varios comprobantes seguidos, tratarlo como error de configuración (`REVISAR`); o limitar el envío en paralelo hacia la SUNAT.
+
+### L-040 No hay límite de envíos en paralelo hacia la SUNAT
+- [ ] Estado: diferido
+- **Qué significa:** con 12 peticiones a la vez el beta rechazó un 1,6 % con 401. La API no limita cuántos envíos hace a la vez; solo los reintentos lo absorben.
+

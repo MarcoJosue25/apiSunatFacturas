@@ -430,3 +430,15 @@ Las descripciones de la SUNAT (por ejemplo `descripcionSunat`) se guardan y se d
 ### O-137 Un archivo de basura (`REVISAR`) en la raíz (fase 9)
 Quedó en el repositorio, desde una mutación de pruebas, un archivo llamado `REVISAR` con el texto `M3 TRANSITORIO-`. Se borró.
 
+### O-138 Carga de 2000 comprobantes contra el beta real (fase 9)
+`SunatBetaCargaRealTest` (`-Pbeta`; cantidades con `-Dcarga.facturas` y `-Dcarga.boletas`): 500 facturas con monto S/ 0.50 y 1500 boletas de S/ 0.10 por la API, 12 hilos a la vez, MySQL real y el beta de la SUNAT. Resultado de la corrida del 2026-10-28:
+- 2000 comprobantes, 0 errores de conexión; 1992 `201` y 8 `202` (guardadas, la SUNAT no respondió bien).
+- Numeración correcta: 500 correlativos distintos de factura y 1500 de boleta, sin repetidos.
+- Latencia del `POST`: p50 186 ms, p95 317 ms, máximo 3,6 s. Toda la emisión tardó 37 s (≈52 por segundo, mezclando boletas que no llaman a la SUNAT).
+- Las 1500 boletas salieron en 3 resúmenes (500 + 500 + 500) y el beta los aceptó los 3 en 6 s.
+- **Primer fallo real del beta:** 8 de las 500 facturas recibieron `HTTP 401` de la SUNAT al enviar en paralelo (las credenciales eran las correctas, las otras 492 pasaron). El sistema lo trató como "sin respuesta útil": quedaron `ERROR_TEMPORAL` con un intento `SIN_RESPUESTA`, y al correr el reintento las 8 se aceptaron al primer intento. Final: 2000 `ACEPTADO`.
+- Al recuperar a mano en la prueba, el `proximo_intento` se fijó con una fecha fija: MySQL usa UTC y la aplicación la hora de Lima, y un `now()` de MySQL queda 5 horas en el futuro para la aplicación.
+
+### O-139 Un `HTTP 401` de la SUNAT se trata como pasajero (fase 9)
+Hoy cualquier error HTTP sin detalle SOAP es `SunatNoDisponibleException` y se reintenta. Con el beta bajo carga el 401 fue pasajero. Pero si en producción la clave SOL fuera incorrecta no sé si la SUNAT contestaría un 401 o un SOAP Fault `0111` (que sí se clasifica como error de configuración); si fuera un 401, el comprobante se reintentaría para siempre con espera de 60 minutos hasta vencer. Ver ERRORES L-039.
+
