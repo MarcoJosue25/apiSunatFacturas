@@ -58,7 +58,7 @@ Ejemplo, un polo de S/ 35.00 por 2 unidades: total de la línea 70.00 → valor 
 
 - El importe total siempre es lo que pagó el cliente (precio × cantidad), sin diferencias de centavos.
 - Cada línea cumple 3271, 3272, 3103 y 3270 con diferencias de menos de 1 centavo.
-- La diferencia entre el IGV total y el 18% de la base crece con el redondeo de cada línea: como máximo 0.0059 por línea, y en documentos reales unos pocos centavos. Sería un problema solo con muchísimas líneas idénticas y adversarias (más de 80), que rechazo antes de enviar a la SUNAT. Ver L-015 en `ERRORES.md`.
+- La diferencia entre el IGV total y el 18% de la base crece con el redondeo de cada línea: como máximo 0.0059 por línea, y en documentos reales unos pocos centavos. Con muchas líneas iguales se acumula: con el peor precio (0.23) a partir de unas 86 líneas, y con S/ 35.00 a partir de unas 417. Ese documento lo rechazo yo antes de enviarlo (mi límite es 0.50, la mitad de la tolerancia de la SUNAT). Lo normal, juntar los productos iguales en una sola línea con su cantidad, es exacto. Ver L-015 en `ERRORES.md`.
 
 ## Pendiente de verificar en el beta
 

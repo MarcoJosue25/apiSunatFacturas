@@ -188,3 +188,9 @@ Reglas de este archivo:
 - [ ] Estado: diferido (se tiene en cuenta en timeouts y reintentos)
 - **Qué significa:** en la prueba manual, una consulta `getStatus` al beta tardó entre 1.2 y 2.5 segundos. Por eso el timeout de lectura por defecto es de 30 s y los tests con tiempo usan márgenes holgados. Un envío de comprobante (que firma y comprime) probablemente tarde más.
 - **Por qué se deja:** no hay nada que arreglar, pero hay que recordarlo al decidir los timeouts de las fases 5 y 7.
+
+### L-015 Las facturas con cientos de líneas iguales se rechazan localmente
+- [ ] Estado: diferido (se mejora solo si algún día hace falta)
+- **Qué significa:** el redondeo de cada línea se acumula. Con 35.00 repetido, cada línea se desvía 0.0012 del 18%, así que unas 417 líneas iguales superan el margen de 0.50 que me puse (la SUNAT tolera 1). Con el peor precio (0.23) bastan unas 86. `CalculadoraIgv.calcularTotales` lanza un error antes de que el documento llegue a la SUNAT.
+- **Por qué se deja:** una venta por WhatsApp no tiene cientos de líneas, y juntar los productos iguales en una sola línea con su cantidad es exacto. Si algún día hace falta, se puede repartir el redondeo entre las líneas (difusión del error) para que el total siempre cuadre.
+
