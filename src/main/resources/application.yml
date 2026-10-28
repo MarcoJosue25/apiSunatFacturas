@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: api-sunat
+
+# El agente (saas-agent) usa el 8080, así que esta API va en otro puerto para poder correr las dos a la vez
+server:
+  port: 8081
