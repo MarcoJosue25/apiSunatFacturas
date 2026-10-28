@@ -24,6 +24,7 @@ sunat:
   clave: ${SUNAT_CLAVE:MODDATOS}
   # La serie de las facturas (la SUNAT exige 4 caracteres y que empiece con F)
   serie-factura: ${SUNAT_SERIE_FACTURA:F001}
+  serie-boleta: ${SUNAT_SERIE_BOLETA:B001}
   # Días calendario después del día de emisión en que todavía se puede enviar una factura
   plazo-envio-dias: ${SUNAT_PLAZO_ENVIO_DIAS:1}
   conexion-timeout-ms: 5000
@@ -48,3 +49,10 @@ sunat:
   consulta-cdr:
     habilitada: ${SUNAT_CONSULTA_CDR_HABILITADA:false}
     url: ${SUNAT_CONSULTA_CDR_URL:https://e-factura.sunat.gob.pe/ol-it-wsconscpegem/billConsultService}
+  # Las boletas se informan a la SUNAT con un resumen diario
+  resumen:
+    habilitado: ${SUNAT_RESUMEN_HABILITADO:true}
+    # Cada día a las 22:00 hora de Lima: segundos minutos horas día mes día-de-semana
+    cron: ${SUNAT_RESUMEN_CRON:0 0 22 * * *}
+    intervalo-consulta-segundos: ${SUNAT_RESUMEN_INTERVALO_SEGUNDOS:60}
+    plazo-dias: 7

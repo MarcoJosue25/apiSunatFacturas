@@ -1,5 +1,6 @@
 package apisunat.api_sunat.service;
 
+import apisunat.api_sunat.dto.BoletaRequest;
 import apisunat.api_sunat.dto.FacturaRequest;
 import apisunat.api_sunat.dto.ResultadoEmision;
 
@@ -18,4 +19,7 @@ public interface FacturaService {
 
     // Manda un XML ya firmado a la SUNAT. Un error SOAP sale como resultado; si la SUNAT no responde, lanza la excepción.
     ResultadoEmision enviar(String serie, long correlativo, byte[] xmlFirmado);
+
+    // Lo mismo para una boleta (que no se envía sola a la SUNAT, sino dentro de un resumen diario)
+    byte[] prepararXmlBoleta(BoletaRequest request, String serie, long correlativo, LocalDateTime emision);
 }

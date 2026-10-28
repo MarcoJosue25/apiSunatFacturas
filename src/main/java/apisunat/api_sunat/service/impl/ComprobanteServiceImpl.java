@@ -4,7 +4,6 @@ import apisunat.api_sunat.config.ClockConfig;
 import apisunat.api_sunat.config.SunatProperties;
 import apisunat.api_sunat.dto.FacturaRequest;
 import apisunat.api_sunat.dto.FacturaResponse;
-import apisunat.api_sunat.dto.ItemRequest;
 import apisunat.api_sunat.dto.ResultadoEmision;
 import apisunat.api_sunat.exception.ComprobanteNoEncontradoException;
 import apisunat.api_sunat.exception.SolicitudInvalidaException;
@@ -17,24 +16,18 @@ import apisunat.api_sunat.repository.EnvioIntentoRepository;
 import apisunat.api_sunat.service.ComprobanteService;
 import apisunat.api_sunat.service.FacturaService;
 import apisunat.api_sunat.service.SerieService;
-import apisunat.api_sunat.sunat.calculo.CalculadoraIgv;
-import apisunat.api_sunat.sunat.calculo.LineaCalculada;
 import apisunat.api_sunat.sunat.calculo.TotalesDocumento;
 import apisunat.api_sunat.sunat.errores.PoliticaBackoff;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 // El recorrido completo con base de datos. Las transacciones son cortas y nunca incluyen la llamada a la SUNAT:
 //   1. (transacción) reservar el número, armar y firmar el XML y guardar el comprobante. Si algo falla, el número no se pierde.
@@ -46,7 +39,6 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class ComprobanteServiceImpl implements ComprobanteService {
 
-    private static final int MAX_INTENTOS_INTERBLOQUEO = 3;
     private static final String RESULTADO_SIN_RESPUESTA = "SIN_RESPUESTA";
 
     private final SunatProperties propiedades;
@@ -68,11 +60,12 @@ public class ComprobanteServiceImpl implements ComprobanteService {
 
         String serie = propiedades.getSerieFactura();
         serieService.asegurar(Comprobante.TIPO_FACTURA, serie);
-        LocalDateTime emision = ahora();
+        // A segundos enteros: es lo que lleva el XML (IssueTime) y lo que guarda la base, así la respuesta coincide con lo guardado
+        LocalDateTime emision = ahora().truncatedTo(java.time.temporal.ChronoUnit.SECONDS);
 
         Comprobante guardado;
         try {
-            guardado = conReintentoPorInterbloqueo(() -> transaccion.execute(estado -> reservarYGuardar(request, serie, emision)));
+            guardado = Interbloqueos.conReintento(() -> transaccion.execute(estado -> reservarYGuardar(request, serie, emision)));
         } catch (DataIntegrityViolationException e) {
             // Otra petición con el mismo idExterno guardó primero: su transacción ganó y la nuestra se deshizo, sin gastar número
             Optional<Comprobante> ganador = comprobantes.findByIdExterno(request.getIdExterno());
@@ -86,21 +79,6 @@ public class ComprobanteServiceImpl implements ComprobanteService {
         return new Emision(enviar(guardado.getId()), true);
     }
 
-    // MySQL puede abortar una transacción por interbloqueo aunque el código esté bien hecho; su propia documentación pide
-    // volver a intentarla. Como la transacción se deshace entera (también el número), repetirla es seguro.
-    private Comprobante conReintentoPorInterbloqueo(Supplier<Comprobante> accion) {
-        for (int intento = 1; ; intento++) {
-            try {
-                return accion.get();
-            } catch (PessimisticLockingFailureException e) {
-                if (intento == MAX_INTENTOS_INTERBLOQUEO) {
-                    throw e;
-                }
-                log.warn("Interbloqueo al reservar el número (intento {} de {}): se vuelve a intentar", intento, MAX_INTENTOS_INTERBLOQUEO);
-            }
-        }
-    }
-
     private Comprobante reservarYGuardar(FacturaRequest request, String serie, LocalDateTime emision) {
         long correlativo = serieService.siguiente(Comprobante.TIPO_FACTURA, serie);
         byte[] xml;
@@ -110,7 +88,7 @@ public class ComprobanteServiceImpl implements ComprobanteService {
             throw new SolicitudInvalidaException(e.getMessage(), e);
         }
         LocalDateTime ahora = ahora();
-        TotalesDocumento totales = totales(request);
+        TotalesDocumento totales = TotalesDeItems.de(request.getItems());
         Comprobante comprobante = Comprobante.nuevo(request.getIdExterno(), serie, correlativo, emision,
                 request.getCliente().getRuc(), request.getCliente().getRazonSocial(), totales.getTotalGravado(), totales.getTotalIgv(),
                 totales.getImporteTotal(), xml, ahora,
@@ -177,19 +155,11 @@ public class ComprobanteServiceImpl implements ComprobanteService {
         return LocalDateTime.now(clock.withZone(ClockConfig.ZONA_LIMA));
     }
 
-    private static TotalesDocumento totales(FacturaRequest request) {
-        List<LineaCalculada> lineas = new ArrayList<>();
-        for (ItemRequest item : request.getItems()) {
-            lineas.add(CalculadoraIgv.calcularLinea(item.getPrecioUnitario(), item.getCantidad()));
-        }
-        return CalculadoraIgv.calcularTotales(lineas);
-    }
-
     private static String recortar(String texto) {
         return texto == null || texto.length() <= 2000 ? texto : texto.substring(0, 2000);
     }
 
-    private static FacturaResponse responder(Comprobante c) {
+    static FacturaResponse responder(Comprobante c) {
         List<String> observaciones = c.getObservaciones() == null ? List.of() : List.of(c.getObservaciones().split("\n"));
         return FacturaResponse.builder()
                 .id(c.getId()).idExterno(c.getIdExterno()).numero(c.numero()).estado(c.getEstado())

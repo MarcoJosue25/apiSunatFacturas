@@ -1,6 +1,7 @@
 package apisunat.api_sunat.service.impl;
 
 import apisunat.api_sunat.config.ClockConfig;
+import apisunat.api_sunat.dto.BoletaRequest;
 import apisunat.api_sunat.dto.FacturaRequest;
 import apisunat.api_sunat.dto.ResultadoEmision;
 import apisunat.api_sunat.exception.SunatFaultException;
@@ -60,6 +61,19 @@ public class FacturaServiceImpl implements FacturaService {
         List<String> errores = xsdValidator.validarFactura(firmado);
         if (!errores.isEmpty()) {
             // El XML lo armamos nosotros: si no cumple el esquema es un error del programa, no del cliente
+            throw new IllegalStateException("El XML armado para " + nombre + " no cumple el esquema de la SUNAT: " + errores);
+        }
+        return firmado;
+    }
+
+    @Override
+    public byte[] prepararXmlBoleta(BoletaRequest request, String serie, long correlativo, LocalDateTime emision) {
+        String nombre = NumeracionUtil.nombreArchivoBoleta(propiedades.getRuc(), serie, correlativo);
+        byte[] xml = xmlBuilder.construirBoleta(request, serie, correlativo, emision);
+        CertificadoFirma certificado = certificadoLoader.cargar();
+        byte[] firmado = firmante.firmar(xml, certificado);
+        List<String> errores = xsdValidator.validarFactura(firmado);
+        if (!errores.isEmpty()) {
             throw new IllegalStateException("El XML armado para " + nombre + " no cumple el esquema de la SUNAT: " + errores);
         }
         return firmado;

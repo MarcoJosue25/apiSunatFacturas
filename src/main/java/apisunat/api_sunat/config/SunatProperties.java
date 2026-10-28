@@ -41,6 +41,11 @@ public class SunatProperties {
     @Pattern(regexp = "^F[A-Z0-9]{3}$", message = "La serie de las facturas debe tener 4 caracteres, empezar con F y llevar solo mayúsculas y números")
     private String serieFactura = "F001";
 
+    // La serie con la que se numeran las boletas: 4 caracteres, empieza con B
+    @NotBlank(message = "La serie de las boletas no puede estar vacía")
+    @Pattern(regexp = "^B[A-Z0-9]{3}$", message = "La serie de las boletas debe tener 4 caracteres, empezar con B y llevar solo mayúsculas y números")
+    private String serieBoleta = "B001";
+
     // Días calendario después del día de emisión en que todavía se puede enviar una factura. La SUNAT hoy dice 1 (preguntas
     // frecuentes) aunque páginas anteriores decían 3; pasado el plazo rechaza con el código 2108. Ver docs/ERRORES.md E-015.
     @PositiveOrZero(message = "El plazo de envío no puede ser negativo")
@@ -68,6 +73,10 @@ public class SunatProperties {
     @Valid
     @NotNull(message = "Faltan los datos de la consulta de constancias")
     private ConsultaCdr consultaCdr = new ConsultaCdr();
+
+    @Valid
+    @NotNull(message = "Faltan los datos del resumen diario")
+    private Resumen resumen = new Resumen();
 
     // Los datos de quien emite la factura (el negocio). Lo opcional puede venir vacío.
     @Getter
@@ -158,5 +167,27 @@ public class SunatProperties {
         @NotBlank(message = "La URL de la consulta de constancias no puede estar vacía")
         @Pattern(regexp = "^https?://\\S+$", message = "La URL de la consulta de constancias debe empezar con http:// o https://")
         private String url = "https://e-factura.sunat.gob.pe/ol-it-wsconscpegem/billConsultService";
+    }
+
+    // El resumen diario de boletas
+    @Getter
+    @Setter
+    public static class Resumen {
+
+        // Se apaga en los tests y se puede apagar en una réplica extra
+        private boolean habilitado = true;
+
+        // A qué hora (de Lima) se arma y se envía el resumen del día: segundos minutos horas día mes día-de-semana
+        @NotBlank(message = "La hora del resumen diario no puede estar vacía")
+        private String cron = "0 0 22 * * *";
+
+        // Cada cuántos segundos se consultan los tickets pendientes y se reintentan los envíos que fallaron
+        @Min(value = 1, message = "El intervalo de consulta de tickets debe ser de al menos 1 segundo")
+        private int intervaloConsultaSegundos = 60;
+
+        // Días después de la emisión en que todavía se puede informar una boleta sin que la SUNAT la marque fuera de plazo (observación 4443)
+        @PositiveOrZero(message = "El plazo del resumen no puede ser negativo")
+        @Max(value = 30, message = "El plazo del resumen no puede pasar de 30 días")
+        private int plazoDias = 7;
     }
 }
