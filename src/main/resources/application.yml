@@ -22,6 +22,8 @@ sunat:
   ruc: ${SUNAT_RUC:20100066603}
   usuario: ${SUNAT_USUARIO:MODDATOS}
   clave: ${SUNAT_CLAVE:MODDATOS}
+  # La llave que piden los endpoints /api en la cabecera X-API-Key. Vacía: no se pide (solo para desarrollo; el perfil prod la exige).
+  api-key: ${SUNAT_API_KEY:}
   # La serie de las facturas (la SUNAT exige 4 caracteres y que empiece con F)
   serie-factura: ${SUNAT_SERIE_FACTURA:F001}
   serie-boleta: ${SUNAT_SERIE_BOLETA:B001}

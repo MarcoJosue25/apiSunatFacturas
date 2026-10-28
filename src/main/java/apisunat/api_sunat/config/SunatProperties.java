@@ -36,6 +36,10 @@ public class SunatProperties {
     @NotBlank(message = "La clave SOL no puede estar vacía")
     private String clave;
 
+    // La llave que debe traer cada petición a /api en la cabecera X-API-Key. Vacía = la API no pide llave (solo para desarrollo:
+    // el perfil prod no arranca sin ella).
+    private String apiKey;
+
     // La serie con la que se numeran las facturas: 4 caracteres, empieza con F (regla 1001 de la SUNAT)
     @NotBlank(message = "La serie de las facturas no puede estar vacía")
     @Pattern(regexp = "^F[A-Z0-9]{3}$", message = "La serie de las facturas debe tener 4 caracteres, empezar con F y llevar solo mayúsculas y números")
