@@ -8,7 +8,7 @@ Una API para emitir facturas y boletas electrónicas directo con la SUNAT, sin i
 
 Estoy armando un agente de ventas para WhatsApp y otras redes, con un pequeño minicrm, y me pareció buena idea que también pueda emitir facturas y boletas. Los proveedores de facturación cobran por comprobante, y la SUNAT ofrece su propio servicio y un certificado digital tributario gratuito (hasta fines de 2027), así que prefiero hacerlo directo.
 
-Es un servicio independiente: mi agente no sabe nada de XML ni de firmas, solo le pide "emite esta boleta" por REST y este proyecto se encarga del resto.
+Es un servicio completamente independiente: solo se le pide "emite esta boleta" por REST y este proyecto se encarga del resto.
 
 ## Qué quiero que haga
 
