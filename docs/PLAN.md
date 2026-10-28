@@ -63,16 +63,16 @@ Lo hacemos despacio y por fases. Cada fase termina en algo que funciona y se pue
 
 Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNAT beta.
 
-**Clases que aparecen:** `config/SunatProperties`, `sunat/soap/SoapEnvelopeBuilder`, `sunat/soap/SoapResponseParser`, `sunat/soap/BillServiceClient`, `service/SunatService` + `service/impl/SunatServiceImpl`, `controller/SunatController`, `dto/EstadoTicketResponse`, `exception/SunatNoDisponibleException`, `exception/SunatRespuestaInvalidaException`, `exception/GlobalExceptionHandler`.
+**Clases que aparecen:** `config/SunatProperties`, `sunat/soap/SoapEnvelopeBuilder`, `sunat/soap/SoapResponseParser`, `sunat/soap/BillServiceClient`, `service/SunatService` + `service/impl/SunatServiceImpl`, `controller/SunatController`, `dto/EstadoTicketResponse`, `exception/SunatNoDisponibleException`, `exception/SunatRespuestaInvalidaException`, `exception/ManejadorExcepciones`.
 
 - [x] `SunatProperties` con `@ConfigurationProperties("sunat")`: url del servicio, ruc, usuario, clave y timeouts. Valida al arrancar y falla rápido si falta algo.
 - [x] Credenciales por variables de entorno (`SUNAT_RUC`, `SUNAT_USUARIO`, `SUNAT_CLAVE`) y un `.env.example`. Por defecto apunta al beta con usuario `MODDATOS`.
 - [x] `SoapEnvelopeBuilder`: sobre SOAP con la cabecera WS-Security UsernameToken (`RUC` + `usuario` juntos como username) y el cuerpo de `getStatus`. Escapa los caracteres especiales de XML.
 - [x] `SoapResponseParser`: lee `statusCode` y `content` de `getStatusResponse`, y también el SOAP Fault.
 - [x] `BillServiceClient` con `RestClient`: POST con `SOAPAction: urn:getStatus`, timeout de conexión y de lectura.
-- [ ] `SunatService.consultarTicket(ticket)`.
+- [x] `SunatService.consultarTicket(ticket)`.
 - [ ] `GET /api/v1/sunat/tickets/{ticket}`: devuelve el `statusCode` y el `content` tal cual, sin interpretarlos todavía.
-- [ ] `GlobalExceptionHandler`: 502 si la SUNAT falla, 504 si no responde a tiempo, 400 si el ticket viene vacío y 500 genérico sin filtrar detalles.
+- [ ] `ManejadorExcepciones` (el mismo nombre que en el agente): 502 si la SUNAT falla, 504 si no responde a tiempo, 400 si el ticket viene vacío y 500 genérico sin filtrar detalles.
 - [ ] Prueba manual con `curl` contra el beta: debe devolver `0127 El ticket no existe`.
 
 **Tests**
@@ -80,7 +80,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] Sobre SOAP: XML exacto esperado, namespaces correctos, RUC y usuario concatenados, y escape de `& < > " '` en credenciales y ticket.
 - [x] Parser: la respuesta real `0127` (guardada como archivo de prueba), `statusCode` 0, 98 y 99 con y sin `content`, SOAP Fault, XML vacío, XML que no es SOAP, `statusCode` ausente y tildes en UTF-8.
 - [x] Cliente con servidor simulado: cabeceras y cuerpo correctos, 200, 500, 503, timeout de lectura, conexión rechazada, respuesta HTML de un proxy y respuesta enorme.
-- [ ] Servicio con Mockito: delega bien y traduce las excepciones.
+- [x] Servicio con Mockito: delega bien y traduce las excepciones.
 - [ ] Controller (`@WebMvcTest`): 200, ticket en blanco 400, SUNAT caída 502, timeout 504, y la respuesta no deja ver stacktrace ni credenciales.
 - [x] Las credenciales no aparecen en los logs.
 - [ ] Prueba real `@Tag("beta")`: un ticket inexistente devuelve `0127`.

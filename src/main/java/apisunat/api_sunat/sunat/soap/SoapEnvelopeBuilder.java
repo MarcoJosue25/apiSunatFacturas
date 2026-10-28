@@ -1,18 +1,16 @@
 package apisunat.api_sunat.sunat.soap;
 
 import apisunat.api_sunat.config.SunatProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 // Arma los mensajes SOAP que se mandan al billService de la SUNAT.
 // La autenticación es WS-Security UsernameToken: el usuario es el RUC pegado al usuario SOL, y la clave es la clave SOL.
 @Component
+@RequiredArgsConstructor
 public class SoapEnvelopeBuilder {
 
     private final SunatProperties propiedades;
-
-    public SoapEnvelopeBuilder(SunatProperties propiedades) {
-        this.propiedades = propiedades;
-    }
 
     public String getStatus(String ticket) {
         exigirTexto("El ticket", ticket);
