@@ -58,8 +58,18 @@ public class BillServiceClient {
         return llamar("sendBill", envelopeBuilder.sendBill(nombreZip, zip), parser::leerSendBill);
     }
 
+    // Pregunta a la SUNAT por la constancia de una factura (billConsultService, que solo existe en producción)
+    public RespuestaStatusCdr getStatusCdr(String rucEmisor, String tipoComprobante, String serie, String numero) {
+        return llamar("getStatusCdr", propiedades.getConsultaCdr().getUrl(),
+                envelopeBuilder.getStatusCdr(rucEmisor, tipoComprobante, serie, numero), parser::leerGetStatusCdr);
+    }
+
     private <T> T llamar(String operacion, String sobre, Function<String, T> lector) {
-        Respuesta respuesta = enviar(operacion, sobre);
+        return llamar(operacion, propiedades.getUrl(), sobre, lector);
+    }
+
+    private <T> T llamar(String operacion, String url, String sobre, Function<String, T> lector) {
+        Respuesta respuesta = enviar(operacion, url, sobre);
         if (!respuesta.estado().is2xxSuccessful()) {
             // Un error HTTP puede traer igual el detalle SOAP; si no lo trae, la SUNAT simplemente no está disponible
             try {
@@ -74,11 +84,11 @@ public class BillServiceClient {
         return lector.apply(respuesta.cuerpo());
     }
 
-    private Respuesta enviar(String operacion, String sobre) {
+    private Respuesta enviar(String operacion, String url, String sobre) {
         long inicio = System.currentTimeMillis();
         try {
             Respuesta respuesta = restClient.post()
-                    .uri(propiedades.getUrl())
+                    .uri(url)
                     .contentType(TEXT_XML_UTF8)
                     .header("SOAPAction", "urn:" + operacion)
                     .body(sobre)

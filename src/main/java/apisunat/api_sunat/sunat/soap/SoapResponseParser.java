@@ -60,6 +60,32 @@ public class SoapResponseParser {
         }
     }
 
+    public RespuestaStatusCdr leerGetStatusCdr(String xml) {
+        Document doc = leer(xml);
+        lanzarSiEsFault(doc);
+
+        Element respuesta = primero(doc, "getStatusCdrResponse");
+        Element status = respuesta == null ? null : primero(respuesta, "statusCdr");
+        if (status == null) {
+            throw new SunatRespuestaInvalidaException("La respuesta de la SUNAT no trae el estado (getStatusCdrResponse/statusCdr)");
+        }
+        String statusCode = texto(status, "statusCode");
+        if (statusCode == null || statusCode.isBlank()) {
+            throw new SunatRespuestaInvalidaException("La respuesta de la SUNAT no trae el statusCode");
+        }
+        String base64 = texto(status, "content");
+        byte[] constancia = null;
+        if (base64 != null && !base64.isEmpty()) {
+            try {
+                constancia = Base64.getDecoder().decode(base64.replaceAll("\\s", ""));
+            } catch (IllegalArgumentException e) {
+                throw new SunatRespuestaInvalidaException("La constancia de la SUNAT no es un base64 válido", e);
+            }
+        }
+        return RespuestaStatusCdr.builder().statusCode(statusCode.trim()).statusMessage(texto(status, "statusMessage"))
+                .constancia(constancia).build();
+    }
+
     private void lanzarSiEsFault(Document doc) {
         Element fault = primero(doc, "Fault");
         if (fault != null) {

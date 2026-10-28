@@ -15,6 +15,10 @@ public class SoapEnvelopeBuilder {
 
     // El nombre del ZIP: letras, números y guiones, terminado en .zip (por ejemplo 20100066603-01-F001-1.zip)
     private static final Pattern NOMBRE_ZIP = Pattern.compile("[A-Za-z0-9-]{1,100}\\.zip");
+    private static final Pattern RUC = Pattern.compile("\\d{11}");
+    private static final Pattern TIPO_COMPROBANTE = Pattern.compile("0[178]");
+    private static final Pattern SERIE = Pattern.compile("[A-Z0-9]{4}");
+    private static final Pattern NUMERO = Pattern.compile("[1-9]\\d{0,7}");
 
     private final SunatProperties propiedades;
 
@@ -24,6 +28,26 @@ public class SoapEnvelopeBuilder {
         exigirContenido(zip);
         return envolver("<ser:sendBill><fileName>" + nombreZip + "</fileName><contentFile>"
                 + Base64.getEncoder().encodeToString(zip) + "</contentFile></ser:sendBill>");
+    }
+
+    // Pregunta a la SUNAT por la constancia de un comprobante ya enviado (servicio billConsultService, solo en producción).
+    // El número va sin ceros a la izquierda, como en el manual (F022 / 7782).
+    public String getStatusCdr(String rucEmisor, String tipoComprobante, String serie, String numero) {
+        if (rucEmisor == null || !RUC.matcher(rucEmisor).matches()) {
+            throw new IllegalArgumentException("El RUC del comprobante debe tener 11 dígitos");
+        }
+        if (tipoComprobante == null || !TIPO_COMPROBANTE.matcher(tipoComprobante).matches()) {
+            throw new IllegalArgumentException("El tipo de comprobante debe ser 01, 07 u 08");
+        }
+        if (serie == null || !SERIE.matcher(serie).matches()) {
+            throw new IllegalArgumentException("La serie debe tener 4 caracteres: mayúsculas y números");
+        }
+        if (numero == null || !NUMERO.matcher(numero).matches()) {
+            throw new IllegalArgumentException("El número debe ser de 1 a 8 dígitos y sin ceros a la izquierda");
+        }
+        return envolver("<ser:getStatusCdr><rucComprobante>" + rucEmisor + "</rucComprobante><tipoComprobante>" + tipoComprobante
+                + "</tipoComprobante><serieComprobante>" + serie + "</serieComprobante><numeroComprobante>" + numero
+                + "</numeroComprobante></ser:getStatusCdr>");
     }
 
     public String getStatus(String ticket) {
