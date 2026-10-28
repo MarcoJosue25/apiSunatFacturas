@@ -194,7 +194,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] Mover `codigos_sunat.csv` a `src/main/resources` y cargarlo al arrancar.
 - [x] `ClasificadorErrores` con las clases (`ClaseResultado`): aceptado, aceptado con observaciones, rechazo, error de datos, error de configuración, transitorio, ya registrado y desconocido. Las reglas salen de `docs/sunat/NOTAS.md`.
 - [x] Un código desconocido nunca se reintenta.
-- [ ] Servicio que arma el recorrido: calcular, XML, XSD, firmar, ZIP, enviar, leer el CDR, clasificar. Todavía sin base de datos.
+- [x] Servicio que arma el recorrido: calcular, XML, XSD, firmar, ZIP, enviar, leer el CDR, clasificar. Todavía sin base de datos. (`FacturaService.emitir`, con la serie y el correlativo como parámetros: la numeración llega en la fase 6).
 
 **Tests**
 - [x] ZIP: contiene exactamente un XML y los nombres coinciden.

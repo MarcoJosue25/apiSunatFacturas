@@ -225,3 +225,15 @@ Ahora hay una sola copia (la que carga la aplicación) y los enlaces de `NOTAS.m
 
 ### O-069 El manual escribe el ZIP en mayúsculas (`.ZIP`) y nosotros en minúsculas (fase 5)
 Los ejemplos del manual (`20100066603-01-F001-1.ZIP` y `.XML`) están en mayúsculas. Se usa minúscula, que es lo que usan las librerías conocidas; si el beta rechazara el nombre por eso (códigos `0151` o `0159`), se cambia. Queda como punto a confirmar en la prueba real.
+
+### O-070 El servicio siempre usa la hora de Lima, aunque el `Clock` esté en otra zona (fase 5)
+Un test con un reloj en UTC encontró que `LocalDateTime.now(clock)` usaba la zona del reloj y ponía la fecha del día siguiente a las 22:30 de Lima. Ahora el servicio hace `clock.withZone(ZONA_LIMA)`, así que la fecha de emisión no depende de cómo se configure el reloj.
+
+### O-071 El servicio devuelve los errores SOAP como resultado, pero deja pasar los de comunicación (fase 5)
+Un `SunatFaultException` (la SUNAT contestó con un error) se convierte en un `ResultadoEmision` clasificado: es una respuesta definitiva. Un `SunatNoDisponibleException` o una respuesta ilegible se dejan subir como excepción: no se sabe si la SUNAT recibió la factura, y no se debe decir que se rechazó. La fase 7 decide cómo reintentar y consultar la constancia.
+
+### O-072 El servicio no guarda nada todavía (fase 5)
+`ResultadoEmision` trae el XML firmado pero no el ZIP de la constancia. La fase 6 (base de datos) lo agregará cuando haya dónde guardarlo.
+
+### O-073 Si el XML armado no cumple el XSD es un error del programa (fase 5)
+El servicio lanza `IllegalStateException` (no `IllegalArgumentException`): el cliente no tiene la culpa, el XML lo armamos nosotros. Llegará como un 500 por el manejador general.
