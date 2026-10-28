@@ -112,7 +112,7 @@ class RespaldoScriptTest {
         // 2. Se restaura en una base nueva
         servidor().execute("DROP DATABASE IF EXISTS " + BASE_RESTAURADA);
         servidor().execute("CREATE DATABASE " + BASE_RESTAURADA);
-        int restauracion = ejecutar(List.of("bash", "-c", "gunzip -c '" + respaldo + "' | mysql --host=" + host + " --port=" + puerto + " --user=" + usuario + " " + BASE_RESTAURADA),
+        int restauracion = ejecutar(List.of("bash", "-c", "gunzip -c '" + respaldo + "' | mysql --protocol=tcp --host=" + host + " --port=" + puerto + " --user=" + usuario + " " + BASE_RESTAURADA),
                 java.util.Map.of("MYSQL_PWD", clave), carpeta.resolve("restauracion.txt"));
         assertThat(restauracion).as(Files.readString(carpeta.resolve("restauracion.txt"))).isZero();
 

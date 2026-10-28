@@ -224,6 +224,13 @@ Reglas de este archivo:
 - **Qué pasó:** corriendo toda la suite (2129 tests) falló una vez `facturasDistintasALaVezRecibenNumerosDistintosYSeguidos` con "Deadlock found" en el `INSERT IGNORE` de `asegurar`. Es el caso que E-022 no cubría: 50 hilos creando a la vez una serie que todavía no existe (la lectura previa da "no existe" en todos y todos hacen el `INSERT IGNORE`). El reintento por interbloqueo solo protegía la reserva del número, no la creación de la serie.
 - **Cómo quedó:** `asegurar` también se repite hasta 3 veces ante un interbloqueo (en facturas y en boletas); al repetir, la serie ya existe. Test con un interbloqueo simulado (rojo sin el reintento).
 
+### E-029 Dos tests de la fase 9 pasaban en mi máquina y fallaron en el CI
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 9
+- **Qué pasó:** (1) `RespaldoScriptTest`: con `localhost` como host, `mysqldump`/`mysql` usan el socket local (`/var/run/mysqld/mysqld.sock`) y no el puerto; en el CI la base está en un contenedor y el socket no existe ("Can't connect to local MySQL server through socket"). En mi máquina el socket sí existía. (2) `ApiKeyPuntaAPuntaTest`: probaba "con llave correcta un POST llega al controlador" con `POST /resumenes/generar`, que depende de lo que haya en la base: en el CI había boletas pendientes de otros tests y el envío falló (500).
+- **Cómo quedó:** el script y el test usan `--protocol=tcp`; el test de la llave usa un `POST /resumenes/999999/reenviar` (404 que no depende de la base ni de la SUNAT). Moraleja: un test que depende del estado compartido de la base o de lo que existe en esta máquina se rompe en otro lado.
+
 ---
 
 ## Limitaciones que se dejan para después

@@ -64,10 +64,11 @@ class ApiKeyPuntaAPuntaTest {
 
     @Test
     void conLaLlaveCorrectaUnPostLlegaAlControlador() {
-        ResponseEntity<String> r = http.post().uri("/api/v1/resumenes/generar").header("X-API-Key", LLAVE).retrieve().toEntity(String.class);
+        // Un reenvío de un resumen que no existe: llega al servicio y da 404 sin depender de lo que haya en la base ni de la SUNAT
+        ResponseEntity<String> r = http.post().uri("/api/v1/resumenes/999999/reenviar").header("X-API-Key", LLAVE).retrieve().toEntity(String.class);
 
-        assertThat(r.getStatusCode().value()).isEqualTo(200);
-        assertThat(r.getBody()).isEqualTo("[]");
+        assertThat(r.getStatusCode().value()).isEqualTo(404);
+        assertThat(r.getBody()).contains("No existe el resumen 999999");
     }
 
     @Test

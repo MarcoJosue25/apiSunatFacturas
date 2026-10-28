@@ -23,7 +23,8 @@ parcial="$archivo.parcial"
 
 # La clave va por el entorno y no por la línea de comandos, para que no se vea en la lista de procesos
 export MYSQL_PWD="$DB_CLAVE"
-mysqldump --host="$DB_HOST" --port="$DB_PUERTO" --user="$DB_USUARIO" \
+# --protocol=tcp: con host "localhost" mysqldump usaría el socket local, que no existe si la base está en otro contenedor o máquina
+mysqldump --protocol=tcp --host="$DB_HOST" --port="$DB_PUERTO" --user="$DB_USUARIO" \
   --single-transaction --no-tablespaces --routines --triggers "$DB_NOMBRE" | gzip > "$parcial"
 
 # Un respaldo que no se puede leer no sirve: se comprueba antes de darlo por bueno
