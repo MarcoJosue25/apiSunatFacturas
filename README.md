@@ -32,6 +32,8 @@ Recién arrancando. Lo voy haciendo por fases, despacio y con tests en cada paso
 9. [ ] Boletas y resumen diario
 10. [ ] Producción
 
+Los errores que me van saliendo y las limitaciones que dejo para después están en [`docs/ERRORES.md`](docs/ERRORES.md).
+
 ## Stack
 
 Java 21, Spring Boot y Maven. MySQL con Flyway más adelante, igual que en mi agente.
