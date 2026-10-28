@@ -237,3 +237,21 @@ Un `SunatFaultException` (la SUNAT contestó con un error) se convierte en un `R
 
 ### O-073 Si el XML armado no cumple el XSD es un error del programa (fase 5)
 El servicio lanza `IllegalStateException` (no `IllegalArgumentException`): el cliente no tiene la culpa, el XML lo armamos nosotros. Llegará como un 500 por el manejador general.
+
+### O-074 ¡El beta aceptó la primera factura firmada por nosotros! (fase 5)
+Con el certificado de prueba autofirmado (`valido.p12`, RUC 20100066603), firma RSA-SHA256, ZIP con solo el XML (sin carpeta `dummy`), nombre en minúsculas (`.zip`) y base64 normal (sin MTOM), el beta contestó "La Factura numero F001-N, ha sido aceptada" en unos 1.5 s. Con eso quedan resueltos los puntos a verificar sobre `dummy`, MTOM, SHA-256 y mayúsculas/minúsculas del nombre (O-050, O-069).
+
+### O-075 Lo que el beta SÍ valida (fase 5)
+Firma presente (`2335`, "No signature in message!"), firma que coincide con el contenido (`2335`, "Incorrect reference digest value"), nombre del XML igual al del ZIP (`0161`), RUC del nombre igual al del XML (`1034`) y datos obligatorios del XML (`2075`, falta `UBLVersionID`). No verifica que el certificado esté registrado (ver L-013 y E-012).
+
+### O-076 Los rechazos del beta llegan como SOAP Fault, también los códigos 2xxx (fase 5)
+`2335` y `2075` están en el rango de "rechazos" (2000-3999) y se esperaba una constancia con ese código, pero llegaron como SOAP Fault. El clasificador los trata igual (por código), pero queda por confirmar en producción si un Fault con código 2xxx consume el número de la factura como un rechazo con constancia.
+
+### O-077 Reenviar una factura ya aceptada devuelve la misma constancia (fase 5)
+El mismo XML enviado dos veces devolvió dos veces la misma constancia aceptada (no el error `1033`). En una exploración, reenviar con el mismo número un XML distinto (otra hora) también devolvió la constancia aceptada. Para la fase 7 significa que, en el beta, reintentar después de un timeout es seguro; en producción puede aparecer `1033` (de ahí la clase `YA_REGISTRADO`).
+
+### O-078 La consola de Maven muestra los acentos de los logs como "?" (fase 5)
+Es solo la codificación de la salida del terminal del entorno; los textos en memoria están bien (los tests con tildes pasan).
+
+### O-079 Cada prueba real usa un correlativo nuevo (fase 5)
+Los números salen de la hora actual más un contador, para no repetir un número ya usado en corridas anteriores del beta.

@@ -104,7 +104,7 @@ Se extrajeron los códigos de todas las hojas a [`codigos_sunat.csv`](../../src/
   no cumple el XSD.
 - **`0127` El ticket no existe:** probado en el beta; llega como `statusCode` dentro de un HTTP 200, no como SOAP Fault.
   El cliente debe leer el `statusCode` de cada respuesta.
-- **`1079` "Solo puede enviar el comprobante en un resumen diario":** es lo que devuelve `sendBill` para una boleta.
+- **`1079` "Solo puede enviar el comprobante en un resumen diario":** debería devolverlo `sendBill` para una boleta (OJO: el beta NO lo devuelve, la acepta; ver ERRORES L-021).
   Confirma que las boletas van por Resumen Diario.
 - **`1032` y `1033`:** comprobante ya informado como anulado o rechazado, y comprobante registrado antes con
   otros datos. Al reintentar hay que reenviar exactamente el mismo XML, sin cambiar datos.

@@ -249,3 +249,18 @@ Reglas de este archivo:
 - **Qué significa:** un `.p12` puede guardar más de una clave privada. `CertificadoLoader` usa la primera que encuentra, sin importar su alias.
 - **Por qué se deja:** los certificados de la SUNAT traen una sola. Si algún día hace falta elegir, se agrega una propiedad con el alias.
 
+### L-020 El beta no valida los números de la factura
+- [ ] Estado: diferido (se vuelve a probar en producción, fase 9)
+- **Qué significa:** en la prueba real, una factura con el importe total cambiado (71.00 en vez de 70.00) fue **aceptada** por el beta. En producción la SUNAT sí rechaza las diferencias aritméticas (reglas `3270` y parecidas, ver `docs/sunat/CALCULOS.md`).
+- **Por qué se deja:** el beta no sirve para comprobar que nuestros cálculos son correctos. La única defensa es la calculadora y el verificador de reglas con fuentes independientes (fases 2 y 3). Esa confianza se confirma con las primeras facturas reales.
+
+### L-021 El beta acepta una boleta por `sendBill`
+- [ ] Estado: diferido (se vuelve a probar en producción, fase 9)
+- **Qué significa:** una boleta (`B001`, tipo `03`) enviada por `sendBill` fue aceptada por el beta; las notas esperaban el error `1079` ("solo puede enviar el comprobante en un resumen diario"), que sí está en las Reglas de validación. En producción habrá que usar siempre el resumen diario.
+- **Por qué se deja:** esta API solo emite facturas por `sendBill`; las boletas van por resumen diario (fase 8). No hay que apoyarse en el beta para detectar el error.
+
+### L-022 El beta acepta fechas de emisión viejas y futuras
+- [ ] Estado: diferido (se vuelve a probar en producción, fase 9)
+- **Qué significa:** facturas con fecha de hace 30 días, de hace 2 días y de mañana fueron aceptadas. En producción el plazo de envío es corto (ver E-015, código `2108`).
+- **Por qué se deja:** esta API siempre pone la fecha y hora actuales de Lima (`FacturaServiceImpl`), así que no se puede enviar una fecha vieja por accidente. El plazo real se valida en producción.
+

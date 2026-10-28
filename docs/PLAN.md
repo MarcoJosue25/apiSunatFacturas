@@ -161,7 +161,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] Propiedades `sunat.certificado.ruta` y `sunat.certificado.clave`.
 - [x] `CertificadoLoader`: lee el `.p12`, valida la vigencia, que la clave sea RSA de 1024 bits o más y que el RUC del certificado sea el del emisor; devuelve la clave privada y el certificado (sin la cadena: no se usa).
 - [x] `XmlSigner`: XMLDSig dentro de `ext:UBLExtensions/ext:UBLExtension/ext:ExtensionContent`, sobre todo el documento.
-- [ ] Algoritmo de firma: se firma con RSA-SHA256 (el JDK 21 desactiva SHA-1 por defecto y el XML de ejemplo ya usa SHA-256). Queda sin marcar hasta que el beta acepte una factura firmada así, en la fase 5 **(verificar)**.
+- [x] Algoritmo de firma: se firma con RSA-SHA256  (el JDK 21 desactiva SHA-1 por defecto y el XML de ejemplo ya usa SHA-256). Queda sin marcar hasta que el beta acepte una factura firmada así, en la fase 5 **(verificar)**.
 - [x] El verificador de firmas vive solo en los tests, porque en producción no se usa.
 
 **Tests**
@@ -187,9 +187,9 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 **Clases que aparecen:** `util/ZipUtil`, `sunat/cdr/CdrParser`, `sunat/cdr/CdrResultado`, `sunat/errores/CatalogoCodigos`, `sunat/errores/ClasificadorErrores`, `model/enums/ClaseResultado`, y un servicio que arma el recorrido completo.
 
 - [x] Nombre del archivo `RUC-01-SERIE-NUMERO` (`NumeracionUtil.nombreArchivoFactura`) y ZIP con el XML adentro (`ZipUtil`).
-- [ ] Probar en el beta si pide la carpeta `dummy` **(verificar)**.
+- [x] Probar en el beta si pide la carpeta `dummy` **(verificar)**. Resultado: no la pide, el beta aceptó el ZIP con solo el XML.
 - [x] `sendBill` en el cliente SOAP, con el ZIP en base64 (`SoapEnvelopeBuilder`, `SoapResponseParser`, `BillServiceClient`).
-- [ ] Probar en el beta si hace falta MTOM **(verificar)**.
+- [x] Probar en el beta si hace falta MTOM **(verificar)**. Resultado: no hace falta, el base64 normal en `contentFile` funciona.
 - [x] `CdrParser`: descomprime la respuesta y lee el `ApplicationResponse` (código, descripción y observaciones).
 - [x] Mover `codigos_sunat.csv` a `src/main/resources` y cargarlo al arrancar.
 - [x] `ClasificadorErrores` con las clases (`ClaseResultado`): aceptado, aceptado con observaciones, rechazo, error de datos, error de configuración, transitorio, ya registrado y desconocido. Las reglas salen de `docs/sunat/NOTAS.md`.
@@ -200,19 +200,19 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] ZIP: contiene exactamente un XML y los nombres coinciden.
 - [x] El nombre del archivo (`RUC-01-F001-1`) coincide con el RUC, la serie y el número que lleva el XML (se movió de la fase 3 porque el nombre se arma con el ZIP).
 - [x] CDR de ejemplo: aceptado, rechazado y con observaciones.
-- [ ] SOAP Fault con `0111`, `0151` y `0306`.
+- [x] SOAP Fault con `0111`, `0151` y `0306`.
 - [x] Cada regla de clasificación de las notas (por ejemplo `0100` y `0109` transitorios, `0306` no).
 - [x] Los 869 códigos del CSV reciben una clase sin fallar.
 - [x] Código desconocido: no se reintenta.
 - [x] Timeout o 500: transitorio.
 - [x] CDR corrupto o ZIP de respuesta vacío.
-- [ ] Prueba real `@Tag("beta")`: factura válida aceptada.
-- [ ] Prueba real: total mal calculado, para ver que lo que atrapa nuestro validador local es lo mismo que rechaza la SUNAT.
-- [ ] Prueba real: reenviar la misma factura. Anotar si devuelve el mismo CDR o el error `1033`.
-- [ ] Prueba real: una boleta por `sendBill`. Esperado `1079`.
+- [x] Prueba real `@Tag("beta")`: factura válida aceptada.
+- [x] Prueba real: total mal calculado, para ver que lo que atrapa nuestro validador local es lo mismo que rechaza la SUNAT. Resultado: el beta NO rechaza un total mal calculado (L-020); el único control es el validador local.
+- [x] Prueba real: reenviar la misma factura. Anotar si devuelve el mismo CDR o el error `1033`. Resultado: devuelve la misma constancia aceptada.
+- [x] Prueba real: una boleta por `sendBill`. Esperado `1079`. Resultado: el beta la ACEPTA, no da `1079` (L-021).
 
 **Listo cuando:**
-- [ ] El beta acepta una factura firmada por mí.
+- [x] El beta acepta una factura firmada por mí.
 
 ---
 
