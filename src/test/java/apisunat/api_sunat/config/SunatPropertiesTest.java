@@ -27,6 +27,7 @@ class SunatPropertiesTest {
         p.setClave("MODDATOS");
         p.setConexionTimeoutMs(5000);
         p.setLecturaTimeoutMs(30000);
+        p.getEmisor().setRazonSocial("EMPRESA DE PRUEBAS SAC");
         return p;
     }
 
@@ -97,7 +98,78 @@ class SunatPropertiesTest {
     @Test
     void sinPropiedadesNingunCampoPasaLaValidacion() {
         assertThat(camposInvalidos(new SunatProperties()))
-                .containsExactlyInAnyOrder("url", "ruc", "usuario", "clave", "conexionTimeoutMs", "lecturaTimeoutMs");
+                .containsExactlyInAnyOrder("url", "ruc", "usuario", "clave", "conexionTimeoutMs", "lecturaTimeoutMs", "emisor.razonSocial");
+    }
+
+    // --- Datos del emisor ---
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"   ", "\t"})
+    void laRazonSocialDelEmisorEsObligatoria(String razon) {
+        SunatProperties p = valida();
+        p.getEmisor().setRazonSocial(razon);
+        assertThat(camposInvalidos(p)).containsExactly("emisor.razonSocial");
+    }
+
+    @Test
+    void laRazonSocialYElNombreComercialTienenUnMaximoDe1500() {
+        SunatProperties p = valida();
+        p.getEmisor().setRazonSocial("R".repeat(1500));
+        p.getEmisor().setNombreComercial("N".repeat(1500));
+        assertThat(validator.validate(p)).isEmpty();
+
+        p.getEmisor().setRazonSocial("R".repeat(1501));
+        p.getEmisor().setNombreComercial("N".repeat(1501));
+        assertThat(camposInvalidos(p)).containsExactlyInAnyOrder("emisor.razonSocial", "emisor.nombreComercial");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {3, 4, 100, 200})
+    void unaDireccionDeTresADoscientosCaracteresEsValida(int largo) {
+        SunatProperties p = valida();
+        p.getEmisor().setDireccion("D".repeat(largo));
+        assertThat(validator.validate(p)).isEmpty();
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 201, 500})
+    void unaDireccionMuyCortaOMuyLargaFalla(int largo) {
+        SunatProperties p = valida();
+        p.getEmisor().setDireccion("D".repeat(largo));
+        assertThat(camposInvalidos(p)).containsExactly("emisor.direccion");
+    }
+
+    @Test
+    void laDireccionYElNombreComercialVaciosCuentanComoSinDato() {
+        SunatProperties p = valida();
+        p.getEmisor().setDireccion("");
+        p.getEmisor().setNombreComercial("   ");
+        assertThat(validator.validate(p)).isEmpty();
+        assertThat(p.getEmisor().getDireccion()).isNull();
+        assertThat(p.getEmisor().getNombreComercial()).isNull();
+    }
+
+    @Test
+    void elCodigoDeEstablecimientoPorDefectoEs0000() {
+        assertThat(new SunatProperties().getEmisor().getCodigoEstablecimiento()).isEqualTo("0000");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"0000", "0001", "0123", "9999"})
+    void unCodigoDeEstablecimientoDeCuatroDigitosEsValido(String codigo) {
+        SunatProperties p = valida();
+        p.getEmisor().setCodigoEstablecimiento(codigo);
+        assertThat(validator.validate(p)).isEmpty();
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"000", "00000", "abcd", "00 0", " 000", "000\n"})
+    void unCodigoDeEstablecimientoQueNoEsDeCuatroDigitosFalla(String codigo) {
+        SunatProperties p = valida();
+        p.getEmisor().setCodigoEstablecimiento(codigo);
+        assertThat(camposInvalidos(p)).as(String.valueOf(codigo)).containsExactly("emisor.codigoEstablecimiento");
     }
 
     // --- Con el arranque de Spring de verdad: una configuración mala impide que la aplicación arranque ---
@@ -112,7 +184,8 @@ class SunatPropertiesTest {
     private static final String[] BUENAS = {
             "sunat.url=https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService",
             "sunat.ruc=20100066603", "sunat.usuario=MODDATOS", "sunat.clave=MODDATOS",
-            "sunat.conexion-timeout-ms=5000", "sunat.lectura-timeout-ms=30000"};
+            "sunat.conexion-timeout-ms=5000", "sunat.lectura-timeout-ms=30000",
+            "sunat.emisor.razon-social=EMPRESA DE PRUEBAS SAC"};
 
     @Test
     void conPropiedadesBuenasLaAplicacionArrancaYLasLee() {
@@ -121,6 +194,25 @@ class SunatPropertiesTest {
             SunatProperties p = ctx.getBean(SunatProperties.class);
             assertThat(p.getRuc()).isEqualTo("20100066603");
             assertThat(p.getConexionTimeoutMs()).isEqualTo(5000);
+        });
+    }
+
+    @Test
+    void sinLaRazonSocialDelEmisorLaAplicacionNoArranca() {
+        runner.withPropertyValues(BUENAS).withPropertyValues("sunat.emisor.razon-social=").run(ctx -> {
+            assertThat(ctx).hasFailed();
+            assertThat(ctx.getStartupFailure()).hasStackTraceContaining("razonSocial");
+        });
+    }
+
+    @Test
+    void losDatosOpcionalesDelEmisorSeLeenOSeQuedanNulos() {
+        runner.withPropertyValues(BUENAS).withPropertyValues("sunat.emisor.nombre-comercial=MI TIENDA", "sunat.emisor.direccion=").run(ctx -> {
+            assertThat(ctx).hasNotFailed();
+            SunatProperties p = ctx.getBean(SunatProperties.class);
+            assertThat(p.getEmisor().getNombreComercial()).isEqualTo("MI TIENDA");
+            assertThat(p.getEmisor().getDireccion()).isNull();
+            assertThat(p.getEmisor().getCodigoEstablecimiento()).isEqualTo("0000");
         });
     }
 

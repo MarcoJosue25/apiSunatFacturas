@@ -15,3 +15,9 @@ sunat:
   clave: ${SUNAT_CLAVE:MODDATOS}
   conexion-timeout-ms: 5000
   lectura-timeout-ms: 30000
+  # Los datos de quien emite. Con el beta sirven los de ejemplo; para emitir de verdad se cambian con variables de entorno.
+  emisor:
+    razon-social: ${SUNAT_EMISOR_RAZON_SOCIAL:EMPRESA DE PRUEBAS SAC}
+    nombre-comercial: ${SUNAT_EMISOR_NOMBRE_COMERCIAL:}
+    direccion: ${SUNAT_EMISOR_DIRECCION:}
+    codigo-establecimiento: ${SUNAT_EMISOR_ESTABLECIMIENTO:0000}

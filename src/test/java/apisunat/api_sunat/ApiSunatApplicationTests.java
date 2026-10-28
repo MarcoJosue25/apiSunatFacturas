@@ -42,4 +42,12 @@ class ApiSunatApplicationTests {
         assertThat(sunat.getClave()).isEqualTo("MODDATOS");
         assertThat(sunat.getRuc()).hasSize(11);
     }
+
+    @Test
+    void porDefectoElEmisorEsElDePruebas() {
+        assertThat(sunat.getEmisor().getRazonSocial()).isEqualTo("EMPRESA DE PRUEBAS SAC");
+        assertThat(sunat.getEmisor().getNombreComercial()).isNull();
+        assertThat(sunat.getEmisor().getDireccion()).isNull();
+        assertThat(sunat.getEmisor().getCodigoEstablecimiento()).isEqualTo("0000");
+    }
 }

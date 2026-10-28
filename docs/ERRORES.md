@@ -110,7 +110,7 @@ Reglas de este archivo:
 - **Fecha:** 2026-10-28
 - **Fase:** 1
 - **Qué pasó:** `SunatProperties` validaba el RUC solo con `@Pattern`, y en Bean Validation un valor nulo pasa ese patrón. Sin la variable de entorno, la aplicación habría arrancado sin RUC. Lo atrapó el test `elRucDebeTenerExactamenteOnceDigitos` con el caso nulo.
-- **Cómo quedó:** se agregó `@NotBlank` al RUC. Ojo para el resto del proyecto: un patrón o un largo no obligan a que el campo exista, hay que combinarlo con `@NotBlank` o `@NotNull`.
+- **Cómo quedó:** se agregó `@NotBlank` al RUC. Ojo para el resto del proyecto: un patrón o un largo no obligan a que el campo exista, hay que combinarlo con `@NotBlank` o `@NotNull`. **Se repitió** en la fase 3 con `codigoEstablecimiento` (también lo atrapó un test): por eso cada campo obligatorio lleva su caso nulo en los tests.
 
 ### E-013 Un error SOAP de la SUNAT llega con HTTP 200
 - [ ] Estado: parcialmente resuelto (el parser ya lo detecta; falta que el cliente lo use, paso 1.4)
