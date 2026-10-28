@@ -10,11 +10,14 @@ import java.math.BigDecimal;
 @Builder
 public class LineaCalculada {
 
-    // Tal como llegaron
+    // Tal como llegó
     BigDecimal cantidad;
+
+    // Precio de venta unitario con IGV que se informa: el que llegó, salvo que se aleje más de 0.50 del que de verdad se cobró
+    // (total de la línea / cantidad), en cuyo caso es ese. Pasa solo con cantidades muy chicas.
     BigDecimal precioUnitario;
 
-    // Precio unitario sin IGV, con 10 decimales (el XML lo pide así)
+    // Precio unitario sin IGV (el informado dividido entre 1.18), con 10 decimales: el XML lo pide así
     BigDecimal valorUnitario;
 
     // Base imponible de la línea (valor de venta del ítem), con 2 decimales

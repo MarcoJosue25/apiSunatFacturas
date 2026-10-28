@@ -140,6 +140,13 @@ Reglas de este archivo:
 - **Qué pasó:** `ItemRequest` tenía `@Builder.Default private String unidadMedida = "NIU"`. Al leer un JSON sin ese campo, Jackson 3 construye el objeto con el constructor de todos los argumentos y deja `null`, así que la validación fallaba con "la unidad de medida no puede estar vacía" aunque el campo se omitió a propósito. Lo atrapó el test del JSON de una factura completa.
 - **Cómo quedó:** el valor por defecto va en el getter (`getUnidadMedida()` devuelve `NIU` si es nulo) y el campo solo valida el patrón cuando viene. Regla para los demás DTO: un valor por defecto se pone en el getter, no en el campo.
 
+### E-017 Con cantidades muy chicas el precio unitario del XML podía romper la regla 3270
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 3
+- **Qué pasó:** el total de la línea se redondea a centavos y al dividirlo entre una cantidad muy chica ese redondeo se amplifica: con 0.001 unidades, medio centavo son 5 soles por unidad. En una factura aleatoria, 250099.00 × 0.001 daba un total de 250.10, y `(valor de venta + IGV) / cantidad` era 250100.00: una diferencia de 1.00, justo el límite que tolera la SUNAT (regla 3270). Lo atrapó el verificador independiente `ReglasSunatXml` con 300 facturas aleatorias.
+- **Cómo quedó:** `CalculadoraIgv.calcularLinea` informa el precio que llegó, salvo que se aleje más de 0.50 del que de verdad se cobró (total / cantidad), y en ese caso informa el cobrado. Si ese precio cobrado pasa de 12 enteros, se rechaza antes de enviar. Está explicado en `docs/sunat/CALCULOS.md`.
+
 ---
 
 ## Limitaciones que se dejan para después

@@ -60,6 +60,17 @@ Ejemplo, un polo de S/ 35.00 por 2 unidades: total de la línea 70.00 → valor 
 - Cada línea cumple 3271, 3272, 3103 y 3270 con diferencias de menos de 1 centavo.
 - La diferencia entre el IGV total y el 18% de la base crece con el redondeo de cada línea: como máximo 0.0059 por línea, y en documentos reales unos pocos centavos. Con muchas líneas iguales se acumula: con el peor precio (0.23) a partir de unas 86 líneas, y con S/ 35.00 a partir de unas 417. Ese documento lo rechazo yo antes de enviarlo (mi límite es 0.50, la mitad de la tolerancia de la SUNAT). Lo normal, juntar los productos iguales en una sola línea con su cantidad, es exacto. Ver L-015 en `ERRORES.md`.
 
+## Precio unitario con cantidades muy chicas
+
+El total de la línea se redondea a centavos. Al dividir ese total entre la cantidad para comprobar la regla 3270 (`precio unitario = (valor de venta + IGV) ÷ cantidad`, ±1), el redondeo se amplifica: con 0.001 unidades, medio centavo son 5 soles por unidad.
+
+Por eso el precio unitario que se informa es:
+
+- el que llegó, si está a 0.50 o menos del precio realmente cobrado (`total de la línea ÷ cantidad`, con 10 decimales);
+- el cobrado, en caso contrario. Es lo que se factura de verdad, y así la regla se cumple exacta.
+
+Con cantidad 1 o con cantidades normales el precio que llega nunca se cambia. Solo pasa con cantidades menores a unos 0.01 y precios que no cuadran al centavo. El valor unitario sin IGV se saca del precio informado. Si el precio cobrado pasara de 12 enteros se rechaza antes de enviar.
+
 ## Monto en letras (leyenda 1000)
 
 La leyenda es opcional y de texto libre. La guía de la SUNAT da estos ejemplos: `MIL OCHOCIENTOS CINCUENTA Y OCHO CON 59/100 Soles` y `CUATROCIENTOS VEINTITRES MIL DOSCIENTOS VEINTICINCO Y 00/100`.

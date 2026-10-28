@@ -13,6 +13,8 @@ public final class CalculadoraIgv {
     private static final BigDecimal UN_CENTAVO = new BigDecimal("0.01");
     // La SUNAT tolera una diferencia de 1 entre el IGV total y el 18% de la base (regla 3291). Nosotros no pasamos de la mitad.
     private static final BigDecimal MARGEN_IGV = new BigDecimal("0.50");
+    // Lo mismo para el precio unitario (regla 3270): no nos alejamos más de 0.50 del que resulta de (valor de venta + IGV) / cantidad
+    private static final BigDecimal MARGEN_PRECIO_UNITARIO = new BigDecimal("0.50");
     private static final int MAX_ENTEROS = 12;
     private static final int MAX_DECIMALES_UNITARIOS = 10;
 
@@ -31,11 +33,20 @@ public final class CalculadoraIgv {
             throw new IllegalArgumentException("El total de la línea no puede tener más de " + MAX_ENTEROS + " dígitos enteros");
         }
 
+        // El total se redondea a centavos y al dividirlo entre una cantidad muy chica ese redondeo se amplifica: con 0.001 unidades, medio
+        // centavo de diferencia son 5 soles por unidad. Si el precio que llegó se aleja demasiado del que de verdad se cobró, se informa el cobrado.
+        BigDecimal precioEfectivo = totalLinea.divide(cantidad, MAX_DECIMALES_UNITARIOS, RoundingMode.HALF_UP);
+        BigDecimal precioInformado = precioEfectivo.subtract(precioUnitarioConIgv).abs().compareTo(MARGEN_PRECIO_UNITARIO) <= 0
+                ? precioUnitarioConIgv : precioEfectivo;
+        if (enteros(precioInformado) > MAX_ENTEROS) {
+            throw new IllegalArgumentException("El precio unitario efectivo de la línea no puede tener más de " + MAX_ENTEROS + " dígitos enteros");
+        }
+
         BigDecimal valorVenta = totalLinea.divide(DIVISOR_IGV, 2, RoundingMode.HALF_UP);
         return LineaCalculada.builder()
                 .cantidad(cantidad)
-                .precioUnitario(precioUnitarioConIgv)
-                .valorUnitario(precioUnitarioConIgv.divide(DIVISOR_IGV, MAX_DECIMALES_UNITARIOS, RoundingMode.HALF_UP))
+                .precioUnitario(precioInformado)
+                .valorUnitario(precioInformado.divide(DIVISOR_IGV, MAX_DECIMALES_UNITARIOS, RoundingMode.HALF_UP))
                 .valorVenta(valorVenta)
                 .igv(totalLinea.subtract(valorVenta))
                 .totalLinea(totalLinea)

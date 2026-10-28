@@ -93,6 +93,72 @@ class CalculadoraIgvLineaTest {
         assertThat(l.getPrecioUnitario()).isEqualTo(bd("35.00"));
     }
 
+    // --- Cantidades muy chicas: el precio unitario informado ---
+
+    // Los esperados salen de un cálculo independiente (Python con Decimal). "efectivo" es cuando el precio que llegó se aleja más de 0.50
+    // del que de verdad se cobró (total / cantidad) y se informa el cobrado, para no romper la regla 3270 de la SUNAT
+    @ParameterizedTest(name = "precio {0} x cantidad {1} -> {7}")
+    @CsvSource({
+            "250099.00, 0.001, 250100.0000000000, 211949.1525423729, 211.95, 38.15, 250.10, efectivo",
+            "1005, 0.001, 1010.0000000000, 855.9322033898, 0.86, 0.15, 1.01, efectivo",
+            "999999.99, 0.0001, 999999.99, 847457.6186440678, 84.75, 15.25, 100.00, dado",
+            "5000, 0.0003, 5000, 4237.2881355932, 1.27, 0.23, 1.50, dado",
+            "333.3333, 0.003, 333.3333, 282.4858474576, 0.85, 0.15, 1.00, dado",
+            "4999.99, 0.001, 4999.99, 4237.2796610169, 4.24, 0.76, 5.00, dado",
+            "35.90, 0.25, 35.90, 30.4237288136, 7.61, 1.37, 8.98, dado",
+            "1.005, 1, 1.005, 0.8516949153, 0.86, 0.15, 1.01, dado",
+            "0.333, 3, 0.333, 0.2822033898, 0.85, 0.15, 1.00, dado",
+            "1000.005, 0.001, 1000.005, 847.4618644068, 0.85, 0.15, 1.00, dado",
+            "77777.777, 0.002, 77780.0000000000, 65915.2542372881, 131.83, 23.73, 155.56, efectivo",
+            "12345.6789, 0.004, 12345.0000000000, 10461.8644067797, 41.85, 7.53, 49.38, efectivo",
+            "9999.995, 0.001, 9999.995, 8474.5720338983, 8.47, 1.53, 10.00, dado",
+            "2500.5, 0.001, 2500.5, 2119.0677966102, 2.12, 0.38, 2.50, dado",
+            "35.00, 2, 35.00, 29.6610169492, 59.32, 10.68, 70.00, dado",
+            "100, 0.005, 100, 84.7457627119, 0.42, 0.08, 0.50, dado",
+            "333333.33, 0.0007, 333328.5714285714, 282481.8401937046, 197.74, 35.59, 233.33, efectivo",
+            "123456789.123, 0.0001, 123456800.0000000000, 104624406.7796610169, 10462.44, 1883.24, 12345.68, efectivo"
+    })
+    void conCantidadesMuyChicasSeInformaElPrecioQueDeVerdadSeCobro(String precio, String cantidad, String precioInformado, String valorUnitario,
+                                                                    String valorVenta, String igv, String total, String modo) {
+        LineaCalculada l = CalculadoraIgv.calcularLinea(bd(precio), bd(cantidad));
+
+        assertThat(l.getPrecioUnitario()).isEqualTo(bd(precioInformado));
+        assertThat(l.getValorUnitario()).isEqualTo(bd(valorUnitario));
+        assertThat(l.getValorVenta()).isEqualTo(bd(valorVenta));
+        assertThat(l.getIgv()).isEqualTo(bd(igv));
+        assertThat(l.getTotalLinea()).isEqualTo(bd(total));
+        // y siempre queda dentro del margen respecto de lo cobrado
+        BigDecimal cobrado = l.getTotalLinea().divide(bd(cantidad), 10, java.math.RoundingMode.HALF_UP);
+        assertThat(l.getPrecioUnitario().subtract(cobrado).abs()).isLessThanOrEqualTo(bd("0.50"));
+    }
+
+    @Test
+    void elLimiteDeMedioSolSeConservaElPrecioQueLlegoYUnPocoMasSeCambia() {
+        // 99.5 x 0.01 = 0.995 -> 1.00; cobrado por unidad 100.00; diferencia 0.50 justa: se queda el que llegó
+        LineaCalculada justo = CalculadoraIgv.calcularLinea(bd("99.5"), bd("0.01"));
+        assertThat(justo.getPrecioUnitario()).isEqualTo(bd("99.5"));
+
+        // 124.475 x 0.004 = 0.4979 -> 0.50; cobrado por unidad 125.00; diferencia 0.525: se informa el cobrado
+        LineaCalculada pasado = CalculadoraIgv.calcularLinea(bd("124.475"), bd("0.004"));
+        assertThat(pasado.getPrecioUnitario()).isEqualTo(bd("125.0000000000"));
+    }
+
+    @Test
+    void unPrecioEfectivoDeMasDeDoceEnterosSeRechazaEnVezDeMandarloALaSunat() {
+        // 999999999990 x 0.0001 = 99999999.999 -> 100000000.00; por unidad serían 1.000.000.000.000 (13 dígitos), 10 más que el precio que llegó
+        assertThatThrownBy(() -> CalculadoraIgv.calcularLinea(bd("999999999990"), bd("0.0001")))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("precio unitario efectivo");
+        // y con 999999999999.99 el efectivo se desvía solo 0.01: se conserva el que llegó y no hay problema
+        assertThat(CalculadoraIgv.calcularLinea(bd("999999999999.99"), bd("0.0001")).getPrecioUnitario()).isEqualTo(bd("999999999999.99"));
+    }
+
+    @Test
+    void conCantidadUnoElPrecioQueLlegoNuncaSeCambiaAunqueTengaMuchosDecimales() {
+        for (String precio : new String[]{"0.1234567891", "9.999", "1.005", "35.00", "35", "0.01"}) {
+            assertThat(CalculadoraIgv.calcularLinea(bd(precio), BigDecimal.ONE).getPrecioUnitario()).isEqualTo(bd(precio));
+        }
+    }
+
     // --- Escalas: los montos siempre con 2 decimales y el valor unitario con 10, aunque la entrada venga de otra forma ---
 
     @ParameterizedTest
@@ -212,10 +278,13 @@ class CalculadoraIgvLineaTest {
             // así que el máximo teórico es 0.005/1.18 + 0.005 = 0.0092: menos de un centavo
             assertThat(l.getValorUnitario().multiply(cantidad).subtract(l.getValorVenta()).abs())
                     .as(caso).isLessThanOrEqualTo(new BigDecimal("0.0093"));
-            // 3270: precio unitario = (valor de venta + IGV) / cantidad
-            BigDecimal precioRecalculado = l.getValorVenta().add(l.getIgv()).divide(cantidad, 10, java.math.RoundingMode.HALF_UP);
-            assertThat(precioRecalculado.subtract(precio).abs().multiply(cantidad))
-                    .as(caso).isLessThanOrEqualTo(new BigDecimal("0.006"));
+            // 3270: precio unitario = (valor de venta + IGV) / cantidad, por unidad. La SUNAT tolera 1; nosotros 0.50 como máximo.
+            BigDecimal cobrado = l.getValorVenta().add(l.getIgv()).divide(cantidad, 10, java.math.RoundingMode.HALF_UP);
+            assertThat(l.getPrecioUnitario().subtract(cobrado).abs()).as(caso).isLessThanOrEqualTo(new BigDecimal("0.50"));
+            // y si se cambió el precio, es exactamente el cobrado
+            if (l.getPrecioUnitario().compareTo(precio) != 0) {
+                assertThat(l.getPrecioUnitario()).as(caso).isEqualTo(cobrado);
+            }
         }
     }
 }
