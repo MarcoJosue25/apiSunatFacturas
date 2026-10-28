@@ -33,6 +33,11 @@ public class SunatProperties {
     @NotBlank(message = "La clave SOL no puede estar vacía")
     private String clave;
 
+    // La serie con la que se numeran las facturas: 4 caracteres, empieza con F (regla 1001 de la SUNAT)
+    @NotBlank(message = "La serie de las facturas no puede estar vacía")
+    @Pattern(regexp = "^F[A-Z0-9]{3}$", message = "La serie de las facturas debe tener 4 caracteres, empezar con F y llevar solo mayúsculas y números")
+    private String serieFactura = "F001";
+
     @Positive(message = "El timeout de conexión debe ser mayor que cero")
     private int conexionTimeoutMs;
 

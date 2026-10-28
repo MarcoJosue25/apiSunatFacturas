@@ -26,7 +26,11 @@ public class SerieServiceImpl implements SerieService {
     @Transactional
     public void asegurar(String tipoDocumento, String serie) {
         validar(tipoDocumento, serie);
-        repositorio.crearSiNoExiste(tipoDocumento, serie);
+        // Casi siempre la serie ya existe: se comprueba con una lectura normal para no ejecutar el INSERT (que, aunque no inserte
+        // nada, toma un bloqueo sobre la fila existente y compite con quienes la tienen bloqueada para pedir su número)
+        if (!repositorio.existsByTipoDocumentoAndSerie(tipoDocumento, serie)) {
+            repositorio.crearSiNoExiste(tipoDocumento, serie);
+        }
     }
 
     // MANDATORY: sin una transacción abierta falla, porque el bloqueo de la fila solo dura lo que dura la transacción

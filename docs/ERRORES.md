@@ -175,6 +175,20 @@ Reglas de este archivo:
 - **Qué pasó:** el primer arreglo de E-020 creaba la serie en una transacción nueva (`REQUIRES_NEW`) dentro de la del comprobante. Cada hilo necesitaba una segunda conexión mientras guardaba la primera; con 50 hilos y un pool de 10, todos esperaban conexión y ninguno la liberaba ("Connection is not available, request timed out").
 - **Cómo quedó:** se descartó esa idea. `asegurar` se llama antes de abrir la transacción principal, así que nunca hace falta una segunda conexión mientras se tiene la primera.
 
+### E-022 Seguía habiendo un interbloqueo raro aun después de E-020
+- [x] Estado: resuelto (con una defensa extra)
+- **Fecha:** 2026-10-28
+- **Fase:** 6
+- **Qué pasó:** corriendo toda la suite, el test de 50 hilos volvió a fallar una vez con "Deadlock found" en el `INSERT IGNORE` de `asegurar`, que se ejecutaba en cada petición aunque la serie ya existiera (toma un bloqueo compartido sobre la fila existente y compite con quien la tiene bloqueada).
+- **Cómo quedó:** `asegurar` primero hace una lectura normal (sin bloqueos) y solo inserta si la serie no existe. El test de 50 hilos se repitió 6 veces seguidas sin fallar. Además, como MySQL puede abortar una transacción por interbloqueo aunque el código esté bien, `ComprobanteServiceImpl` repite hasta 3 veces la transacción de reserva (que se deshace entera, número incluido); dos tests lo comprueban.
+
+### E-023 El nuevo campo obligatorio `idExterno` rompió los tests del DTO
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 6
+- **Qué pasó:** al agregar `idExterno` (obligatorio) a `FacturaRequest`, 9 tests de validación de `FacturaRequest` dejaron de pasar porque sus datos no lo tenían. Se vio al correr toda la suite y no solo los tests nuevos.
+- **Cómo quedó:** se actualizaron los datos de prueba y se agregaron tests de la validación del `idExterno`. Moraleja: correr siempre la suite completa antes de cerrar un paso.
+
 ---
 
 ## Limitaciones que se dejan para después
@@ -277,4 +291,19 @@ Reglas de este archivo:
 - [ ] Estado: diferido (se vuelve a probar en producción, fase 9)
 - **Qué significa:** facturas con fecha de hace 30 días, de hace 2 días y de mañana fueron aceptadas. En producción el plazo de envío es corto (ver E-015, código `2108`).
 - **Por qué se deja:** esta API siempre pone la fecha y hora actuales de Lima (`FacturaServiceImpl`), así que no se puede enviar una fecha vieja por accidente. El plazo real se valida en producción.
+
+### L-023 La reserva del número es en serie: una a la vez
+- [ ] Estado: diferido (se mide si algún día hace falta)
+- **Qué significa:** mientras una petición arma y firma el XML, tiene bloqueada la fila de la serie; las demás peticiones esperan. Cada reserva dura decenas de milisegundos, así que el máximo ronda las decenas de facturas por segundo.
+- **Por qué se deja:** es lo que garantiza que no haya saltos ni repetidos, y una tienda por WhatsApp está muy lejos de ese límite. Si hiciera falta, se reservarían bloques de números.
+
+### L-024 Una sola serie para las facturas
+- [ ] Estado: diferido
+- **Qué significa:** `sunat.serie-factura` es una sola serie (por defecto `F001`). La tabla `series` ya admite varias, pero la API no permite elegir.
+- **Por qué se deja:** hasta ahora no hace falta más de una.
+
+### L-025 La petición `POST` es síncrona
+- [ ] Estado: diferido
+- **Qué significa:** el `POST` espera la respuesta de la SUNAT (1 a 3 segundos en el beta; el timeout de lectura es 30 s). Si la SUNAT está lenta, mi agente espera.
+- **Por qué se deja:** es lo más simple y deja el resultado a la vista. Si molestara, el POST podría responder 202 al instante y dejar el envío al planificador de la fase 7.
 

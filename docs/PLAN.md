@@ -227,25 +227,25 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] Entidades con el estilo del agente, `@Version` y cambios de estado dentro de la propia entidad: (`VENCIDO` se agrega en la fase 7, que es la que lo usa; se agregó `REVISAR` para respuestas desconocidas o `YA_REGISTRADO`). pendiente, enviando, aceptado, aceptado con observaciones, rechazado, error de datos, error de configuración, error temporal y vencido.
 - [x] Repositorios.
 - [x] `SerieService`: siguiente correlativo atómico, sin saltos ni repetidos. (`asegurar` antes de la transacción y `siguiente` dentro de ella).
-- [ ] Recorrido: reservar el número, guardar pendiente, generar y firmar, guardar el XML, enviar, guardar el resultado. Un rechazo consume el número. Un error temporal deja el comprobante pendiente para la fase 7.
-- [ ] `POST /api/v1/facturas` con el DTO validado y `GET /api/v1/facturas/{id}` con el estado.
-- [ ] Un `idExterno` único del agente para que si reintenta una petición no se duplique la factura.
-- [ ] `GET /api/v1/facturas/{id}/xml`, porque el cliente debe poder descargar su comprobante **(decidir)**.
+- [x] Recorrido: reservar el número, guardar pendiente, generar y firmar, guardar el XML, enviar, guardar el resultado. (`ComprobanteServiceImpl`: el número, el XML y el comprobante se guardan en una sola transacción; así, si algo falla antes de guardar, el número no se pierde). Un rechazo consume el número. Un error temporal deja el comprobante pendiente para la fase 7.
+- [x] `POST /api/v1/facturas` con el DTO validado y `GET /api/v1/facturas/{id}` con el estado.
+- [x] Un `idExterno` único del agente para que si reintenta una petición no se duplique la factura.
+- [x] `GET /api/v1/facturas/{id}/xml`, porque el cliente debe poder descargar su comprobante **(decidir)**. Decidido: sí, se incluye.
 
 **Tests**
 - [x] Las migraciones aplican sobre un MySQL limpio.
 - [x] Correlativo con 50 hilos a la vez: sin saltos ni repetidos.
-- [ ] Un rechazo consume el número.
+- [x] Un rechazo consume el número.
 - [x] Transiciones de estado permitidas y prohibidas, en una prueba parametrizada.
-- [ ] Validación del POST: campos faltantes, RUC mal, monto 0 e ítems vacíos.
-- [ ] Idempotencia: el mismo `idExterno` dos veces, y también a la vez, da una sola factura.
-- [ ] GET de un id inexistente da 404.
-- [ ] Flujo completo con SUNAT simulada: aceptada, rechazada y caída.
-- [ ] La respuesta no expone credenciales ni detalles internos.
-- [ ] Prueba real `@Tag("beta")` de punta a punta.
+- [x] Validación del POST: campos faltantes, RUC mal, monto 0 e ítems vacíos.
+- [x] Idempotencia: el mismo `idExterno` dos veces, y también a la vez, da una sola factura.
+- [x] GET de un id inexistente da 404.
+- [x] Flujo completo con SUNAT simulada: aceptada, rechazada y caída.
+- [x] La respuesta no expone credenciales ni detalles internos.
+- [x] Prueba real `@Tag("beta")` de punta a punta.
 
 **Listo cuando:**
-- [ ] Hago un `POST` y la factura queda aceptada y guardada.
+- [x] Hago un `POST` y la factura queda aceptada y guardada.
 
 ---
 

@@ -276,3 +276,27 @@ El plan listaba `VENCIDO` entre los estados de la fase 6, pero nada lo usa hasta
 
 ### O-086 Un comprobante puede quedar `ENVIANDO` si la aplicación se cae a mitad del envío (fase 6)
 `PENDIENTE` y `ERROR_TEMPORAL` se pueden reenviar, pero `ENVIANDO` no tiene salida salvo un resultado. La fase 7 debe tratar un `ENVIANDO` viejo como incierto (consultar la constancia antes de reenviar).
+
+### O-087 El número se reserva dentro de la misma transacción que arma y firma el XML (fase 6)
+Si algo falla (datos inválidos, sin certificado, XML que no cumple el esquema), la transacción se deshace y el número queda libre otra vez: la siguiente factura usa el mismo. Un test lo comprueba con una factura de monto cero y con el certificado ausente. En cambio, una vez que la SUNAT responde (aunque rechace), el número ya está guardado en un comprobante y no se reutiliza.
+
+### O-088 Las llamadas a la SUNAT nunca van dentro de una transacción (fase 6)
+El envío se hace sin transacción abierta para no retener una conexión de la base ni bloqueos mientras se espera hasta 30 segundos a la SUNAT.
+
+### O-089 Códigos HTTP del POST (fase 6)
+201 si se creó y la SUNAT ya contestó (aceptada, con observaciones, rechazada o con error); 202 si quedó guardada pero la SUNAT no respondió (se reenviará); 200 si el `idExterno` ya existía (se devuelve la misma factura y no se envía nada). Un rechazo da 201 porque el comprobante sí existe y su número está gastado: el agente debe mirar el campo `estado`.
+
+### O-090 Si el `idExterno` se repite con otros datos, gana la primera factura (fase 6)
+Se devuelve la factura original, sin compararla con la nueva petición. Es lo normal en una clave de idempotencia; comparar las dos y avisar de la diferencia se puede agregar si hace falta.
+
+### O-091 Dos peticiones al mismo tiempo con el mismo `idExterno` (fase 6)
+Las dos arman el XML, pero solo una guarda: la otra choca con la restricción de unicidad dentro de su transacción, se deshace sin gastar número y devuelve la factura de la primera. El test con 12 hilos comprueba que hay una sola factura, un solo envío y que la siguiente factura es la 2.
+
+### O-092 `@MockitoBean` sobre un servicio con `@Transactional` ejecuta la transacción al configurar el mock (fase 6)
+Al intentar espiar `SerieService` (que tiene `Propagation.MANDATORY`), la propia llamada de configuración del mock pasó por el proxy transaccional y falló. Se espió `FacturaService`, que no es transaccional, para simular el interbloqueo. También: para volver a configurar un mock que ya tiene respuesta hay que usar `doAnswer(...).when(mock)...`, porque `when(mock.metodo())` ejecuta la respuesta anterior.
+
+### O-093 Faltan en el JSON del POST: dirección del cliente y código de ítem, que son opcionales (fase 6)
+`direccion` del cliente y `codigo` de cada ítem se aceptan pero hoy el XML no los usa todos; se anotó en L-016 (datos opcionales del emisor/cliente).
+
+### O-094 La respuesta no lleva el XML ni la constancia (fase 6)
+`FacturaResponse` no tiene campos para eso; el XML se descarga aparte en `GET /api/v1/facturas/{id}/xml` (ISO-8859-1, como adjunto). La constancia de la SUNAT (ZIP) se guarda en la base y por ahora no se expone; se agregará un endpoint si el cliente la necesita.

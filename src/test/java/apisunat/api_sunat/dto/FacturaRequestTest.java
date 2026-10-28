@@ -30,7 +30,7 @@ class FacturaRequestTest {
     }
 
     private static FacturaRequest factura() {
-        return FacturaRequest.builder().cliente(cliente()).items(List.of(item())).build();
+        return FacturaRequest.builder().idExterno("pedido-1").cliente(cliente()).items(List.of(item())).build();
     }
 
     private Set<String> rutas(Object objeto) {
@@ -60,20 +60,20 @@ class FacturaRequestTest {
         for (int i = 0; i < 999; i++) {
             muchos.add(item());
         }
-        assertThat(validador.validate(FacturaRequest.builder().cliente(cliente()).items(muchos).build())).isEmpty();
+        assertThat(validador.validate(FacturaRequest.builder().idExterno("pedido-1").cliente(cliente()).items(muchos).build())).isEmpty();
     }
 
     // --- La factura ---
 
     @Test
     void sinClienteFalla() {
-        assertThat(rutas(FacturaRequest.builder().items(List.of(item())).build())).containsExactly("cliente");
+        assertThat(rutas(FacturaRequest.builder().idExterno("pedido-1").items(List.of(item())).build())).containsExactly("cliente");
     }
 
     @Test
     void sinItemsOConItemsVaciosFalla() {
-        assertThat(rutas(FacturaRequest.builder().cliente(cliente()).build())).containsExactly("items");
-        assertThat(rutas(FacturaRequest.builder().cliente(cliente()).items(List.of()).build())).containsExactly("items");
+        assertThat(rutas(FacturaRequest.builder().idExterno("pedido-1").cliente(cliente()).build())).containsExactly("items");
+        assertThat(rutas(FacturaRequest.builder().idExterno("pedido-1").cliente(cliente()).items(List.of()).build())).containsExactly("items");
     }
 
     @Test
@@ -82,20 +82,20 @@ class FacturaRequestTest {
         for (int i = 0; i < 1000; i++) {
             muchos.add(item());
         }
-        assertThat(mensajes(FacturaRequest.builder().cliente(cliente()).items(muchos).build())).containsExactly("La factura no puede tener más de 999 ítems");
+        assertThat(mensajes(FacturaRequest.builder().idExterno("pedido-1").cliente(cliente()).items(muchos).build())).containsExactly("La factura no puede tener más de 999 ítems");
     }
 
     @Test
     void loErroresDeUnItemDicenCualEs() {
         ItemRequest malo = item();
         malo.setCantidad(BigDecimal.ZERO);
-        FacturaRequest f = FacturaRequest.builder().cliente(cliente()).items(List.of(item(), malo)).build();
+        FacturaRequest f = FacturaRequest.builder().idExterno("pedido-1").cliente(cliente()).items(List.of(item(), malo)).build();
         assertThat(rutas(f)).containsExactly("items[1].cantidad");
     }
 
     @Test
     void loErroresDelClienteDicenCualEs() {
-        FacturaRequest f = FacturaRequest.builder().cliente(ClienteRequest.builder().ruc("123").razonSocial("X").build()).items(List.of(item())).build();
+        FacturaRequest f = FacturaRequest.builder().idExterno("pedido-1").cliente(ClienteRequest.builder().ruc("123").razonSocial("X").build()).items(List.of(item())).build();
         assertThat(rutas(f)).containsExactly("cliente.ruc");
     }
 
@@ -248,7 +248,7 @@ class FacturaRequestTest {
 
     @Test
     void losMensajesDeErrorEstanEnEspanol() {
-        FacturaRequest f = FacturaRequest.builder().cliente(ClienteRequest.builder().ruc("1").razonSocial("").build())
+        FacturaRequest f = FacturaRequest.builder().idExterno("pedido-1").cliente(ClienteRequest.builder().ruc("1").razonSocial("").build())
                 .items(List.of(ItemRequest.builder().descripcion("").cantidad(BigDecimal.ZERO).precioUnitario(BigDecimal.ONE).build())).build();
         assertThat(mensajes(f)).contains("El RUC del cliente no es válido", "La razón social del cliente no puede estar vacía",
                 "La descripción del ítem no puede estar vacía", "La cantidad del ítem debe ser mayor que cero");
@@ -261,7 +261,7 @@ class FacturaRequestTest {
     @Test
     void elJsonDeUnaFacturaSeConvierteYQuedaValido() {
         String cuerpo = """
-                {"cliente": {"ruc": "20123456786", "razonSocial": "CLIENTE SAC", "direccion": "Av. Perú 123"},
+                {"idExterno": "pedido-1", "cliente": {"ruc": "20123456786", "razonSocial": "CLIENTE SAC", "direccion": "Av. Perú 123"},
                  "items": [{"descripcion": "Polo básico negro", "cantidad": 2, "precioUnitario": 35.00, "codigo": "POLO-N"},
                            {"descripcion": "Servicio de estampado", "cantidad": 1.5, "precioUnitario": 12.5, "unidadMedida": "ZZ"}]}
                 """;
@@ -278,7 +278,7 @@ class FacturaRequestTest {
     @Test
     void unPrecioEscritoComoNumeroJsonNoPierdeDecimalesPorPuntoFlotante() {
         FacturaRequest f = json.readValue("""
-                {"cliente": {"ruc": "20123456786", "razonSocial": "X"}, "items": [{"descripcion": "a", "cantidad": 1, "precioUnitario": 0.1}]}
+                {"idExterno": "pedido-1", "cliente": {"ruc": "20123456786", "razonSocial": "X"}, "items": [{"descripcion": "a", "cantidad": 1, "precioUnitario": 0.1}]}
                 """, FacturaRequest.class);
         assertThat(f.getItems().get(0).getPrecioUnitario()).isEqualByComparingTo(new BigDecimal("0.1"));
         assertThat(f.getItems().get(0).getPrecioUnitario().toPlainString()).isEqualTo("0.1");
@@ -287,6 +287,34 @@ class FacturaRequestTest {
     @Test
     void unJsonSinCamposDaUnaFacturaInvalidaYNoUnaExcepcion() {
         FacturaRequest f = json.readValue("{}", FacturaRequest.class);
-        assertThat(rutas(f)).containsExactlyInAnyOrder("cliente", "items");
+        assertThat(rutas(f)).containsExactlyInAnyOrder("idExterno", "cliente", "items");
+    }
+
+    // --- idExterno ---
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"pedido-1", "A", "abc_DEF.123:4-5", "0", "12345"})
+    void unIdExternoValidoPasa(String id) {
+        FacturaRequest f = factura();
+        f.setIdExterno(id);
+        assertThat(validador.validate(f)).isEmpty();
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.NullAndEmptySource
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"   ", "con espacio", "ñandú", "a/b", "a;b", "pedido\n1", "<x>", "a,b", "a'b"})
+    void unIdExternoInvalidoFalla(String id) {
+        FacturaRequest f = factura();
+        f.setIdExterno(id);
+        assertThat(rutas(f)).containsExactly("idExterno");
+    }
+
+    @Test
+    void elIdExternoTieneUnMaximoDe100Caracteres() {
+        FacturaRequest f = factura();
+        f.setIdExterno("x".repeat(100));
+        assertThat(validador.validate(f)).isEmpty();
+        f.setIdExterno("x".repeat(101));
+        assertThat(rutas(f)).containsExactly("idExterno");
     }
 }

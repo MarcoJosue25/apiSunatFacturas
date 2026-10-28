@@ -172,6 +172,30 @@ class SunatPropertiesTest {
         assertThat(camposInvalidos(p)).as(String.valueOf(codigo)).containsExactly("emisor.codigoEstablecimiento");
     }
 
+    // --- Serie de las facturas ---
+
+    @Test
+    void laSerieDeLasFacturasPorDefectoEsF001() {
+        assertThat(new SunatProperties().getSerieFactura()).isEqualTo("F001");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"F001", "FA01", "FS21", "FZZZ", "F9A0"})
+    void unaSerieDeFacturaValidaPasa(String serie) {
+        SunatProperties p = valida();
+        p.setSerieFactura(serie);
+        assertThat(validator.validate(p)).isEmpty();
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"B001", "f001", "F00", "F0011", "F 01", "F-01", " F001", "F001\n", "FÑ01"})
+    void unaSerieDeFacturaInvalidaFalla(String serie) {
+        SunatProperties p = valida();
+        p.setSerieFactura(serie);
+        assertThat(camposInvalidos(p)).containsExactly("serieFactura");
+    }
+
     // --- Certificado digital ---
 
     @Test

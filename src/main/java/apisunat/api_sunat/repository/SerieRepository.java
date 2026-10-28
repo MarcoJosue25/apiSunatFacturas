@@ -12,6 +12,9 @@ import java.util.Optional;
 
 public interface SerieRepository extends JpaRepository<Serie, Long> {
 
+    // Lectura normal, sin bloqueos
+    boolean existsByTipoDocumentoAndSerie(String tipoDocumento, String serie);
+
     // Crea la serie si no existe (sin error si dos hilos lo intentan a la vez)
     @Modifying
     @Query(value = "INSERT IGNORE INTO series (tipo_documento, serie, ultimo_correlativo, version) VALUES (:tipo, :serie, 0, 0)",
