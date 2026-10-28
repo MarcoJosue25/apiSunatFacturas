@@ -38,3 +38,17 @@ echo "no es un p12" > corrupto.p12
 ```
 
 Los tests que dependen de la fecha usan un reloj fijo, no la fecha real, para que `valido.p12` no deje de servir cuando pase el tiempo.
+
+## Certificado emitido por una "autoridad" (para el perfil prod)
+
+`emitido-por-ca.p12` (RUC `20512345678`, `CN=MI EMPRESA SAC`, vigencia 2026-01-01 a 2035-12-30) NO es autofirmado: su emisor es `CN=AUTORIDAD DE PRUEBA`. Sirve para probar que el perfil `prod` acepta un certificado que no sea autofirmado. Se generó así:
+
+```bash
+keytool -genkeypair -alias ca -keyalg RSA -keysize 2048 -sigalg SHA256withRSA -dname "CN=AUTORIDAD DE PRUEBA, O=AUTORIDAD DE PRUEBA, C=PE" -ext bc:c -startdate "2026/01/01 00:00:00" -validity 3650 -storetype PKCS12 -keystore ca.p12 -storepass prueba123 -keypass prueba123
+keytool -genkeypair -alias emisor -keyalg RSA -keysize 2048 -sigalg SHA256withRSA -dname "CN=MI EMPRESA SAC, OU=20512345678, O=MI EMPRESA SAC, C=PE" -startdate "2026/01/01 00:00:00" -validity 3650 -storetype PKCS12 -keystore emitido-por-ca.p12 -storepass prueba123 -keypass prueba123
+keytool -certreq -alias emisor -keystore emitido-por-ca.p12 -storepass prueba123 -file emisor.csr
+keytool -gencert -alias ca -keystore ca.p12 -storepass prueba123 -infile emisor.csr -outfile emisor.crt -startdate "2026/01/01 00:00:00" -validity 3650 -rfc
+keytool -exportcert -alias ca -keystore ca.p12 -storepass prueba123 -rfc -file ca.crt
+keytool -importcert -noprompt -alias ca -file ca.crt -keystore emitido-por-ca.p12 -storepass prueba123
+keytool -importcert -noprompt -alias emisor -file emisor.crt -keystore emitido-por-ca.p12 -storepass prueba123
+```
