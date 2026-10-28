@@ -60,6 +60,12 @@ Ejemplo, un polo de S/ 35.00 por 2 unidades: total de la línea 70.00 → valor 
 - Cada línea cumple 3271, 3272, 3103 y 3270 con diferencias de menos de 1 centavo.
 - La diferencia entre el IGV total y el 18% de la base crece con el redondeo de cada línea: como máximo 0.0059 por línea, y en documentos reales unos pocos centavos. Con muchas líneas iguales se acumula: con el peor precio (0.23) a partir de unas 86 líneas, y con S/ 35.00 a partir de unas 417. Ese documento lo rechazo yo antes de enviarlo (mi límite es 0.50, la mitad de la tolerancia de la SUNAT). Lo normal, juntar los productos iguales en una sola línea con su cantidad, es exacto. Ver L-015 en `ERRORES.md`.
 
+## Monto en letras (leyenda 1000)
+
+La leyenda es opcional y de texto libre. La guía de la SUNAT da estos ejemplos: `MIL OCHOCIENTOS CINCUENTA Y OCHO CON 59/100 Soles` y `CUATROCIENTOS VEINTITRES MIL DOSCIENTOS VEINTICINCO Y 00/100`.
+
+Decisión: `<LETRAS> CON NN/100 SOLES`, en mayúsculas y **sin tildes**, siguiendo la RAE: `VEINTIUN MIL`, `UN MILLON`, `MIL UN MILLONES`, `CIEN` y `CIENTO UNO`. Llega hasta 999 999 999 999.99. Se comprueba con casi 8.000 números contra una librería independiente (`num2words`).
+
 ## Pendiente de verificar en el beta
 
 - Que el beta acepte estos cálculos (se prueba en la fase 5 con una factura real).

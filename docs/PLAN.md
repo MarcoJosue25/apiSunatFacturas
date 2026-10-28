@@ -101,7 +101,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] Calculadora de línea: valor unitario, precio unitario (con IGV), valor de venta del ítem e IGV de la línea. Solo operación gravada (afectación 10) al principio.
 - [x] Totales del documento: suma de valores de venta, IGV total e importe total.
 - [x] Redondeo a 2 decimales y precisión del valor unitario, según lo anotado.
-- [ ] Monto en letras para la leyenda 1000, con el formato de la guía: `MIL OCHOCIENTOS CINCUENTA Y OCHO CON 59/100 SOLES` (mayúsculas y sin tildes).
+- [x] Monto en letras para la leyenda 1000, con el formato de la guía: `MIL OCHOCIENTOS CINCUENTA Y OCHO CON 59/100 SOLES` (mayúsculas y sin tildes).
 - [ ] Serie y correlativo: formato `F001-00000001` y validación del formato.
 
 **Tests**
@@ -109,7 +109,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] Líneas: cantidades con decimales, precios con muchos decimales y cantidad cero (rechazada). Los descuentos no entran todavía (L-002).
 - [x] Coherencia: el total siempre es la suma de las líneas y el IGV de la línea cuadra con su base. Con muchos casos generados con semilla fija.
 - [x] Ida y vuelta: del precio con IGV al valor unitario y de regreso no pierde centavos.
-- [ ] Monto en letras: 0, 1, 15, 21, 100 ("CIEN"), 101, 1000, 1001, 21000, 1000000 ("UN MILLÓN"), centavos, y negativos rechazados.
+- [x] Monto en letras: 0, 1, 15, 21, 100 ("CIEN"), 101, 1000, 1001, 21000, 1000000 ("UN MILLÓN"), centavos, y negativos rechazados.
 - [ ] Serie y correlativo: `F001`, `F999`, `B001`, serie inválida, correlativo 0 o de más de 8 dígitos.
 
 **Listo cuando:**
