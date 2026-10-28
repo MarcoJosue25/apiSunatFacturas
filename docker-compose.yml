@@ -1,4 +1,6 @@
-# MySQL para desarrollar en local: docker compose up -d
+# Solo MySQL, para desarrollar en local:                 docker compose up -d
+# MySQL y la API juntos (con el perfil prod):            docker compose --profile app up -d --build
+# La API lee su configuración del archivo .env (copie .env.example) y el certificado de la carpeta ./certificados
 services:
   mysql:
     image: mysql:8.4
@@ -18,6 +20,25 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+
+  api-sunat:
+    profiles: ["app"]
+    build: .
+    container_name: api-sunat
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      # Dentro de docker la base se llama "mysql", no localhost; y el certificado está en el volumen
+      DB_URL: jdbc:mysql://mysql:3306/apisunat
+      SUNAT_CERTIFICADO_RUTA: /certificados/certificado.p12
+      SPRING_PROFILES_ACTIVE: prod
+    volumes:
+      - ./certificados:/certificados:ro
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
 
 volumes:
   mysql-datos:

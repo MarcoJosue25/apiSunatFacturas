@@ -40,3 +40,12 @@ jobs:
 
       - name: Compilar y correr los tests
         run: ./mvnw -B clean test
+
+  # Comprueba que la imagen de Docker se arma (compila con el JDK y deja solo el .jar en una imagen con JRE). No la publica.
+  imagen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Armar la imagen
+        run: docker build -t api-sunat:ci .

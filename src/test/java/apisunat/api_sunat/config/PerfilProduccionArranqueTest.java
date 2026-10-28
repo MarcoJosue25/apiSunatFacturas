@@ -1,8 +1,14 @@
 package apisunat.api_sunat.config;
 
 import apisunat.api_sunat.ApiSunatApplication;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -34,6 +40,27 @@ class PerfilProduccionArranqueTest {
                 .hasMessageContaining("servicio de pruebas (beta)")
                 .hasMessageContaining("MODDATOS")
                 .hasMessageContaining("Falta la llave de la API");
+    }
+
+    @Test
+    void siLaConfiguracionNoSirveNiSiquieraSeConectaALaBaseDeDatos() {
+        ListAppender<ILoggingEvent> logs = new ListAppender<>();
+        logs.start();
+        Logger raiz = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        try {
+            // Spring Boot reconfigura el log al arrancar y borraría un appender puesto antes: se pone cuando el contexto ya se está preparando
+            assertThatThrownBy(() -> new SpringApplicationBuilder(ApiSunatApplication.class).web(WebApplicationType.NONE).profiles("prod")
+                    .listeners((ApplicationListener<ApplicationPreparedEvent>) evento -> raiz.addAppender(logs))
+                    .run("--sunat.reintentos.habilitado=false", "--sunat.resumen.habilitado=false"))
+                    .rootCause().hasMessageContaining("perfil prod");
+        } finally {
+            raiz.detachAppender(logs);
+            logs.stop();
+        }
+
+        // Sin el orden de arranque de ArranqueProduccionConfig aquí habría mensajes de Hikari (el pool) y de Flyway (las migraciones)
+        assertThat(logs.list).as("se está capturando el log").anyMatch(e -> e.getFormattedMessage().contains("perfil prod"));
+        assertThat(logs.list).noneMatch(e -> e.getLoggerName().startsWith("com.zaxxer.hikari") || e.getLoggerName().startsWith("org.flywaydb"));
     }
 
     @Test

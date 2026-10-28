@@ -96,7 +96,9 @@ public class BillServiceClient {
                     .uri(url)
                     .contentType(TEXT_XML_UTF8)
                     .header("SOAPAction", "urn:" + operacion)
-                    .body(sobre)
+                    // Como bytes y no como texto: con el log de Spring en DEBUG, un cuerpo de texto se escribe completo en el log,
+                    // y este lleva la clave SOL
+                    .body(sobre.getBytes(StandardCharsets.UTF_8))
                     .exchange((peticion, res) -> {
                         byte[] bytes = res.getBody().readNBytes(maxBytes + 1);
                         if (bytes.length > maxBytes) {

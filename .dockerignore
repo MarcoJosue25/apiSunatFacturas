@@ -1,0 +1,9 @@
+.git
+.github
+.idea
+target
+docs
+*.md
+.env
+*.p12
+certificados
