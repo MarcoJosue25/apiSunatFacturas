@@ -1,0 +1,15 @@
+# Maven
+target/
+
+# Secretos y certificados reales (los de prueba van en src/test/resources)
+.env
+*.p12
+!src/test/resources/**/*.p12
+
+# IDE y sistema
+.idea/
+*.iml
+.vscode/
+.DS_Store
+*.log
+HELP.md
