@@ -180,3 +180,21 @@ El cliente hace una sola llamada. Si hay un timeout no se sabe si la SUNAT recib
 
 ### O-054 El nombre del ZIP en el sobre solo admite letras, números y guiones (fase 5)
 `SoapEnvelopeBuilder.sendBill` valida el nombre antes de ponerlo en el XML sin escapar. Todos los nombres reales (`20100066603-01-F001-1.zip`) cumplen. Rechazar el resto evita meter texto raro en el sobre.
+
+### O-055 La estructura de la constancia (CDR) sale del manual del programador, no de una captura real (fase 5)
+`CdrParser` se hizo con los ejemplos C.1 y C.2 del manual (páginas 47 a 50), guardados en `src/test/resources/sunat/cdr/` con la firma recortada. Cuando la prueba real del beta guarde una constancia verdadera hay que compararla con estas y agregarla como fixture.
+
+### O-056 Las observaciones de una constancia son los `cbc:Note` de la raíz, con el formato "código - texto" (fase 5)
+El manual (B.10) dice que las notas son advertencias de recepción que no rechazan el documento. `CdrParser` solo lee los `cbc:Note` hijos directos de la raíz y separa el código de cuatro dígitos del texto; si la nota no empieza con un código de cuatro dígitos, el código queda nulo y se guarda el texto completo.
+
+### O-057 El rechazo puede llegar como constancia o como SOAP Fault (fase 5)
+Según el manual, una constancia con `ResponseCode` distinto de cero es un rechazo con su propio `ApplicationResponse`; las NOTAS del proyecto dicen que lo habitual en `sendBill` es un SOAP Fault. `CdrParser` entiende la constancia y `SoapResponseParser` el Fault; el servicio del recorrido completo tendrá que tratar los dos. Qué hace el beta de verdad se anota tras la prueba real.
+
+### O-058 La constancia de la SUNAT se firma con RSA-SHA1 (fase 5)
+En los ejemplos del manual la firma de la SUNAT usa `rsa-sha1` y `sha1`. Nosotros no la verificamos (no es necesario para saber si nos aceptaron) y firmamos con SHA-256. Si algún día se verifica, hay que activar SHA-1 solo para ese caso.
+
+### O-059 Las descripciones del CDR vienen partidas en líneas y se normalizan (fase 5)
+El ejemplo del manual trae `La Factura numero FA01-981, ha sido\n aceptada` (con salto de línea). `CdrParser` deja un solo espacio entre palabras para que el mensaje se pueda mostrar y comparar.
+
+### O-060 Lombok `@Singular` adivina mal el singular de "observaciones" (fase 5)
+Generó `observacione(...)`, que no compiló en el uso. Se indica explícitamente `@Singular("observacion")`.

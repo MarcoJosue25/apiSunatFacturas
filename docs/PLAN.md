@@ -190,7 +190,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [ ] Probar en el beta si pide la carpeta `dummy` **(verificar)**.
 - [x] `sendBill` en el cliente SOAP, con el ZIP en base64 (`SoapEnvelopeBuilder`, `SoapResponseParser`, `BillServiceClient`).
 - [ ] Probar en el beta si hace falta MTOM **(verificar)**.
-- [ ] `CdrParser`: descomprime la respuesta y lee el `ApplicationResponse` (código, descripción y observaciones).
+- [x] `CdrParser`: descomprime la respuesta y lee el `ApplicationResponse` (código, descripción y observaciones).
 - [ ] Mover `codigos_sunat.csv` a `src/main/resources` y cargarlo al arrancar.
 - [ ] `ClasificadorErrores` con las clases: aceptado, aceptado con observaciones, rechazo, error de datos, error de configuración y transitorio. Las reglas salen de `docs/sunat/NOTAS.md`.
 - [ ] Un código desconocido nunca se reintenta.
@@ -199,13 +199,13 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 **Tests**
 - [x] ZIP: contiene exactamente un XML y los nombres coinciden.
 - [x] El nombre del archivo (`RUC-01-F001-1`) coincide con el RUC, la serie y el número que lleva el XML (se movió de la fase 3 porque el nombre se arma con el ZIP).
-- [ ] CDR de ejemplo: aceptado, rechazado y con observaciones.
+- [x] CDR de ejemplo: aceptado, rechazado y con observaciones.
 - [ ] SOAP Fault con `0111`, `0151` y `0306`.
 - [ ] Cada regla de clasificación de las notas (por ejemplo `0100` y `0109` transitorios, `0306` no).
 - [ ] Los 869 códigos del CSV reciben una clase sin fallar.
 - [ ] Código desconocido: no se reintenta.
 - [ ] Timeout o 500: transitorio.
-- [ ] CDR corrupto o ZIP de respuesta vacío.
+- [x] CDR corrupto o ZIP de respuesta vacío.
 - [ ] Prueba real `@Tag("beta")`: factura válida aceptada.
 - [ ] Prueba real: total mal calculado, para ver que lo que atrapa nuestro validador local es lo mismo que rechaza la SUNAT.
 - [ ] Prueba real: reenviar la misma factura. Anotar si devuelve el mismo CDR o el error `1033`.
