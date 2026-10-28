@@ -5,7 +5,7 @@ import apisunat.api_sunat.dto.BoletaRequest;
 import apisunat.api_sunat.dto.ClienteBoletaRequest;
 import apisunat.api_sunat.dto.ItemRequest;
 import apisunat.api_sunat.dto.ResumenResponse;
-import apisunat.api_sunat.exception.ComprobanteNoEncontradoException;
+import apisunat.api_sunat.exception.ResumenNoEncontradoException;
 import apisunat.api_sunat.exception.SunatFaultException;
 import apisunat.api_sunat.exception.SunatNoDisponibleException;
 import apisunat.api_sunat.model.Comprobante;
@@ -459,7 +459,7 @@ class ResumenDiarioServiceImplTest {
         doReturn(RespuestaStatus.builder().statusCode("0").content(cdrAceptado("ok")).build()).when(cliente).getStatus(anyString());
         servicio.consultar(id);
 
-        assertThatThrownBy(() -> servicio.reenviar(id)).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> servicio.reenviar(id)).isInstanceOf(apisunat.api_sunat.exception.OperacionNoPermitidaException.class);
         verify(cliente, times(1)).sendSummary(anyString(), any());
     }
 
@@ -556,7 +556,7 @@ class ResumenDiarioServiceImplTest {
 
     @Test
     void obtenerUnResumenQueNoExisteFalla() {
-        assertThatThrownBy(() -> servicio.obtener(999_999L)).isInstanceOf(ComprobanteNoEncontradoException.class);
+        assertThatThrownBy(() -> servicio.obtener(999_999L)).isInstanceOf(ResumenNoEncontradoException.class);
     }
 
     @Test

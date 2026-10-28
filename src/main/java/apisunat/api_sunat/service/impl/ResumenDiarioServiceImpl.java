@@ -3,7 +3,8 @@ package apisunat.api_sunat.service.impl;
 import apisunat.api_sunat.config.ClockConfig;
 import apisunat.api_sunat.config.SunatProperties;
 import apisunat.api_sunat.dto.ResumenResponse;
-import apisunat.api_sunat.exception.ComprobanteNoEncontradoException;
+import apisunat.api_sunat.exception.OperacionNoPermitidaException;
+import apisunat.api_sunat.exception.ResumenNoEncontradoException;
 import apisunat.api_sunat.exception.SunatFaultException;
 import apisunat.api_sunat.exception.SunatNoDisponibleException;
 import apisunat.api_sunat.exception.SunatRespuestaInvalidaException;
@@ -338,6 +339,10 @@ public class ResumenDiarioServiceImpl implements ResumenDiarioService {
 
     @Override
     public ResumenResponse reenviar(Long id) {
+        EstadoResumen actual = cargar(id).getEstado();
+        if (actual != EstadoResumen.RECHAZADO) {
+            throw new OperacionNoPermitidaException("Solo se reenvía un resumen rechazado, y este está " + actual);
+        }
         transaccion.executeWithoutResult(estado -> {
             ResumenDiario resumen = cargar(id);
             resumen.prepararReenvio(ahora());
@@ -393,7 +398,7 @@ public class ResumenDiarioServiceImpl implements ResumenDiarioService {
     // ---------------------------------------------------------------------------------------------------- ayudas
 
     private ResumenDiario cargar(Long id) {
-        return resumenes.findById(id).orElseThrow(() -> new ComprobanteNoEncontradoException(id));
+        return resumenes.findById(id).orElseThrow(() -> new ResumenNoEncontradoException(id));
     }
 
     // El número de una boleta (B001-12) aparece en el texto como palabra completa, no dentro de otro número (B001-123)

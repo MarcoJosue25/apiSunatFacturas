@@ -126,6 +126,14 @@ class BoletaServiceImplTest {
     }
 
     @Test
+    void elServicioDeFacturasNoMuestraUnaBoletaNiSuXml() {
+        Long id = servicio.emitir(boleta("b1", dni(), item("1", "10.00"))).boleta().getId();
+
+        assertThatThrownBy(() -> facturas.obtener(id)).isInstanceOf(ComprobanteNoEncontradoException.class);
+        assertThatThrownBy(() -> facturas.obtenerXml(id)).isInstanceOf(ComprobanteNoEncontradoException.class);
+    }
+
+    @Test
     void emitirUnaBoletaNoHablaConLaSunat() {
         servicio.emitir(boleta("b1", dni(), item("2", "35.00")));
         verifyNoInteractions(cliente);

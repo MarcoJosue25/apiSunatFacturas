@@ -143,12 +143,12 @@ public class ComprobanteServiceImpl implements ComprobanteService {
 
     @Override
     public FacturaResponse obtener(Long id) {
-        return responder(comprobantes.findById(id).orElseThrow(() -> new ComprobanteNoEncontradoException(id)));
+        return responder(comprobantes.findById(id).filter(c -> !c.esBoleta()).orElseThrow(() -> new ComprobanteNoEncontradoException(id)));
     }
 
     @Override
     public byte[] obtenerXml(Long id) {
-        return comprobantes.findById(id).orElseThrow(() -> new ComprobanteNoEncontradoException(id)).getXmlFirmado();
+        return comprobantes.findById(id).filter(c -> !c.esBoleta()).orElseThrow(() -> new ComprobanteNoEncontradoException(id)).getXmlFirmado();
     }
 
     private LocalDateTime ahora() {

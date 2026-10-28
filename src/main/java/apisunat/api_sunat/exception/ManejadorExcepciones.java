@@ -79,6 +79,17 @@ public class ManejadorExcepciones {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MensajeError(e.getMessage(), null));
     }
 
+    @ExceptionHandler(ResumenNoEncontradoException.class)
+    public ResponseEntity<MensajeError> manejarResumenNoEncontrado(ResumenNoEncontradoException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MensajeError(e.getMessage(), null));
+    }
+
+    // Lo pedido no se puede hacer con el estado actual (por ejemplo reenviar un resumen que la SUNAT aceptó)
+    @ExceptionHandler(OperacionNoPermitidaException.class)
+    public ResponseEntity<MensajeError> manejarOperacionNoPermitida(OperacionNoPermitidaException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new MensajeError(e.getMessage(), null));
+    }
+
     // Es un problema de configuración del servicio, no de quien pide la factura: el detalle va al log, no a la respuesta
     @ExceptionHandler({CertificadoInvalidoException.class, FirmaException.class})
     public ResponseEntity<MensajeError> manejarFirma(RuntimeException e) {
