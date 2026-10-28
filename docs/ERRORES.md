@@ -112,6 +112,13 @@ Reglas de este archivo:
 - **Qué pasó:** `SunatProperties` validaba el RUC solo con `@Pattern`, y en Bean Validation un valor nulo pasa ese patrón. Sin la variable de entorno, la aplicación habría arrancado sin RUC. Lo atrapó el test `elRucDebeTenerExactamenteOnceDigitos` con el caso nulo.
 - **Cómo quedó:** se agregó `@NotBlank` al RUC. Ojo para el resto del proyecto: un patrón o un largo no obligan a que el campo exista, hay que combinarlo con `@NotBlank` o `@NotNull`.
 
+### E-013 Un error SOAP de la SUNAT llega con HTTP 200
+- [ ] Estado: parcialmente resuelto (el parser ya lo detecta; falta que el cliente lo use, paso 1.4)
+- **Fecha:** 2026-10-28
+- **Fase:** 1
+- **Qué pasó:** al mandar un sobre sin la cabecera de seguridad, el beta respondió HTTP **200** con un `Fault` dentro del cuerpo (`faultcode soap-env:Client.0200`). El mensaje además es engañoso: dice "El servidor remoto no se encuentra activo (codigo: 0200)" aunque el problema era la cabecera. Ejemplo guardado en `src/test/resources/sunat/beta/fault-sin-seguridad.xml`.
+- **Cómo se soluciona:** el cliente nunca decide por el código HTTP: siempre pasa el cuerpo al `SoapResponseParser`, que lanza `SunatFaultException` si hay un Fault. El código de 4 dígitos se saca del `faultcode` o del texto "(codigo: NNNN)".
+
 ---
 
 ## Limitaciones que se dejan para después
@@ -164,3 +171,8 @@ Reglas de este archivo:
 ### L-012 El certificado gratuito puede no corresponder a mi régimen
 - [ ] Estado: pendiente (se confirma antes de la fase 9)
 - **Qué significa:** el certificado gratuito exige estar afecto a renta de tercera categoría. Si el RUC 10 está en Nuevo RUS, probablemente no califica y habría que cambiar de régimen o usar otra vía.
+
+### L-013 El beta no valida la clave
+- [ ] Estado: diferido (se ve en la fase 9)
+- **Qué significa:** con una clave incorrecta y con el ticket vacío, el beta respondió exactamente igual que con la clave buena (`0127`). Los errores de autenticación y permisos (`0109`, `0111`) no se pueden reproducir en el beta.
+- **Por qué se deja:** esos casos se prueban con respuestas simuladas, y su comportamiento real se confirma recién con la SUNAT de producción.
