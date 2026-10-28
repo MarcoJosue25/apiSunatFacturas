@@ -69,6 +69,10 @@
 				<configuration>
 					<groups>${test.groups}</groups>
 					<excludedGroups>${test.excluded.groups}</excludedGroups>
+					<!-- Los tests no corren los reintentos automáticos: los que los prueban los encienden a propósito -->
+					<systemPropertyVariables>
+						<sunat.reintentos.habilitado>false</sunat.reintentos.habilitado>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>

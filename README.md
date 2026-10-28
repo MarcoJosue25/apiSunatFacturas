@@ -28,7 +28,7 @@ Recién arrancando. Lo voy haciendo por fases, despacio y con tests en cada paso
 5. [x] Firma digital
 6. [x] Enviar la factura al beta
 7. [x] Guardar y exponer por REST
-8. [ ] Reintentos
+8. [x] Reintentos
 9. [ ] Boletas y resumen diario
 10. [ ] Producción
 

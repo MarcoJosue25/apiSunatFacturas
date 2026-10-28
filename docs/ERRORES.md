@@ -307,3 +307,23 @@ Reglas de este archivo:
 - **Qué significa:** el `POST` espera la respuesta de la SUNAT (1 a 3 segundos en el beta; el timeout de lectura es 30 s). Si la SUNAT está lenta, mi agente espera.
 - **Por qué se deja:** es lo más simple y deja el resultado a la vista. Si molestara, el POST podría responder 202 al instante y dejar el envío al planificador de la fase 7.
 
+### L-026 Una factura vencida deja un hueco en la numeración de la SUNAT
+- [ ] Estado: diferido (se resuelve en la fase 9 con la SUNAT real)
+- **Qué significa:** si una factura pasa a `VENCIDO` sin haber llegado nunca a la SUNAT, su número queda sin informar y la siguiente ya usa el siguiente. No se vuelve a emitir con el mismo número porque su fecha ya es vieja.
+- **Por qué se deja:** no sé aún si la SUNAT exige informar los números saltados (por ejemplo con una comunicación de baja). Se confirma en la fase 9 y, si hace falta, se agrega la baja en la parte opcional del plan.
+
+### L-027 `getStatusCdr` solo está probado con respuestas simuladas
+- [ ] Estado: diferido (se confirma en la fase 9)
+- **Qué significa:** el servicio `billConsultService` solo existe en producción. La estructura del mensaje y los códigos de respuesta (`0001` aceptado, `0002` rechazado, `0011` no existe...) salen del manual y de la guía de consulta integrada, y no se pudieron comprobar contra la SUNAT. Por eso `sunat.consulta-cdr.habilitada` está apagado por defecto.
+- **Por qué se deja:** el beta no lo tiene. Mientras esté apagado, un reintento reenvía directamente, que en el beta es seguro porque devuelve la misma constancia.
+
+### L-028 Los reintentos corren en la misma aplicación
+- [ ] Estado: diferido
+- **Qué significa:** el planificador es un `@Scheduled` dentro de la aplicación, sin cola ni servicio aparte. Si hubiera varias copias, el control de versiones (`@Version`) y los estados evitan enviar el mismo comprobante dos veces, pero se desperdicia algo de trabajo en las pasadas simultáneas.
+- **Por qué se deja:** una sola copia alcanza para este volumen.
+
+### L-029 Un comprobante `REVISAR` espera a una persona
+- [ ] Estado: diferido
+- **Qué significa:** los códigos desconocidos, `1033` y las respuestas raras de la consulta de constancias dejan el comprobante en `REVISAR`. Nadie los avisa todavía: solo quedan en el log y en la base.
+- **Por qué se deja:** hay que saber primero cuáles aparecen de verdad. Se puede agregar un aviso (por ejemplo al agente) más adelante.
+

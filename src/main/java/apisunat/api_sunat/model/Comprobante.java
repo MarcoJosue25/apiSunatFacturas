@@ -153,6 +153,15 @@ public class Comprobante {
         this.proximoIntento = null;
     }
 
+    // Todavía no toca enviar (por ejemplo la SUNAT no pudo ni contestar la consulta): se deja para más tarde sin contar como fallo
+    public void posponer(LocalDateTime proximoIntento, LocalDateTime ahora) {
+        if (estado != EstadoComprobante.PENDIENTE && estado != EstadoComprobante.ERROR_TEMPORAL) {
+            throw new IllegalStateException("Un comprobante " + estado + " no se puede posponer");
+        }
+        this.proximoIntento = proximoIntento;
+        this.actualizadoEn = ahora;
+    }
+
     private void programarReintento(LocalDateTime proximo) {
         if (proximo == null) {
             throw new IllegalArgumentException("Falta la fecha del próximo intento");

@@ -255,28 +255,28 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 **Clases que aparecen:** `scheduler/ReintentoScheduler`, una política de backoff y la consulta `getStatusCdr` en el cliente.
 
-- [ ] Plazo de envío: fecha de emisión más 1 día calendario, configurable en `sunat.plazo-envio-dias` **(verificar si son 1 o 3 días)**.
-- [ ] Política de backoff (1, 2, 5, 15, 30 y 60 minutos, con tope).
-- [ ] `ReintentoScheduler` con `@Scheduled`: toma los pendientes cuyo próximo intento ya llegó.
-- [ ] Antes de reenviar, consultar `getStatusCdr` para ver si la SUNAT ya la recibió. Revisar si el servicio existe en el beta **(verificar)**.
-- [ ] Pasar a `VENCIDO` al cumplirse el plazo y dejar un aviso en los logs.
-- [ ] Que dos procesos no tomen el mismo pendiente.
-- [ ] Configuración del intervalo y apagado del scheduler en los tests, como en el agente.
-- [ ] Guardar cada intento con su código y fecha.
+- [x] Plazo de envío: fecha de emisión más 1 día calendario, configurable en `sunat.plazo-envio-dias` **(verificar si son 1 o 3 días)**. Queda en 1 día por defecto (preguntas frecuentes de la SUNAT); la diferencia con los 3 días de páginas antiguas solo se puede confirmar con la SUNAT real (fase 9).
+- [x] Política de backoff (1, 2, 5, 15, 30 y 60 minutos, con tope).
+- [x] `ReintentoScheduler` con `@Scheduled`: toma los pendientes cuyo próximo intento ya llegó.
+- [x] Antes de reenviar, consultar `getStatusCdr` para ver si la SUNAT ya la recibió. Revisar si el servicio existe en el beta **(verificar)**. Resultado: el beta NO tiene `getStatusCdr` (su `billService` solo trae `getStatus`, `getStatusAR`, `sendBill`, `sendPack` y `sendSummary`); existe en producción, en `billConsultService`. Por eso `sunat.consulta-cdr.habilitada` es `false` por defecto y se prueba con respuestas simuladas hasta la fase 9.
+- [x] Pasar a `VENCIDO` al cumplirse el plazo y dejar un aviso en los logs.
+- [x] Que dos procesos no tomen el mismo pendiente.
+- [x] Configuración del intervalo y apagado del scheduler en los tests, como en el agente.
+- [x] Guardar cada intento con su código y fecha.
 
 **Tests**
-- [ ] Con reloj controlado, sin esperar tiempo real.
-- [ ] Secuencia falla, falla, funciona.
-- [ ] No reintenta error de datos, rechazo ni error de configuración.
-- [ ] Pasa a vencido al cumplirse el plazo, y no antes.
-- [ ] Backoff: valores exactos y tope.
-- [ ] `getStatusCdr` dice que ya está aceptada: no se reenvía y se guarda el CDR.
-- [ ] Dos hilos no envían el mismo comprobante dos veces.
-- [ ] Sobrevive a un reinicio, porque el estado está en la base.
-- [ ] Cada intento queda registrado.
+- [x] Con reloj controlado, sin esperar tiempo real.
+- [x] Secuencia falla, falla, funciona.
+- [x] No reintenta error de datos, rechazo ni error de configuración.
+- [x] Pasa a vencido al cumplirse el plazo, y no antes.
+- [x] Backoff: valores exactos y tope.
+- [x] `getStatusCdr` dice que ya está aceptada: no se reenvía y se guarda el CDR.
+- [x] Dos hilos no envían el mismo comprobante dos veces.
+- [x] Sobrevive a un reinicio, porque el estado está en la base.
+- [x] Cada intento queda registrado.
 
 **Listo cuando:**
-- [ ] Apago la conexión a la SUNAT, emito, la restauro y el comprobante se envía solo.
+- [x] Apago la conexión a la SUNAT, emito, la restauro y el comprobante se envía solo.
 
 ---
 
@@ -350,10 +350,10 @@ Se necesitan si algún día hay que corregir o anular un comprobante. No se cons
 
 ## Cosas por confirmar en el camino
 
-- [ ] Algoritmo de firma: SHA-1 o SHA-256 (fase 4).
-- [ ] Si el ZIP necesita la carpeta `dummy` y si hace falta MTOM (fase 5).
-- [ ] Qué responde la SUNAT al reenviar un comprobante ya aceptado (fase 5).
+- [x] Algoritmo de firma: SHA-1 o SHA-256 (fase 4).: SHA-256 aceptado por el beta.
+- [x] Si el ZIP necesita la carpeta `dummy` y si hace falta MTOM (fase 5).: no hacen falta.
+- [x] Qué responde la SUNAT al reenviar un comprobante ya aceptado (fase 5).: en el beta, la misma constancia.
 - [ ] Plazo de envío de facturas: 1 día o 3 días (fase 7).
-- [ ] Si `getStatusCdr` existe en el beta (fase 7).
+- [x] Si `getStatusCdr` existe en el beta (fase 7).: no existe en el beta.
 - [ ] Plazo de envío del resumen diario de boletas (fase 8).
 - [ ] Si el beta acepta mi RUC 10 y mi régimen permite el certificado gratuito (fase 9).

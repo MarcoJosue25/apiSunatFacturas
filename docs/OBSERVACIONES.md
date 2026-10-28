@@ -312,3 +312,36 @@ Si la petición `POST` se cae justo después de guardar y antes de enviar, el co
 
 ### O-098 Un error de Git: se comiteó un paso con un test fallando (fase 7)
 Encadené `mvn test ...; git commit` sin condicionar el commit al resultado y subió con un test en rojo (era un test mal escrito, no el código). Se corrigió en el commit siguiente; desde ahora se comitea solo si los tests pasan.
+
+### O-099 El beta no tiene `getStatusCdr` (fase 7)
+El WSDL de `https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService?wsdl` solo trae `getStatus`, `getStatusAR`, `sendBill`, `sendPack` y `sendSummary`; las direcciones de `billConsultService` y `billValidService` en el beta dan 404 y las de producción no son accesibles desde este entorno. Hay una operación `getStatusAR` (¿la constancia de aceptación del resumen?) que no está en el manual leído: por ver más adelante, si hace falta.
+
+### O-100 Reenviar en el beta es seguro, en producción no se sabe (fase 7)
+En el beta un reenvío devuelve la misma constancia, así que sin la consulta previa no hay riesgo. En producción lo normal es el error `1033`/otra respuesta, y para eso existe la consulta previa con `getStatusCdr` (apagada hasta la fase 9).
+
+### O-101 Solo se consulta antes de reenviar si ya hubo un intento fallido (fase 7)
+Un comprobante `PENDIENTE` que nunca se envió no necesita consulta: la SUNAT no puede tenerlo. La consulta se hace cuando `intentos_fallidos > 0`, porque un fallo (sobre todo un timeout) no dice si la SUNAT llegó a recibirlo.
+
+### O-102 Si la consulta de la constancia falla, no se reenvía y no se cuenta como fallo (fase 7)
+Sin saber si la SUNAT ya la tiene, reenviar podría duplicar el trabajo o chocar con `1033`. Se pospone el siguiente intento con la misma espera que se llevaba y los intentos fallidos no suben.
+
+### O-103 Para guardar una constancia recuperada se pasa por `ENVIANDO` dentro de la misma transacción (fase 7)
+La máquina de estados no permite ir de `ERROR_TEMPORAL` directo a `ACEPTADO` (a propósito: así nada salta pasos). Al recuperar una constancia con `getStatusCdr` se hace `marcarEnviando` + `registrarResultado` en una sola transacción, y nadie ve el estado intermedio.
+
+### O-104 El plazo se cuenta en días calendario completos (fase 7)
+Una factura emitida el 28 con plazo 1 se puede enviar durante todo el 29; desde las 00:00 del 30 ya es `VENCIDO`. Con la hora de Lima. Se prueba con el límite exacto (23:59:59.999999999 sí, 00:00:00 no).
+
+### O-105 Cuando el planificador marca `VENCIDO` queda un aviso en el log y un intento registrado (fase 7)
+El texto del log dice que hay que emitir una factura nueva. El intento queda con resultado `VENCIDO` en `envio_intentos`.
+
+### O-106 Un `ENVIANDO` viejo se recupera como `ERROR_TEMPORAL` (fase 7)
+Si la aplicación se cae a mitad de un envío, el comprobante queda `ENVIANDO`. Pasados `sunat.reintentos.minutos-maximo-enviando` (10 minutos) vuelve a la cola, con un intento `SIN_RESPUESTA`, y entonces se aplica la regla de consultar antes de reenviar. Un test lo simula dejando el comprobante en `ENVIANDO` con la fecha vieja.
+
+### O-107 `@Scheduled` y los tests (fase 7)
+El pom apaga el planificador en todos los tests (`sunat.reintentos.habilitado=false` como propiedad del sistema de surefire); los tests que lo prueban lo encienden con `@SpringBootTest(properties = ...)`, que tiene prioridad sobre las propiedades del sistema. Con `@ConditionalOnProperty` el bean y `@EnableScheduling` desaparecen del todo.
+
+### O-108 Un `Clock` mutable para los tests (fase 7)
+`RelojMutable` (en los tests) reemplaza el `Clock` de toda la aplicación con `@Primary`, y los servicios que hacen `clock.withZone(Lima)` siguen compartiendo su instante. Así los tests avanzan minutos y días sin esperar.
+
+### O-109 Test de punta a punta de los reintentos con un servidor SOAP local (fase 7)
+`ReintentoPuntaAPuntaTest` usa el cliente HTTP real contra un servidor local que al principio no existe (conexión rechazada), lo enciende después y el planificador manda la factura una sola vez. Es la prueba de "apago la conexión, emito, la restauro y se envía sola".
