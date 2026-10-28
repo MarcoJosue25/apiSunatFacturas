@@ -196,6 +196,84 @@ class SunatPropertiesTest {
         assertThat(camposInvalidos(p)).containsExactly("serieFactura");
     }
 
+    // --- Plazo de envío, reintentos y consulta de constancias ---
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 3, 30})
+    void unPlazoDeEnvioDeCeroATreintaDiasEsValido(int dias) {
+        SunatProperties p = valida();
+        p.setPlazoEnvioDias(dias);
+        assertThat(validator.validate(p)).isEmpty();
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 31, 365})
+    void unPlazoDeEnvioFueraDeRangoFalla(int dias) {
+        SunatProperties p = valida();
+        p.setPlazoEnvioDias(dias);
+        assertThat(camposInvalidos(p)).containsExactly("plazoEnvioDias");
+    }
+
+    @Test
+    void losValoresPorDefectoDeLosReintentosYDeLaConsultaSonLosEsperados() {
+        SunatProperties p = new SunatProperties();
+        assertThat(p.getReintentos().isHabilitado()).isTrue();
+        assertThat(p.getReintentos().getIntervaloSegundos()).isEqualTo(60);
+        assertThat(p.getReintentos().getLote()).isEqualTo(20);
+        assertThat(p.getReintentos().getMinutosMaximoEnviando()).isEqualTo(10);
+        assertThat(p.getConsultaCdr().isHabilitada()).isFalse();
+        assertThat(p.getConsultaCdr().getUrl()).isEqualTo("https://e-factura.sunat.gob.pe/ol-it-wsconscpegem/billConsultService");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void elIntervaloElLoteYElTiempoEnviandoDebenSerPositivos(int valor) {
+        SunatProperties p = valida();
+        p.getReintentos().setIntervaloSegundos(valor);
+        p.getReintentos().setLote(valor);
+        p.getReintentos().setMinutosMaximoEnviando(valor);
+        assertThat(camposInvalidos(p)).containsExactlyInAnyOrder("reintentos.intervaloSegundos", "reintentos.lote", "reintentos.minutosMaximoEnviando");
+    }
+
+    @Test
+    void elLoteNoPuedePasarDe500() {
+        SunatProperties p = valida();
+        p.getReintentos().setLote(500);
+        assertThat(validator.validate(p)).isEmpty();
+        p.getReintentos().setLote(501);
+        assertThat(camposInvalidos(p)).containsExactly("reintentos.lote");
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"ftp://x", "e-factura.sunat.gob.pe", "https://"})
+    void laUrlDeLaConsultaDeConstanciasDebeSerHttpOHttps(String url) {
+        SunatProperties p = valida();
+        p.getConsultaCdr().setUrl(url);
+        assertThat(camposInvalidos(p)).containsExactly("consultaCdr.url");
+    }
+
+    @Test
+    void conLaConfiguracionDeSpringLosNuevosValoresSeLeen() {
+        runner.withPropertyValues(BUENAS).withPropertyValues("sunat.plazo-envio-dias=3", "sunat.reintentos.habilitado=false",
+                "sunat.reintentos.intervalo-segundos=5", "sunat.consulta-cdr.habilitada=true").run(ctx -> {
+            assertThat(ctx).hasNotFailed();
+            SunatProperties p = ctx.getBean(SunatProperties.class);
+            assertThat(p.getPlazoEnvioDias()).isEqualTo(3);
+            assertThat(p.getReintentos().isHabilitado()).isFalse();
+            assertThat(p.getReintentos().getIntervaloSegundos()).isEqualTo(5);
+            assertThat(p.getConsultaCdr().isHabilitada()).isTrue();
+        });
+    }
+
+    @Test
+    void conUnPlazoNegativoLaAplicacionNoArranca() {
+        runner.withPropertyValues(BUENAS).withPropertyValues("sunat.plazo-envio-dias=-1").run(ctx -> {
+            assertThat(ctx).hasFailed();
+            assertThat(ctx.getStartupFailure()).hasStackTraceContaining("plazoEnvioDias");
+        });
+    }
+
     // --- Certificado digital ---
 
     @Test

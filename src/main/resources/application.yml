@@ -24,6 +24,8 @@ sunat:
   clave: ${SUNAT_CLAVE:MODDATOS}
   # La serie de las facturas (la SUNAT exige 4 caracteres y que empiece con F)
   serie-factura: ${SUNAT_SERIE_FACTURA:F001}
+  # Días calendario después del día de emisión en que todavía se puede enviar una factura
+  plazo-envio-dias: ${SUNAT_PLAZO_ENVIO_DIAS:1}
   conexion-timeout-ms: 5000
   lectura-timeout-ms: 30000
   # Los datos de quien emite. Con el beta sirven los de ejemplo; para emitir de verdad se cambian con variables de entorno.
@@ -36,3 +38,13 @@ sunat:
   certificado:
     ruta: ${SUNAT_CERTIFICADO_RUTA:}
     clave: ${SUNAT_CERTIFICADO_CLAVE:}
+  # Vuelve a enviar lo que quedó pendiente (la SUNAT caída, un corte de red...)
+  reintentos:
+    habilitado: ${SUNAT_REINTENTOS_HABILITADO:true}
+    intervalo-segundos: ${SUNAT_REINTENTOS_INTERVALO_SEGUNDOS:60}
+    lote: 20
+    minutos-maximo-enviando: 10
+  # Antes de reenviar, preguntar si la SUNAT ya tiene la factura. Solo existe en producción (el beta no lo tiene).
+  consulta-cdr:
+    habilitada: ${SUNAT_CONSULTA_CDR_HABILITADA:false}
+    url: ${SUNAT_CONSULTA_CDR_URL:https://e-factura.sunat.gob.pe/ol-it-wsconscpegem/billConsultService}

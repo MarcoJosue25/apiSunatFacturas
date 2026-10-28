@@ -3,7 +3,10 @@ package apisunat.api_sunat.config;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -38,6 +41,12 @@ public class SunatProperties {
     @Pattern(regexp = "^F[A-Z0-9]{3}$", message = "La serie de las facturas debe tener 4 caracteres, empezar con F y llevar solo mayúsculas y números")
     private String serieFactura = "F001";
 
+    // Días calendario después del día de emisión en que todavía se puede enviar una factura. La SUNAT hoy dice 1 (preguntas
+    // frecuentes) aunque páginas anteriores decían 3; pasado el plazo rechaza con el código 2108. Ver docs/ERRORES.md E-015.
+    @PositiveOrZero(message = "El plazo de envío no puede ser negativo")
+    @Max(value = 30, message = "El plazo de envío no puede pasar de 30 días")
+    private int plazoEnvioDias = 1;
+
     @Positive(message = "El timeout de conexión debe ser mayor que cero")
     private int conexionTimeoutMs;
 
@@ -51,6 +60,14 @@ public class SunatProperties {
     @Valid
     @NotNull(message = "Faltan los datos del certificado")
     private Certificado certificado = new Certificado();
+
+    @Valid
+    @NotNull(message = "Faltan los datos de los reintentos")
+    private Reintentos reintentos = new Reintentos();
+
+    @Valid
+    @NotNull(message = "Faltan los datos de la consulta de constancias")
+    private ConsultaCdr consultaCdr = new ConsultaCdr();
 
     // Los datos de quien emite la factura (el negocio). Lo opcional puede venir vacío.
     @Getter
@@ -107,5 +124,39 @@ public class SunatProperties {
         public boolean isRutaYClaveCompletas() {
             return (getRuta() == null) == (getClave() == null);
         }
+    }
+
+    // El planificador que vuelve a enviar lo que quedó pendiente
+    @Getter
+    @Setter
+    public static class Reintentos {
+
+        // Se apaga en los tests y se puede apagar en una réplica extra
+        private boolean habilitado = true;
+
+        @Min(value = 1, message = "El intervalo de reintentos debe ser de al menos 1 segundo")
+        private int intervaloSegundos = 60;
+
+        // Cuántos comprobantes se toman en cada pasada
+        @Min(value = 1, message = "El lote de reintentos debe ser de al menos 1")
+        @Max(value = 500, message = "El lote de reintentos no puede pasar de 500")
+        private int lote = 20;
+
+        // Un comprobante que lleva más tiempo que este "enviándose" se da por perdido (la aplicación se cayó a mitad del envío)
+        @Min(value = 1, message = "El tiempo máximo enviando debe ser de al menos 1 minuto")
+        private int minutosMaximoEnviando = 10;
+    }
+
+    // Consultar a la SUNAT si ya tiene una factura antes de volver a enviarla. El servicio billConsultService existe solo en
+    // producción: el beta no lo tiene (su billService solo trae getStatus, getStatusAR, sendBill, sendPack y sendSummary).
+    @Getter
+    @Setter
+    public static class ConsultaCdr {
+
+        private boolean habilitada = false;
+
+        @NotBlank(message = "La URL de la consulta de constancias no puede estar vacía")
+        @Pattern(regexp = "^https?://\\S+$", message = "La URL de la consulta de constancias debe empezar con http:// o https://")
+        private String url = "https://e-factura.sunat.gob.pe/ol-it-wsconscpegem/billConsultService";
     }
 }
