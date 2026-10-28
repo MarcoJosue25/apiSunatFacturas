@@ -60,7 +60,10 @@ class PerfilProduccionArranqueTest {
 
         // Sin el orden de arranque de ArranqueProduccionConfig aquí habría mensajes de Hikari (el pool) y de Flyway (las migraciones)
         assertThat(logs.list).as("se está capturando el log").anyMatch(e -> e.getFormattedMessage().contains("perfil prod"));
-        assertThat(logs.list).noneMatch(e -> e.getLoggerName().startsWith("com.zaxxer.hikari") || e.getLoggerName().startsWith("org.flywaydb"));
+        // Solo los mensajes de este hilo: los pools de otros contextos de test que siguen vivos escriben sus estadísticas desde sus propios hilos
+        String hilo = Thread.currentThread().getName();
+        assertThat(logs.list).filteredOn(e -> e.getThreadName().equals(hilo))
+                .noneMatch(e -> e.getLoggerName().startsWith("com.zaxxer.hikari") || e.getLoggerName().startsWith("org.flywaydb"));
     }
 
     @Test

@@ -229,7 +229,7 @@ Reglas de este archivo:
 - **Fecha:** 2026-10-28
 - **Fase:** 9
 - **Qué pasó:** (1) `RespaldoScriptTest`: con `localhost` como host, `mysqldump`/`mysql` usan el socket local (`/var/run/mysqld/mysqld.sock`) y no el puerto; en el CI la base está en un contenedor y el socket no existe ("Can't connect to local MySQL server through socket"). En mi máquina el socket sí existía. (2) `ApiKeyPuntaAPuntaTest`: probaba "con llave correcta un POST llega al controlador" con `POST /resumenes/generar`, que depende de lo que haya en la base: en el CI había boletas pendientes de otros tests y el envío falló (500).
-- **Cómo quedó:** el script y el test usan `--protocol=tcp`; el test de la llave usa un `POST /resumenes/999999/reenviar` (404 que no depende de la base ni de la SUNAT). Moraleja: un test que depende del estado compartido de la base o de lo que existe en esta máquina se rompe en otro lado.
+- **Cómo quedó:** el script y el test usan `--protocol=tcp`; el test de la llave usa un `POST /resumenes/999999/reenviar` (404 que no depende de la base ni de la SUNAT). (3) `PerfilProduccionArranqueTest` ("ni siquiera se conecta a la base"): contaba también los mensajes `HikariPool-7 - Pool stats` que escriben, desde sus propios hilos, los contextos de otros tests que siguen vivos (y con el log en DEBUG por `SecretosNoSeFiltranTest`); en mi máquina el orden de los tests lo escondía. Ahora solo mira los mensajes del hilo que arranca. Moraleja: un test que depende del estado compartido de la base o de lo que existe en esta máquina se rompe en otro lado.
 
 ---
 
