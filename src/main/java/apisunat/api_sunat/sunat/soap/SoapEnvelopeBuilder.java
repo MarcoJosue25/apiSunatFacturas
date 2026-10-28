@@ -30,6 +30,14 @@ public class SoapEnvelopeBuilder {
                 + Base64.getEncoder().encodeToString(zip) + "</contentFile></ser:sendBill>");
     }
 
+    // Envía un resumen diario de boletas dentro de un ZIP, en base64. La SUNAT no lo procesa al instante: contesta con un ticket.
+    public String sendSummary(String nombreZip, byte[] zip) {
+        exigirNombreZip(nombreZip);
+        exigirContenido(zip);
+        return envolver("<ser:sendSummary><fileName>" + nombreZip + "</fileName><contentFile>"
+                + Base64.getEncoder().encodeToString(zip) + "</contentFile></ser:sendSummary>");
+    }
+
     // Pregunta a la SUNAT por la constancia de un comprobante ya enviado (servicio billConsultService, solo en producción).
     // El número va sin ceros a la izquierda, como en el manual (F022 / 7782).
     public String getStatusCdr(String rucEmisor, String tipoComprobante, String serie, String numero) {

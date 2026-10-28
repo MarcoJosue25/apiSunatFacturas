@@ -58,6 +58,11 @@ public class BillServiceClient {
         return llamar("sendBill", envelopeBuilder.sendBill(nombreZip, zip), parser::leerSendBill);
     }
 
+    // Envía el ZIP del resumen diario y devuelve el ticket para consultar después cómo le fue
+    public String sendSummary(String nombreZip, byte[] zip) {
+        return llamar("sendSummary", envelopeBuilder.sendSummary(nombreZip, zip), parser::leerSendSummary);
+    }
+
     // Pregunta a la SUNAT por la constancia de una factura (billConsultService, que solo existe en producción)
     public RespuestaStatusCdr getStatusCdr(String rucEmisor, String tipoComprobante, String serie, String numero) {
         return llamar("getStatusCdr", propiedades.getConsultaCdr().getUrl(),

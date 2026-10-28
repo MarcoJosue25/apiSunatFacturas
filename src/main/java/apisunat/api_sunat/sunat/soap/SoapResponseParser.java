@@ -60,6 +60,19 @@ public class SoapResponseParser {
         }
     }
 
+    // El número de ticket con el que luego se consulta el resultado del resumen
+    public String leerSendSummary(String xml) {
+        Document doc = leer(xml);
+        lanzarSiEsFault(doc);
+
+        Element respuesta = primero(doc, "sendSummaryResponse");
+        String ticket = respuesta == null ? null : texto(respuesta, "ticket");
+        if (ticket == null || !ticket.matches("\\d{1,30}")) {
+            throw new SunatRespuestaInvalidaException("La respuesta de la SUNAT no trae un ticket válido (sendSummaryResponse/ticket)");
+        }
+        return ticket;
+    }
+
     public RespuestaStatusCdr leerGetStatusCdr(String xml) {
         Document doc = leer(xml);
         lanzarSiEsFault(doc);
