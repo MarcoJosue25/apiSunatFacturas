@@ -105,6 +105,13 @@ Reglas de este archivo:
 - **Qué pasó:** `./mvnw` usa `wget` para bajar la distribución de Maven, y `wget` falla en el entorno de Claude por el proxy. Con `curl` la misma URL funciona.
 - **Cómo se soluciona:** en el entorno de Claude se usa el `mvn` instalado (`mvn clean test`). El wrapper queda en el repo para tu máquina y para el CI. Se confirma en el primer CI que `./mvnw` funciona allí.
 
+### E-012 Un RUC nulo pasaba la validación de las propiedades
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 1
+- **Qué pasó:** `SunatProperties` validaba el RUC solo con `@Pattern`, y en Bean Validation un valor nulo pasa ese patrón. Sin la variable de entorno, la aplicación habría arrancado sin RUC. Lo atrapó el test `elRucDebeTenerExactamenteOnceDigitos` con el caso nulo.
+- **Cómo quedó:** se agregó `@NotBlank` al RUC. Ojo para el resto del proyecto: un patrón o un largo no obligan a que el campo exista, hay que combinarlo con `@NotBlank` o `@NotNull`.
+
 ---
 
 ## Limitaciones que se dejan para después

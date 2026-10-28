@@ -5,3 +5,13 @@ spring:
 # El agente (saas-agent) usa el 8080, así que esta API va en otro puerto para poder correr las dos a la vez
 server:
   port: 8081
+
+# Por defecto apunta al servicio de pruebas (beta) de la SUNAT con las credenciales públicas de pruebas.
+# Para otro RUC o para producción se cambian con variables de entorno.
+sunat:
+  url: ${SUNAT_URL:https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService}
+  ruc: ${SUNAT_RUC:20100066603}
+  usuario: ${SUNAT_USUARIO:MODDATOS}
+  clave: ${SUNAT_CLAVE:MODDATOS}
+  conexion-timeout-ms: 5000
+  lectura-timeout-ms: 30000
