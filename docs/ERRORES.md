@@ -225,3 +225,13 @@ Reglas de este archivo:
 - **Qué significa:** el XML va en ISO-8859-1. Un emoji o una letra de otro alfabeto en el nombre de un producto o un cliente se escribe como `?` (uno por carácter). Las comillas y guiones elegantes, los puntos suspensivos y el euro se cambian por su parecido en ASCII (`TextoSunat`).
 - **Por qué se deja:** es lo más seguro para que la SUNAT no rechace el XML. Quien necesite el texto exacto lo tiene en la base de datos, no en el XML.
 
+### L-018 El RUC del certificado se busca solo en la unidad organizativa (OU)
+- [ ] Estado: diferido (se ajusta si mi certificado real lo trae en otro lugar)
+- **Qué significa:** `CertificadoLoader` lee el RUC de los campos `OU` del titular (puede venir solo o con texto, como `RUC 20100066603`). Si el certificado lo trae en otro campo (por ejemplo `SERIALNUMBER`), se rechaza con el mensaje "no trae el RUC en la unidad organizativa".
+- **Por qué se deja:** la documentación de la SUNAT indica que el RUC va en la OU y no tengo un certificado real para comprobar otras formas. Se confirma en la fase 9 con el certificado verdadero.
+
+### L-019 Si el archivo trae varias claves, se usa la primera
+- [ ] Estado: diferido (comportamiento decidido)
+- **Qué significa:** un `.p12` puede guardar más de una clave privada. `CertificadoLoader` usa la primera que encuentra, sin importar su alias.
+- **Por qué se deja:** los certificados de la SUNAT traen una sola. Si algún día hace falta elegir, se agrega una propiedad con el alias.
+

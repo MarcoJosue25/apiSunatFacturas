@@ -120,3 +120,21 @@ La ruta vacía o con solo espacios cuenta como "sin ruta", pero de la clave solo
 
 ### O-034 `keytool -startdate` permite crear certificados vencidos y futuros (fase 4)
 No hace falta esperar ni manipular el reloj del sistema para tener un certificado vencido: `-startdate "2020/01/01 00:00:00" -validity 30` lo genera ya vencido.
+
+### O-035 Solo se guarda el certificado del emisor, sin la cadena (fase 4)
+El plan hablaba de "la cadena" de certificados. Para firmar basta la clave privada y el certificado del emisor, que es el que va dentro del `KeyInfo` de la firma. La cadena se agregará solo si la SUNAT la pide.
+
+### O-036 Una clave incorrecta y un archivo dañado dan errores distintos (fase 4)
+El JDK avisa de la clave equivocada con un `IOException` cuyo mensaje dice "password was incorrect" (o cuya causa es `UnrecoverableKeyException`); un archivo que no es PKCS12 da otro `IOException`. Se distinguen para que el mensaje diga qué arreglar. El mensaje nunca incluye la clave; un test lo comprueba con varias claves equivocadas.
+
+### O-037 El JDK sí abre claves RSA de 512 bits, pero `keytool` avisa que son inseguras (fase 4)
+Por eso la comprobación del mínimo de 1024 bits la hace nuestro código y no se deja al JDK. El archivo `rsa-512.p12` existe solo para probarla.
+
+### O-038 `checkValidity` incluye los dos extremos (fase 4)
+Un certificado se considera vigente justo en el segundo en que empieza y en el segundo en que vence; un segundo antes o después ya no. Un test lo fija con relojes de precisión de segundos.
+
+### O-039 Una mutación mal hecha no cuenta (fase 4)
+Al romper a propósito la validación de vigencia, el código ni compiló (el `catch` quedaba sin su excepción), así que no probaba nada. Se rehízo cambiando la fecha por una fija. Al hacer mutaciones se comprueba que fallen los tests, no que falle la compilación.
+
+### O-040 La excepción del certificado todavía no tiene respuesta HTTP (fase 4)
+`CertificadoInvalidoException` se lanza al firmar, que recién ocurre dentro del recorrido de la fase 5. Su mapeo en `ManejadorExcepciones` (una respuesta 500 con el mensaje, porque es un problema de configuración y no del cliente) se agrega cuando haya un endpoint que la pueda provocar.
