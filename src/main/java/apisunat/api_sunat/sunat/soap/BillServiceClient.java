@@ -16,6 +16,7 @@ import org.springframework.web.client.RestClientException;
 import java.net.SocketTimeoutException;
 import java.net.http.HttpTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Function;
 
 // Habla con el billService de la SUNAT. Nunca decide por el código HTTP: la SUNAT manda errores SOAP con HTTP 200,
 // así que siempre se mira el cuerpo. Las fallas de red salen como SunatNoDisponibleException.
@@ -49,12 +50,20 @@ public class BillServiceClient {
     }
 
     public RespuestaStatus getStatus(String ticket) {
-        String sobre = envelopeBuilder.getStatus(ticket);
-        Respuesta respuesta = enviar("getStatus", sobre);
+        return llamar("getStatus", envelopeBuilder.getStatus(ticket), parser::leerGetStatus);
+    }
+
+    // Envía el ZIP del comprobante y devuelve el ZIP de la constancia (CDR) que contesta la SUNAT
+    public byte[] sendBill(String nombreZip, byte[] zip) {
+        return llamar("sendBill", envelopeBuilder.sendBill(nombreZip, zip), parser::leerSendBill);
+    }
+
+    private <T> T llamar(String operacion, String sobre, Function<String, T> lector) {
+        Respuesta respuesta = enviar(operacion, sobre);
         if (!respuesta.estado().is2xxSuccessful()) {
             // Un error HTTP puede traer igual el detalle SOAP; si no lo trae, la SUNAT simplemente no está disponible
             try {
-                parser.leerGetStatus(respuesta.cuerpo());
+                lector.apply(respuesta.cuerpo());
             } catch (SunatFaultException e) {
                 throw e;
             } catch (SunatRespuestaInvalidaException ignorado) {
@@ -62,7 +71,7 @@ public class BillServiceClient {
             }
             throw new SunatNoDisponibleException("La SUNAT respondió con el error HTTP " + respuesta.estado().value(), false, null);
         }
-        return parser.leerGetStatus(respuesta.cuerpo());
+        return lector.apply(respuesta.cuerpo());
     }
 
     private Respuesta enviar(String operacion, String sobre) {

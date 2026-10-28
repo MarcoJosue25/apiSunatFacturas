@@ -188,7 +188,8 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 - [x] Nombre del archivo `RUC-01-SERIE-NUMERO` (`NumeracionUtil.nombreArchivoFactura`) y ZIP con el XML adentro (`ZipUtil`).
 - [ ] Probar en el beta si pide la carpeta `dummy` **(verificar)**.
-- [ ] `sendBill` en el cliente SOAP, con el ZIP en base64. Probar si hace falta MTOM **(verificar)**.
+- [x] `sendBill` en el cliente SOAP, con el ZIP en base64 (`SoapEnvelopeBuilder`, `SoapResponseParser`, `BillServiceClient`).
+- [ ] Probar en el beta si hace falta MTOM **(verificar)**.
 - [ ] `CdrParser`: descomprime la respuesta y lee el `ApplicationResponse` (código, descripción y observaciones).
 - [ ] Mover `codigos_sunat.csv` a `src/main/resources` y cargarlo al arrancar.
 - [ ] `ClasificadorErrores` con las clases: aceptado, aceptado con observaciones, rechazo, error de datos, error de configuración y transitorio. Las reglas salen de `docs/sunat/NOTAS.md`.

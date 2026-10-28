@@ -154,6 +154,13 @@ Reglas de este archivo:
 - **Qué pasó:** al mirar el XML firmado, el `SignatureValue` y el `X509Certificate` salían en varias líneas de 76 caracteres con `&#13;` (retorno de carro) al final de cada una. La firma verificaba igual, pero no es la forma habitual y no se sabe si el servicio de la SUNAT lo toleraría igual de bien.
 - **Cómo quedó:** `XmlSigner` quita los espacios de esos dos textos después de firmar, para que queden en una sola línea. No afecta la firma porque `Reference URI=""` excluye a la propia firma y el base64 se lee sin espacios. El `DigestValue` no se toca porque sí está dentro de lo firmado. Un test comprueba que no haya `&#13;` ni saltos de línea y que la firma siga verificando.
 
+### E-019 El decodificador base64 "mime" aceptaba una constancia con basura sin avisar
+- [x] Estado: resuelto
+- **Fecha:** 2026-10-28
+- **Fase:** 5
+- **Qué pasó:** para leer la constancia (`applicationResponse`) usé `Base64.getMimeDecoder()`, porque la SUNAT puede partir el base64 en líneas. Ese decodificador ignora en silencio los caracteres que no son base64: el texto `@@@@` se decodificaba como una constancia vacía y `esto no es base64!!` como bytes a medias, en vez de fallar. Lo descubrió el test de "constancia que no es base64".
+- **Cómo quedó:** `SoapResponseParser.leerSendBill` quita los espacios y saltos de línea y decodifica con `Base64.getDecoder()` (estricto). Un texto que no es base64 lanza `SunatRespuestaInvalidaException`. Los tests cubren tanto el base64 partido en líneas (válido) como la basura (inválida).
+
 ---
 
 ## Limitaciones que se dejan para después

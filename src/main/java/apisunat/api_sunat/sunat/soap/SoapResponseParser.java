@@ -11,6 +11,7 @@ import org.xml.sax.InputSource;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
+import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,13 +24,7 @@ public class SoapResponseParser {
 
     public RespuestaStatus leerGetStatus(String xml) {
         Document doc = leer(xml);
-
-        Element fault = primero(doc, "Fault");
-        if (fault != null) {
-            String faultCode = texto(fault, "faultcode");
-            String faultString = texto(fault, "faultstring");
-            throw new SunatFaultException(faultCode, faultString, sacarCodigo(faultCode, faultString));
-        }
+        lanzarSiEsFault(doc);
 
         Element respuesta = primero(doc, "getStatusResponse");
         Element status = respuesta == null ? null : primero(respuesta, "status");
@@ -44,6 +39,34 @@ public class SoapResponseParser {
                 .statusCode(statusCode.trim())
                 .content(texto(status, "content"))
                 .build();
+    }
+
+    // El ZIP con la constancia de recepción (CDR), ya decodificado del base64
+    public byte[] leerSendBill(String xml) {
+        Document doc = leer(xml);
+        lanzarSiEsFault(doc);
+
+        Element respuesta = primero(doc, "sendBillResponse");
+        String base64 = respuesta == null ? null : texto(respuesta, "applicationResponse");
+        if (base64 == null || base64.isEmpty()) {
+            throw new SunatRespuestaInvalidaException("La respuesta de la SUNAT no trae la constancia (sendBillResponse/applicationResponse)");
+        }
+        try {
+            // Se quitan los saltos de línea que a veces trae y luego se decodifica de forma estricta: el decodificador "mime"
+            // ignora en silencio los caracteres que no son base64 y podría devolver una constancia vacía o a medias
+            return Base64.getDecoder().decode(base64.replaceAll("\\s", ""));
+        } catch (IllegalArgumentException e) {
+            throw new SunatRespuestaInvalidaException("La constancia de la SUNAT no es un base64 válido", e);
+        }
+    }
+
+    private void lanzarSiEsFault(Document doc) {
+        Element fault = primero(doc, "Fault");
+        if (fault != null) {
+            String faultCode = texto(fault, "faultcode");
+            String faultString = texto(fault, "faultstring");
+            throw new SunatFaultException(faultCode, faultString, sacarCodigo(faultCode, faultString));
+        }
     }
 
     // No se permiten DOCTYPE: así una respuesta maliciosa no puede leer archivos ni inflar la memoria (XXE, billion laughs)

@@ -4,13 +4,27 @@ import apisunat.api_sunat.config.SunatProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
+import java.util.regex.Pattern;
+
 // Arma los mensajes SOAP que se mandan al billService de la SUNAT.
 // La autenticación es WS-Security UsernameToken: el usuario es el RUC pegado al usuario SOL, y la clave es la clave SOL.
 @Component
 @RequiredArgsConstructor
 public class SoapEnvelopeBuilder {
 
+    // El nombre del ZIP: letras, números y guiones, terminado en .zip (por ejemplo 20100066603-01-F001-1.zip)
+    private static final Pattern NOMBRE_ZIP = Pattern.compile("[A-Za-z0-9-]{1,100}\\.zip");
+
     private final SunatProperties propiedades;
+
+    // Envía un comprobante (factura o nota) dentro de un ZIP, en base64. La SUNAT contesta en el mismo momento.
+    public String sendBill(String nombreZip, byte[] zip) {
+        exigirNombreZip(nombreZip);
+        exigirContenido(zip);
+        return envolver("<ser:sendBill><fileName>" + nombreZip + "</fileName><contentFile>"
+                + Base64.getEncoder().encodeToString(zip) + "</contentFile></ser:sendBill>");
+    }
 
     public String getStatus(String ticket) {
         exigirTexto("El ticket", ticket);
@@ -28,6 +42,18 @@ public class SoapEnvelopeBuilder {
                 + "</wsse:UsernameToken></wsse:Security></soapenv:Header>"
                 + "<soapenv:Body>" + cuerpo + "</soapenv:Body>"
                 + "</soapenv:Envelope>";
+    }
+
+    private static void exigirNombreZip(String nombre) {
+        if (nombre == null || !NOMBRE_ZIP.matcher(nombre).matches()) {
+            throw new IllegalArgumentException("El nombre del ZIP debe llevar solo letras, números y guiones, y terminar en .zip");
+        }
+    }
+
+    private static void exigirContenido(byte[] zip) {
+        if (zip == null || zip.length == 0) {
+            throw new IllegalArgumentException("El ZIP no puede estar vacío");
+        }
     }
 
     private static void exigirTexto(String nombre, String valor) {

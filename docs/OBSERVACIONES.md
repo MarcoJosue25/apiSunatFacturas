@@ -168,3 +168,15 @@ Una carpeta como `dummy/` termina en `/`, no en `.xml`, así que ya se descarta 
 
 ### O-050 La `dummy/` de la SUNAT se ignora al leer, pero al enviar no se agrega (fase 5)
 Algunos ejemplos antiguos de la SUNAT mandan el ZIP con una carpeta `dummy/` vacía. Por ahora se manda solo el XML; si el beta lo rechazara por eso se agrega (queda como punto a verificar en el plan).
+
+### O-051 El cliente SOAP ahora es genérico por operación (fase 5)
+`BillServiceClient.llamar(operacion, sobre, lector)` concentra lo común (HTTP, timeouts, errores SOAP con HTTP 500, tope de tamaño) y cada operación (`getStatus`, `sendBill`) solo dice qué sobre manda y cómo lee la respuesta. Los 28 tests de `getStatus` siguieron pasando sin tocarlos al hacer el cambio.
+
+### O-052 `sendBill` nunca reintenta por su cuenta (fase 5)
+El cliente hace una sola llamada. Si hay un timeout no se sabe si la SUNAT recibió la factura o no; decidir qué hacer (volver a enviar o consultar la constancia) es trabajo de la fase 7. Un test comprueba que ante un 503 hay una sola llamada.
+
+### O-053 Java acepta bits sobrantes en el relleno de base64 (fase 5)
+`PK==` decodifica sin error aunque los bits del último carácter no sean cero. Para el parser alcanza con que rechace los caracteres inválidos y el relleno mal puesto (`PK=`, `AAAA=A`); no se intentó ser más estricto que el JDK.
+
+### O-054 El nombre del ZIP en el sobre solo admite letras, números y guiones (fase 5)
+`SoapEnvelopeBuilder.sendBill` valida el nombre antes de ponerlo en el XML sin escapar. Todos los nombres reales (`20100066603-01-F001-1.zip`) cumplen. Rechazar el resto evita meter texto raro en el sobre.
