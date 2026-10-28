@@ -83,6 +83,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] Servicio con Mockito: delega bien y traduce las excepciones.
 - [x] Controller (`@WebMvcTest`): 200, ticket en blanco 400, SUNAT caída 502, timeout 504, y la respuesta no deja ver stacktrace ni credenciales.
 - [x] Las credenciales no aparecen en los logs.
+- [x] Prueba de punta a punta con la aplicación completa y una SUNAT falsa en localhost: tickets, errores SOAP, caída, timeout, basura y rutas inexistentes.
 - [ ] Prueba real `@Tag("beta")`: un ticket inexistente devuelve `0127`.
 
 **Listo cuando:**
