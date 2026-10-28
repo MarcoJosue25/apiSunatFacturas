@@ -73,7 +73,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] `SunatService.consultarTicket(ticket)`.
 - [x] `GET /api/v1/sunat/tickets/{ticket}`: devuelve el `statusCode` y el `content` tal cual, sin interpretarlos todavía.
 - [x] `ManejadorExcepciones` (el mismo nombre que en el agente): 502 si la SUNAT falla, 504 si no responde a tiempo, 400 si el ticket viene vacío y 500 genérico sin filtrar detalles.
-- [ ] Prueba manual con `curl` contra el beta: debe devolver `0127 El ticket no existe`.
+- [x] Prueba manual con `curl` contra el beta: debe devolver `0127 El ticket no existe`.
 
 **Tests**
 - [x] Propiedades: el arranque falla si falta el RUC, la URL es inválida o un timeout es 0 o negativo.
@@ -84,10 +84,10 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [x] Controller (`@WebMvcTest`): 200, ticket en blanco 400, SUNAT caída 502, timeout 504, y la respuesta no deja ver stacktrace ni credenciales.
 - [x] Las credenciales no aparecen en los logs.
 - [x] Prueba de punta a punta con la aplicación completa y una SUNAT falsa en localhost: tickets, errores SOAP, caída, timeout, basura y rutas inexistentes.
-- [ ] Prueba real `@Tag("beta")`: un ticket inexistente devuelve `0127`.
+- [x] Prueba real `@Tag("beta")`: un ticket inexistente devuelve `0127`.
 
 **Listo cuando:**
-- [ ] Hago `curl` a mi API y veo la respuesta real del beta.
+- [x] Hago `curl` a mi API y veo la respuesta real del beta.
 
 ---
 

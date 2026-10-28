@@ -183,3 +183,8 @@ Reglas de este archivo:
 - [ ] Estado: diferido (se ve en la fase 9)
 - **Qué significa:** con una clave incorrecta y con el ticket vacío, el beta respondió exactamente igual que con la clave buena (`0127`). Los errores de autenticación y permisos (`0109`, `0111`) no se pueden reproducir en el beta.
 - **Por qué se deja:** esos casos se prueban con respuestas simuladas, y su comportamiento real se confirma recién con la SUNAT de producción.
+
+### L-014 El beta es lento
+- [ ] Estado: diferido (se tiene en cuenta en timeouts y reintentos)
+- **Qué significa:** en la prueba manual, una consulta `getStatus` al beta tardó entre 1.2 y 2.5 segundos. Por eso el timeout de lectura por defecto es de 30 s y los tests con tiempo usan márgenes holgados. Un envío de comprobante (que firma y comprime) probablemente tarde más.
+- **Por qué se deja:** no hay nada que arreglar, pero hay que recordarlo al decidir los timeouts de las fases 5 y 7.

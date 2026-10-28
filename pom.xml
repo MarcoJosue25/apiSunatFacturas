@@ -15,6 +15,9 @@
 	<description>Emisión de facturas y boletas electrónicas directo con la SUNAT</description>
 	<properties>
 		<java.version>21</java.version>
+		<!-- Las pruebas con @Tag("beta") llaman a la SUNAT de verdad: no corren por defecto, solo con -Pbeta -->
+		<test.groups></test.groups>
+		<test.excluded.groups>beta</test.excluded.groups>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -45,6 +48,14 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<groups>${test.groups}</groups>
+					<excludedGroups>${test.excluded.groups}</excludedGroups>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<annotationProcessorPaths>
@@ -57,5 +68,16 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<!-- ./mvnw test -Pbeta  corre solo las pruebas contra el servicio beta de la SUNAT (necesita internet) -->
+		<profile>
+			<id>beta</id>
+			<properties>
+				<test.groups>beta</test.groups>
+				<test.excluded.groups></test.excluded.groups>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>

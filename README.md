@@ -22,7 +22,7 @@ Es un servicio independiente: mi agente no sabe nada de XML ni de firmas, solo l
 Recién arrancando. Lo voy haciendo por fases, despacio y con tests en cada paso. El plan completo, con los pasos y su check, está en [`docs/PLAN.md`](docs/PLAN.md).
 
 1. [x] Cimientos
-2. [ ] Conexión con el beta de la SUNAT
+2. [x] Conexión con el beta de la SUNAT
 3. [ ] Los números (cálculos exactos)
 4. [ ] XML de factura
 5. [ ] Firma digital
@@ -37,6 +37,24 @@ Los errores que me van saliendo y las limitaciones que dejo para después están
 ## Stack
 
 Java 21, Spring Boot y Maven. MySQL con Flyway más adelante, igual que en mi agente.
+
+## Cómo correrlo
+
+Necesitas Java 21. Por defecto apunta al servicio de pruebas (beta) de la SUNAT con las credenciales públicas de pruebas (ver [`.env.example`](.env.example) para cambiar el RUC).
+
+```bash
+./mvnw spring-boot:run
+curl http://localhost:8081/api/v1/sunat/tickets/201100000011227
+```
+
+Con un ticket que no existe, el beta responde `{"statusCode":"0127","content":"El ticket no existe"}`.
+
+## Pruebas
+
+```bash
+./mvnw test            # todas las pruebas, sin internet
+./mvnw test -Pbeta     # solo las que llaman al beta de la SUNAT de verdad
+```
 
 ## Documentación
 
