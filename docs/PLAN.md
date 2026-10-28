@@ -95,15 +95,14 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 **Objetivo:** cálculos exactos y blindados. Una diferencia de centavos hace que la SUNAT rechace la factura y se pierda el número, así que esta fase es de las más pesadas en tests.
 
-**Clases que aparecen:** `util/MontoUtil`, `util/MontoEnLetras`, `util/NumeracionUtil`, y una calculadora de líneas y totales.
+**Clases que aparecen:** `sunat/calculo/CalculadoraIgv` (con `LineaCalculada` y `TotalesDocumento`), `util/MontoEnLetras` y `util/NumeracionUtil`. El `Clock` y la fecha y hora de Lima pasan a la fase 3, porque hasta el XML nadie los usa.
 
-- [ ] Leer las reglas de cálculo (guía XML de factura 2.1, hoja `Factura2_0` de las Reglas de validación, y los códigos 3270 a 3294) y anotar las fórmulas y tolerancias en `docs/sunat/CALCULOS.md`. Sin esto no se programa nada.
+- [x] Leer las reglas de cálculo (guía XML de factura 2.1, hoja `Factura2_0` de las Reglas de validación, y los códigos 3270 a 3294) y anotar las fórmulas y tolerancias en `docs/sunat/CALCULOS.md`. Sin esto no se programa nada.
 - [ ] Calculadora de línea: valor unitario, precio unitario (con IGV), valor de venta del ítem e IGV de la línea. Solo operación gravada (afectación 10) al principio.
 - [ ] Totales del documento: suma de valores de venta, IGV total e importe total.
 - [ ] Redondeo a 2 decimales y precisión del valor unitario, según lo anotado.
 - [ ] Monto en letras para la leyenda 1000 ("CUATROCIENTOS VEINTITRÉS Y 00/100 SOLES").
 - [ ] Serie y correlativo: formato `F001-00000001` y validación del formato.
-- [ ] `Clock` inyectable y fecha y hora de Lima.
 
 **Tests**
 - [ ] Redondeo: 0.005, 0.015, 0.004999, 0.01, montos grandes y los límites.
@@ -112,7 +111,6 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 - [ ] Ida y vuelta: del precio con IGV al valor unitario y de regreso no pierde centavos.
 - [ ] Monto en letras: 0, 1, 15, 21, 100 ("CIEN"), 101, 1000, 1001, 21000, 1000000 ("UN MILLÓN"), centavos, y negativos rechazados.
 - [ ] Serie y correlativo: `F001`, `F999`, `B001`, serie inválida, correlativo 0 o de más de 8 dígitos.
-- [ ] Fecha: el reloj controlado devuelve la hora de Lima aunque el servidor esté en otra zona.
 
 **Listo cuando:**
 - [ ] Los cálculos son puros, no dependen de nada externo y tienen sus casos límite cubiertos.
@@ -127,6 +125,7 @@ Recorrido: `SunatController` → `SunatService` → `BillServiceClient` → SUNA
 
 - [ ] Extraer los XSD 2.1 (`docs/sunat/Archivos XSD (1).zip`) a `src/main/resources/xsd/`, con una nota de qué versión son.
 - [ ] `XsdValidator`: valida un XML contra los XSD y devuelve los errores legibles.
+- [ ] `Clock` inyectable con la zona de Lima (fecha y hora de emisión), con su test.
 - [ ] Datos del emisor en `sunat.emisor.*` (razón social, nombre comercial, ubigeo y dirección).
 - [ ] DTO de entrada de la factura (se reutiliza en la fase 6 para el endpoint).
 - [ ] `FacturaXmlBuilder` con el DOM del JDK: versión UBL, tipo de documento 01, moneda PEN, leyenda 1000, emisor, cliente con RUC, forma de pago contado, ítems, impuestos, totales, `cac:Signature` y un `ext:UBLExtension` vacío para la firma.
